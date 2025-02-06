@@ -211,7 +211,7 @@ data:
 
 ---
 # Issuer
-apiVersion: v1
+apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: ca-issuer  # Replace with the name for your issuer
@@ -222,7 +222,7 @@ spec:
 
 ---
 # Certificate for the service (httpbin in this case)
-apiVersion: v1
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: tls-certificate  # Replace with the service name
