@@ -197,7 +197,7 @@
 #           port: 80
 ########################
 # Root CA Secret
-apiVersion: cert-manager.io/v1
+apiVersion: v1
 kind: Secret
 metadata:
   name: root-cert  # Replace with the name for your root certificate secret
@@ -211,7 +211,7 @@ data:
 
 ---
 # Issuer
-apiVersion: cert-manager.io/v1
+apiVersion: v1
 kind: Issuer
 metadata:
   name: ca-issuer  # Replace with the name for your issuer
@@ -222,7 +222,7 @@ spec:
 
 ---
 # Certificate for the service (httpbin in this case)
-apiVersion: cert-manager.io/v1
+apiVersion: v1
 kind: Certificate
 metadata:
   name: tls-certificate  # Replace with the service name
