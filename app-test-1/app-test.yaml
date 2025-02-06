@@ -318,7 +318,7 @@ spec:
   ports:
   - name: http
     port: 8000
-    targetPort: 8080
+    targetPort: 80
   selector:
     app: app-test-1   # Replace with your service name (e.g., httpbin)
 
