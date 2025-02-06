@@ -157,6 +157,8 @@ kind: HTTPProxy
 metadata:
   name: app-test-1  # Replace with your service name (e.g., httpbin)
   namespace: app-test-1  # Replace with your namespace
+  annotations:
+    argocd.argoproj.io/route: "app-test-1.local-cluster.dev"
 spec:
   virtualhost:
     fqdn: app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
