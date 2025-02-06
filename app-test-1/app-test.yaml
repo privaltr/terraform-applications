@@ -196,88 +196,174 @@
 #         - name: app-test-1
 #           port: 80
 ########################
+# Root CA Secret
+apiVersion: cert-manager.io/v1
+kind: Secret
+metadata:
+  name: root-cert  # Replace with the name for your root certificate secret
+  namespace: default  # Replace with your namespace
+  annotations:
+    description: "Root CA for TLS Issuance"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIExjCCAy6gAwIBAgIRAPekcus6v7w8JGhTzB6taIUwDQYJKoZIhvcNAQELBQAw
+    ezEeMBwGA1UEChMVbWtjZXJ0IGRldmVsb3BtZW50IENBMSgwJgYDVQQLDB91MUB1
+    MS1TdGFuZGFyZC1QQy1RMzUtSUNIOS0yMDA5MS8wLQYDVQQDDCZta2NlcnQgdTFA
+    dTEtU3RhbmRhcmQtUEMtUTM1LUlDSDktMjAwOTAeFw0yNTAyMDUxODI5MDVaFw0z
+    NTAyMDUxODI5MDVaMHsxHjAcBgNVBAoTFW1rY2VydCBkZXZlbG9wbWVudCBDQTEo
+    MCYGA1UECwwfdTFAdTEtU3RhbmRhcmQtUEMtUTM1LUlDSDktMjAwOTEvMC0GA1UE
+    AwwmbWtjZXJ0IHUxQHUxLVN0YW5kYXJkLVBDLVEzNS1JQ0g5LTIwMDkwggGiMA0G
+    CSqGSIb3DQEBAQUAA4IBjwAwggGKAoIBgQCngHUi2QfJl2057s033HG3yRZsVrT5
+    PxUEb268ga/O/PifiVJ0+EV31lwMAHXtKkTTblabZlb2drTFwtNAlwc1P2jMrlVW
+    2ugAKqwtW02mFNjHU28R5nYqE8KAHTxJ3BPS301X8FSb4fv6PJFKP1K3IswXVJ7l
+    sOMEoolKY/uDRmLeosiGX7EjW53XCrL3asLAr26Vd/vGplLacZb0qC+J4o6Nphoc
+    mSr3O885tbsp2PtoFINen3f3c9hk91oIBMrRbvLuAV+5fTkYRU1dQUjD85a65ljx
+    k0Rqo4/Pfd6ZTWOG20uqE8RAZgP6xXI4yAWn8JAbbrRO3xXv0a3TLj+FLKoHx3mg
+    5/CnMZe5GOg84fA4or6iCu/oguGD9XhW+/CmYfLpNuGz874EjH8BTp6pA7uA27Sb
+    +l3Cpv9X99/JFajyG96z8E8W9HKQvGQKPGAXXibdgStQtvaKAaSy8wDJKr7Vk86W
+    5rhJCRaDTfUkrTfCxjbK0UfUea6mSYSm0l0CAwEAAaNFMEMwDgYDVR0PAQH/BAQD
+    AgIEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFGF/UKHbt5E33MFZDbZk
+    TzaDfBa/MA0GCSqGSIb3DQEBCwUAA4IBgQAVsOTbefnstUCMfnREzcT0EtNUCgxf
+    YWGBlXOw62lqVHGupzvDCXFb44RgRhclXxHhrsPBrPXL3cnwOjc9g7Yz1rGhXbia
+    oec9vpTTA2YynhJeQ1J69ZK1l3bQ96rfL8OvVMGlUTKTQvBNzFhTkIjrp4pjsmAR
+    6brz1Uc1xqZntVu+upucKzJOY9d0iU2dGa03XBAYDFNm4cRhFQzqg5biraidlrUK
+    qW8Mv2yVUNbTmUMvyqdPAEX4HOrreHWnVFJBoTbjpYM3aFRCgEtkhSHnRtkcb1V+
+    KzvgZ2jvN8l/gwgS/kj1nTA6eupzDE8d9xh+0SKdzMsGvQjZr+hoAHxz2/bbOS6E
+    3sGuwdsncOZIr/rsJQaIPhy+MBDgGquKva0Tew6gUS1kh0/GZO5dPiNJirfje7Kx
+    C3VBwFjg+KTEymYsq0xkXOfNXIZkrP7IVQq6Q8oGLFnEmFmB6Xmo3O1hoXOytuq4
+    3bgfrVslB8FzvQIPaTwqHQ6qDgV3EDhzTWU=
+    -----END CERTIFICATE-----
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+    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
+    HI0SKbzPYVu9Qms+fAiLCus=
+    -----END PRIVATE KEY-----
+
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer  # Replace with the name for your issuer
+  namespace: default  # Replace with your namespace
+spec:
+  ca:
+    secretName: root-cert  # This should match the secret name from above
+
+---
+# Certificate for the service (httpbin in this case)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate  # Replace with the service name
+  namespace: default  # Replace with your namespace
+spec:
+  secretName: default-https-cert  # Replace with the secret name for the TLS certificate
+  dnsNames:
+    - app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
+  privateKey:
+    rotationPolicy: "Always"
+  issuerRef:
+    name: ca-issuer  # This should match the name of your issuer
+    kind: Issuer
+
+---
+# Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-test-1
-  namespace: default
-  labels:
-    app: app-test-1
-    service: app-test-1
+ name: app-test-1-svc # Replace with your service name (e.g., httpbin)
+ namespace: default # Replace with your namespace
+ labels:
+   app: app-test-1 # Replace with your service name (e.g., httpbin)
+   service: nginx # Replace with your service name (e.g., httpbin)
 spec:
   ports:
   - name: http
     port: 8000
     targetPort: 8080
   selector:
-    app: app-test-1
+    app: app-test-1   # Replace with your service name (e.g., httpbin)
 
 ---
+# Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-test-1
-  namespace: default
+  name: app-test-1 # Replace with your service name (e.g., httpbin)
+  namespace: default # Replace with your namespace
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-test-1
+      app: app-test-1 # Replace with your service name (e.g., httpbin)
+      version: v1
   template:
     metadata:
       labels:
         app: app-test-1
+        version: v1 # Replace with your service name (e.g., httpbin)
     spec:
       containers:
-        - name: nginx
-          image: nginx:latest
+        - name: nginx # Replace with your service name (e.g., httpbin)
+          imagePullPolicy: IfNotPresent
+          image: nginx:latest # Replace with your service image (e.g., docker.io/mccutchen/go-httpbin)
           ports:
             - containerPort: 8080
 
 ---
-
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: ca-issuer
-  namespace: default
-spec:
-  ca:
-    secretName: root-cert  # Reference the secret created by Terraform
-
----
-
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: tls-certificate
-  namespace: default
-spec:
-  secretName: default-https-cert
-  dnsNames:
-    - app-test-1.local-cluster.dev
-  privateKey:
-    rotationPolicy: "Always"
-  issuerRef:
-    name: ca-issuer
-    kind: Issuer
-
----
-
+# Ingress (HTTPProxy)
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: app-test-1-proxy
-  namespace: default
+  name: app-test-1  # Replace with your service name (e.g., httpbin)
+  namespace: default  # Replace with your namespace
 spec:
   virtualhost:
-    fqdn: app-test-1.local-cluster.dev
+    fqdn: pp-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
     tls:
-      secretName: tls-certificate  # This is the secret created by cert-manager
+      secretName: default-https-cert  # This should match the certificate secret name
   routes:
     - conditions:
       - prefix: /
       services:
-        - name: app-test-1
+        - name: app-test-1  # Replace with your service name (e.g., httpbin)
           port: 8000
-
