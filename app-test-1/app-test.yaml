@@ -253,7 +253,7 @@ metadata:
   name: tls-certificate
   namespace: default
 spec:
-  secretName: tls-certificate
+  secretName: default-https-cert
   dnsNames:
     - app-test-1.local-cluster.dev
   privateKey:
