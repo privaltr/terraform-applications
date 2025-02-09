@@ -7,9 +7,9 @@ metadata:
   # annotations:
   #   description: "Root CA for TLS Issuance"
   annotations:
-    avp.kubernetes.io/path: "secret/tls/root-cert"
-    avp.kubernetes.io/secret-version: "1"
-type: kubernetes.io/tls
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+    # avp.kubernetes.io/secret-version: "1"
+type: Opaque
 stringData:
   tls.crt: |
     <tls.crt>
