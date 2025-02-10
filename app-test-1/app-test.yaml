@@ -7,14 +7,14 @@ metadata:
   # annotations:
   #   description: "Root CA for TLS Issuance"
   annotations:
-    avp.kubernetes.io/path: "tls/root-cert"
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
     # avp.kubernetes.io/secret-version: "1"
 type: kubernetes.io/tls
 stringData:
   tls.crt: |
-    <tls.crt>
+    <!vault:tls.crt!>
   tls.key: |
-    <tls.key>
+    <!vault:tls.key!>
 ---
 # Issuer
 apiVersion: cert-manager.io/v1
