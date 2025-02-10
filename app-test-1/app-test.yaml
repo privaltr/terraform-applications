@@ -9,7 +9,7 @@ metadata:
   annotations:
     avp.kubernetes.io/path: "secret/data/tls/root-cert"
     # avp.kubernetes.io/secret-version: "1"
-type: Opaque
+type: kubernetes.io/tls
 stringData:
   tls.crt: |
     <tls.crt>
