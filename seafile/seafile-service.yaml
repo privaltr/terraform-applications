@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: seafile
 spec:
-  selector:
-    app: seafile
-  type: LoadBalancer
   ports:
-    - protocol: TCP
+  - name: http
       port: 80
       targetPort: 80
       nodePort: 30000
+  selector:
+    app: seafile
