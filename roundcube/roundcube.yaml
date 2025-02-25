@@ -82,6 +82,8 @@ spec:
           ports:
             - containerPort: 80
           env:
+            - name: ROUNDCUBEMAIL_PLUGINS
+              value: "archive,zipdownload,markasjunk"
             - name: ROUNDCUBEMAIL_DEFAULT_HOST
               value: "ssl://mail.ricksdomein.nl"
             - name: ROUNDCUBEMAIL_DEFAULT_PORT
