@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: mailcow/nginx:latest
+          image: mailcow/nginx:1.02
           ports:
             - containerPort: 80
             - containerPort: 443
