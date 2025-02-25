@@ -1,0 +1,107 @@
+# Root CA Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: root-cert
+  namespace: app-test-1
+  annotations:
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <tls.crt>
+  tls.key: |
+    <tls.key>
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: app-test-1
+spec:
+  ca:
+    secretName: root-cert
+---
+# Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate
+  namespace: app-test-1
+spec:
+  secretName: app-test-1-https-cert
+  dnsNames:
+    - app-test-1.local-cluster.dev
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: roundcube
+  namespace: app-test-1
+  labels:
+    app: roundcube
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: roundcube
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roundcube
+  namespace: app-test-1
+  annotations:
+    link.argocd.argoproj.io/external-link: https://app-test-1.local-cluster.dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: roundcube
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: roundcube
+        version: v1
+    spec:
+      containers:
+        - name: roundcube
+          imagePullPolicy: IfNotPresent
+          image: roundcube/roundcubemail:latest
+          ports:
+            - containerPort: 80
+          #env:
+          #  - name: ROUNDCUBEMAIL_DEFAULT_HOST
+          #    value: "ssl://mail.example.com"
+          #  - name: ROUNDCUBEMAIL_SMTP_SERVER
+          #    value: "tls://mail.example.com"
+---
+# Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: roundcube
+  namespace: app-test-1
+spec:
+  virtualhost:
+    fqdn: app-test-1.local-cluster.dev
+    tls:
+      secretName: app-test-1-https-cert
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: roundcube
+          port: 80
+
