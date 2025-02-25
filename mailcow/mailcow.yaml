@@ -1,0 +1,122 @@
+# Root CA Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: root-cert
+  namespace: app-test-1
+  annotations:
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <tls.crt>
+  tls.key: |
+    <tls.key>
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: app-test-1
+spec:
+  ca:
+    secretName: root-cert
+---
+# Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate
+  namespace: app-test-1
+spec:
+  secretName: app-test-1-https-cert
+  dnsNames:
+    - app-test-1.local-cluster.dev
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailcow
+  namespace: app-test-1
+  labels:
+    app: mailcow
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: smtp
+      port: 25
+      targetPort: 25
+    - name: smtps
+      port: 465
+      targetPort: 465
+    - name: submission
+      port: 587
+      targetPort: 587
+    - name: imap
+      port: 143
+      targetPort: 143
+    - name: imaps
+      port: 993
+      targetPort: 993
+  selector:
+    app: mailcow
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailcow
+  namespace: app-test-1
+  annotations:
+    link.argocd.argoproj.io/external-link: https://app-test-1.local-cluster.dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcow
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: mailcow
+        version: v1
+    spec:
+      containers:
+        - name: mailcow
+          imagePullPolicy: IfNotPresent
+          image: mailcow/mailcow-dockerized:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 25
+            - containerPort: 465
+            - containerPort: 587
+            - containerPort: 143
+            - containerPort: 993
+---
+# Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: mailcow
+  namespace: app-test-1
+spec:
+  virtualhost:
+    fqdn: app-test-1.local-cluster.dev
+    tls:
+      secretName: app-test-1-https-cert
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: mailcow
+          port: 80
+
