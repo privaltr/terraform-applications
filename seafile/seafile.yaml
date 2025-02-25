@@ -91,7 +91,7 @@ spec:
             - name: SEAFILE_ADMIN_PASSWORD
               value: "password"  # Change this or use a Secret
           ports:
-            - containerPort: 80
+            - containerPort: 8080
 
 ---
 # Service for MariaDB
