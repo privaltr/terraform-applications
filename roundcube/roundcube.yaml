@@ -81,11 +81,11 @@ spec:
           image: roundcube/roundcubemail:latest
           ports:
             - containerPort: 80
-          #env:
-          #  - name: ROUNDCUBEMAIL_DEFAULT_HOST
-          #    value: "ssl://mail.example.com"
-          #  - name: ROUNDCUBEMAIL_SMTP_SERVER
-          #    value: "tls://mail.example.com"
+          env:
+            - name: ROUNDCUBEMAIL_DEFAULT_HOST
+              value: "ssl://mail.ricksdomein.nl"
+            - name: ROUNDCUBEMAIL_SMTP_SERVER
+              value: "tls://mail.ricksdomein.nl"
 ---
 # Ingress (HTTPProxy)
 apiVersion: projectcontour.io/v1
