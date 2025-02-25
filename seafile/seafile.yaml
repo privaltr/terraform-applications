@@ -194,4 +194,4 @@ spec:
         - prefix: /
       services:
         - name: seafile
-          port: 80
+          port: 8000
