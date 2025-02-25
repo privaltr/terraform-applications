@@ -131,7 +131,7 @@ spec:
     spec:
       containers:
         - name: postfix
-          image: mailcow/postfix:latest
+          image: mailcow/postfix:1.79
           ports:
             - containerPort: 25
 ---
@@ -170,7 +170,7 @@ spec:
     spec:
       containers:
         - name: dovecot
-          image: mailcow/dovecot:latest
+          image: mailcow/dovecot:2.3
           ports:
             - containerPort: 143
             - containerPort: 993
