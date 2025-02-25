@@ -1,0 +1,123 @@
+---
+# Root CA Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: root-cert
+  namespace: app-test-1
+  annotations:
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <tls.crt>
+  tls.key: |
+    <tls.key>
+
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: app-test-1
+spec:
+  ca:
+    secretName: root-cert
+
+---
+# Certificate for Seafile
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: seafile-tls-cert
+  namespace: app-test-1
+spec:
+  secretName: seafile-https-cert
+  dnsNames:
+    - seafile.local-cluster.dev
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+# Service for Seafile
+apiVersion: v1
+kind: Service
+metadata:
+  name: seafile
+  namespace: app-test-1
+  labels:
+    app: seafile
+spec:
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: https
+      port: 8082
+      targetPort: 8082
+    - name: seahub
+      port: 80
+      targetPort: 80
+  selector:
+    app: seafile
+
+---
+# Deployment for Seafile
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seafile
+  namespace: app-test-1
+  annotations:
+    link.argocd.argoproj.io/external-link: https://seafile.local-cluster.dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seafile
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: seafile
+        version: v1
+    spec:
+      containers:
+        - name: seafile
+          imagePullPolicy: IfNotPresent
+          image: seafileltd/seafile-mc:latest
+          env:
+            - name: SEAFILE_SERVER_HOSTNAME
+              value: "seafile.local-cluster.dev"
+            - name: SEAFILE_ADMIN_EMAIL
+              value: "admin@local-cluster.dev"
+            - name: SEAFILE_ADMIN_PASSWORD
+              value: "password"  # Change this or use a Secret
+          ports:
+            - containerPort: 8000
+            - containerPort: 8082
+            - containerPort: 80
+
+---
+# Ingress (HTTPProxy) for Seafile
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: seafile
+  namespace: app-test-1
+spec:
+  virtualhost:
+    fqdn: seafile.local-cluster.dev
+    tls:
+      secretName: seafile-https-cert
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: seafile
+          port: 80
+
