@@ -39,70 +39,49 @@ spec:
     name: ca-issuer
     kind: Issuer
 ---
-# Service
+# Service for Mailcow Nginx
 apiVersion: v1
 kind: Service
 metadata:
-  name: mailcow
+  name: mailcow-nginx
   namespace: app-test-1
   labels:
-    app: mailcow
+    app: mailcow-nginx
 spec:
   ports:
     - name: http
       port: 80
       targetPort: 80
-    - name: smtp
-      port: 25
-      targetPort: 25
-    - name: smtps
-      port: 465
-      targetPort: 465
-    - name: submission
-      port: 587
-      targetPort: 587
-    - name: imap
-      port: 143
-      targetPort: 143
-    - name: imaps
-      port: 993
-      targetPort: 993
+    - name: https
+      port: 443
+      targetPort: 443
   selector:
-    app: mailcow
+    app: mailcow-nginx
 ---
-# Deployment
+# Deployment for Mailcow Nginx
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mailcow
+  name: mailcow-nginx
   namespace: app-test-1
-  annotations:
-    link.argocd.argoproj.io/external-link: https://app-test-1.local-cluster.dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mailcow
-      version: v1
+      app: mailcow-nginx
   template:
     metadata:
       labels:
-        app: mailcow
-        version: v1
+        app: mailcow-nginx
     spec:
       containers:
-        - name: mailcow
-          imagePullPolicy: IfNotPresent
-          image: mailcow/mailcow-dockerized:latest
+        - name: nginx
+          image: mailcow/nginx:latest
           ports:
             - containerPort: 80
-            - containerPort: 25
-            - containerPort: 465
-            - containerPort: 587
-            - containerPort: 143
-            - containerPort: 993
+            - containerPort: 443
 ---
-# Ingress (HTTPProxy)
+# Ingress (HTTPProxy) for Mailcow
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
@@ -117,6 +96,84 @@ spec:
     - conditions:
       - prefix: /
       services:
-        - name: mailcow
+        - name: mailcow-nginx
           port: 80
+---
+# Service for Mailcow Postfix
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailcow-postfix
+  namespace: app-test-1
+spec:
+  ports:
+    - name: smtp
+      port: 25
+      targetPort: 25
+  selector:
+    app: mailcow-postfix
+---
+# Deployment for Mailcow Postfix
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailcow-postfix
+  namespace: app-test-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcow-postfix
+  template:
+    metadata:
+      labels:
+        app: mailcow-postfix
+    spec:
+      containers:
+        - name: postfix
+          image: mailcow/postfix:latest
+          ports:
+            - containerPort: 25
+---
+# Service for Mailcow Dovecot
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailcow-dovecot
+  namespace: app-test-1
+spec:
+  ports:
+    - name: imap
+      port: 143
+      targetPort: 143
+    - name: imaps
+      port: 993
+      targetPort: 993
+  selector:
+    app: mailcow-dovecot
+---
+# Deployment for Mailcow Dovecot
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailcow-dovecot
+  namespace: app-test-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcow-dovecot
+  template:
+    metadata:
+      labels:
+        app: mailcow-dovecot
+    spec:
+      containers:
+        - name: dovecot
+          image: mailcow/dovecot:latest
+          ports:
+            - containerPort: 143
+            - containerPort: 993
+---
+# Persistent storage, config maps, and secrets should be added for full Mailcow functionality
 
