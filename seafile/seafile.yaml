@@ -84,14 +84,20 @@ spec:
           imagePullPolicy: IfNotPresent
           image: seafileltd/seafile-mc:11.0-latest
           env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_ROOT_PASSWD
+              value: "db_dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_ADMIN_EMAIL
               value: "admin@local-cluster.dev"
             - name: SEAFILE_ADMIN_PASSWORD
               value: "password"  # Change this or use a Secret
+            - name: SEAFILE_SERVER_LETSENCRYPT
+              value: "false"
           ports:
-            - containerPort: 8080
+            - containerPort: 80
 
 ---
 # Service for MariaDB
