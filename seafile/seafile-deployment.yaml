@@ -19,7 +19,7 @@ spec:
           #image: docker.seadrive.org/seafileltd/seafile-pro-mc:11.0-latest
           env:
             - name: DB_HOST
-              value: "mariadb"
+              value: "mariadb.local-cluster.dev"
             - name: DB_ROOT_PASSWD
               value: "db_dev" #db's password
             - name: TIME_ZONE

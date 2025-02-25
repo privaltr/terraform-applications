@@ -7,5 +7,6 @@ spec:
   - name: http
     port: 80
     targetPort: 80
+    nodePort: 30000
   selector:
     app: seafile
