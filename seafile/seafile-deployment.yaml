@@ -34,10 +34,12 @@ spec:
               value: "https://seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
+            - name: SEAFILE_SERVER_LETSENCRYPT
+              value: "true"
           ports:
-            - containerPort: 80
-            # - containerPort: 443
-            #   name:  seafile-secure
+            # - containerPort: 80
+            - containerPort: 443
+              name:  seafile-secure
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
