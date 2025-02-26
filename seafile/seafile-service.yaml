@@ -5,8 +5,8 @@ metadata:
 spec:
   ports:
   - name: https
-    port: 443
-    targetPort: 443
+    port: 80
+    targetPort: 80
     # nodePort: 30000
   selector:
     app: seafile

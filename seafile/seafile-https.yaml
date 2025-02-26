@@ -55,4 +55,4 @@ spec:
       - prefix: /
       services:
         - name: seafile  # Replace with your service name (e.g., httpbin)
-          port: 443
+          port: 80
