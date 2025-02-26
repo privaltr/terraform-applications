@@ -89,7 +89,7 @@ spec:
             - name: seafile-data
               mountPath: /shared
             - name: ca-pemstore
-              mountPath: /etc/ssl/certs/my-cert.pem  # Path to mount the certificate
+              mountPath: /usr/local/share/ca-certificates/rootCA.crt  # Path to mount the certificate
               subPath: my-cert.pem  # Reference the key from the ConfigMap
       volumes:
         - name: ca-pemstore
