@@ -29,13 +29,11 @@ spec:
             - name: SEAFILE_ADMIN_PASSWORD
               value: "admin_password" #admin password
             - name: SEAFILE_SERVER_LETSENCRYPT
-              value: "false"
+              value: "true"
             - name: CSRF_TRUSTED_ORIGINS
               value: "https://seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
-            - name: SEAFILE_SERVER_LETSENCRYPT
-              value: "true"
           ports:
             # - containerPort: 80
             - containerPort: 443
