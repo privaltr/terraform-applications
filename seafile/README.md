@@ -2,7 +2,7 @@
 
 # Checklist
 
-- [ ] Enable seadoc so the Wiki feature will work
+- [ ] Enable [seadoc](https://manual.seafile.com/11.0/extra_setup/setup_seadoc/) so the Wiki feature will work
 - [ ] Update config to Seafile 12
 
 ## Sources
