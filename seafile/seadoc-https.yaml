@@ -52,7 +52,10 @@ spec:
       secretName: sdoc-server-https-cert  # This should match the certificate secret name
   routes:
     - conditions:
-      - prefix: /
+      - prefix: /sdoc-server
+      pathRewritePolicy:
+        replacePrefix:
+          - replacement: /
       services:
-        - name: sdoc-server  # Replace with your service name (e.g., httpbin)
+        - name: sdoc-server
           port: 80
