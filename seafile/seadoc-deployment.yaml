@@ -32,6 +32,17 @@ spec:
               value: "db_dev" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
+          labels:
+            caddy: https://seafile.local-cluster.dev  # Uses SEAFILE_SERVER_PROTOCOL and SEAFILE_SERVER_HOSTNAME to define the base URL for reverse proxy
+            caddy.@ws.0_header: "Connection *Upgrade*"  # Sets WebSocket headers
+            caddy.@ws.1_header: "Upgrade websocket"  # Enables WebSocket upgrade
+            caddy.0_reverse_proxy: "@ws {{upstreams 80}}"  # Proxy WebSocket traffic to the upstream service (port 80)
+            caddy.1_handle_path: "/socket.io/*"  # Matches the path for Socket.IO WebSockets
+            caddy.1_handle_path.0_rewrite: "* /socket.io{uri}"  # Rewrites the path for WebSocket
+            caddy.1_handle_path.1_reverse_proxy: "{{upstreams 80}}"  # Proxies WebSocket traffic to the service on port 80
+            caddy.2_handle_path: "/sdoc-server/*"  # Matches requests for the Seafile document server
+            caddy.2_handle_path.0_rewrite: "* {uri}"  # Rewrites path for the document server
+            caddy.2_handle_path.1_reverse_proxy: "{{upstreams 80}}"  # Proxies the traffic to `sdoc-server`
           volumeMounts:
             - mountPath: /opt/sdoc-server/data
               name: sdoc-server-storage
