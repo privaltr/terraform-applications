@@ -36,8 +36,8 @@ spec:
               value: "seafile.local-cluster.dev"
           ports:
             - containerPort: 80
-          #        - containerPort: 443
-          #          name:  seafile-secure
+                 - containerPort: 443
+                   name:  seafile-secure
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
