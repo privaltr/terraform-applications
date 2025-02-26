@@ -61,7 +61,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: tls-certificate # Replace with the service name
+  name: tls-certificate2 # Replace with the service name
 spec:
   secretName: sdoc-server-https-cert  # Replace with the secret name for the TLS certificate
   dnsNames:
