@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sdoc-server
-          image: seafileltd/sdoc-server:latest
+          image: seafileltd/sdoc-server:1.0-latest
           ports:
             - containerPort: 8000
           env:
