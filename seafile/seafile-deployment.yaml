@@ -59,19 +59,19 @@ spec:
 
           #     # Start Seafile normally
           #     /sbin/my_init
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "
-                  CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
-                  if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
-                    echo \"Adding CSRF_TRUSTED_ORIGINS...\";
-                    sleep 20s;
-                    echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
-                  else
-                    echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
-                  fi
-                "]
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: ["/bin/sh", "-c", "
+          #         CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
+          #         if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
+          #           echo \"Adding CSRF_TRUSTED_ORIGINS...\";
+          #           sleep 20s;
+          #           echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
+          #         else
+          #           echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
+          #         fi
+          #       "]
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
