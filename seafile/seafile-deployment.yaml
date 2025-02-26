@@ -15,8 +15,9 @@ spec:
       containers:
         - name: seafile
           #        image: seafileltd/seafile-mc:9.0.10
-          image: seafileltd/seafile-mc:11.0-latest
+          # image: seafileltd/seafile-mc:11.0-latest
           # image: seafileltd/seafile-mc:12.0.9
+          image: seafileltd/seafile-mc:12.0-latest
           #image: docker.seadrive.org/seafileltd/seafile-pro-mc:11.0-latest
           env:
             - name: DB_HOST
@@ -42,23 +43,6 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo "Waiting for Seafile to start..."
-              sleep 20  # Adjust if needed
-
-              CONFIG_FILE="/shared/seafile/conf/seahub_settings.py"
-
-              if ! grep -q "CSRF_TRUSTED_ORIGINS" "$CONFIG_FILE"; then
-                echo "Adding CSRF_TRUSTED_ORIGINS..."
-                echo "CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']" >> "$CONFIG_FILE"
-              else
-                echo "CSRF_TRUSTED_ORIGINS already set, skipping..."
-              fi
-
-              # Start Seafile normally
-              /sbin/my_init
           # lifecycle:
           #   postStart:
           #     exec:
