@@ -30,9 +30,6 @@ spec:
               value: "db_dev" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
-
-            - name: LOG_LEVEL
-              value: "info"
           volumeMounts:
             - mountPath: /opt/sdoc-server/data
               name: sdoc-server-storage
