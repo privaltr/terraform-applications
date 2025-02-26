@@ -14,10 +14,7 @@ spec:
     spec:
       containers:
         - name: seafile
-          #        image: seafileltd/seafile-mc:9.0.10
-          # image: seafileltd/seafile-mc:11.0-latest #(working)
-          # image: seafileltd/seafile-mc:12.0.9 #(not working)
-          image: seafileltd/seafile-mc:12.0-latest #(not working)
+          image: seafileltd/seafile-mc:12.0-latest
           #image: docker.seadrive.org/seafileltd/seafile-pro-mc:11.0-latest
           env:
             - name: JWT_PRIVATE_KEY
@@ -47,21 +44,6 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-          # lifecycle:
-          #   postStart:
-          #     exec:
-          #       command: ["/bin/sh", "-c", "
-          #         CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
-          #         if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
-          #           echo \"Adding CSRF_TRUSTED_ORIGINS...\";
-          #           sleep 300s;
-          #           echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
-          #           echo \"Restarting container...\";
-          #           pkill -f seafile || true;
-          #         else
-          #           echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
-          #         fi
-          #       "]
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
