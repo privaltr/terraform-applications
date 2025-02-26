@@ -1,4 +1,10 @@
 # Seafile
+
+# Checklist
+
+- [ ] Enable seadoc so the Wiki feature will work
+- [ ] Update config to Seafile 12
+
 ## Sources
 * [Setup Seafile with a single K8S pod with K8S resources files](https://manual.seafile.com/12.0/setup/k8s_single_node/#system-requirements)
 * [Environment Variables](https://manual.seafile.com/12.0/config/env/)
