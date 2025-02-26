@@ -2,11 +2,36 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ca-pemstore
-  annotations:
-    avp.kubernetes.io/path: "secret/data/tls/root-cert"
-stringData:
-  tls.crt: |
-    <tls.crt>
+data:
+  my-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIExjCCAy6gAwIBAgIRAIwk4aFKo7mqWb59EdVkpxMwDQYJKoZIhvcNAQELBQAw
+    ezEeMBwGA1UEChMVbWtjZXJ0IGRldmVsb3BtZW50IENBMSgwJgYDVQQLDB91MUB1
+    MS1TdGFuZGFyZC1QQy1RMzUtSUNIOS0yMDA5MS8wLQYDVQQDDCZta2NlcnQgdTFA
+    dTEtU3RhbmRhcmQtUEMtUTM1LUlDSDktMjAwOTAeFw0yNTAyMDcwODE5NTZaFw0z
+    NTAyMDcwODE5NTZaMHsxHjAcBgNVBAoTFW1rY2VydCBkZXZlbG9wbWVudCBDQTEo
+    MCYGA1UECwwfdTFAdTEtU3RhbmRhcmQtUEMtUTM1LUlDSDktMjAwOTEvMC0GA1UE
+    AwwmbWtjZXJ0IHUxQHUxLVN0YW5kYXJkLVBDLVEzNS1JQ0g5LTIwMDkwggGiMA0G
+    CSqGSIb3DQEBAQUAA4IBjwAwggGKAoIBgQCpNy/jU10tm+Ne2FHasV6gUNIleYBz
+    zJKOqPTv5gA5i4YctQk+zN6y25XBpOXaoG+7XkaGLcwj7t6vnseVPKaL/Qf3aLWU
+    stkZjwr4O5EOpIg7GT4LDMVgf3sdh4tXJwXqQ66wdTMQ0RUjg5uz+9TwXr3o9DuT
+    JG23pNngkDtqe/9+bR8MIpz1ITkSda1xtnkhXoGNq6eoZdZ8gMMiIKP4jilqgDdV
+    bXKlA7ZrbEuIr1uBeYyhv71wkJ4vfEBUgIG7Tb9BzLpH7TI1EOL0N/eOUgwsW9wf
+    3uWsR+FYMhFTul2otaJnCkVbRJKvGLIKj+JLJxbcefiOYvNTPYopANM/VNEoa8Wm
+    69rxtDhbpSRk1mE66xuuyD01tdShMXdgFT1oXqbQdbAhVKDThyURZy6WwIDWeEKm
+    dpO7CKrAx1c/z59B7JuvPaEqVAdc5kyF1R3xV+3/BP7FH3oyDj02EeMYpxr36QO9
+    +XrGYeP2DjJw5MTaU5cMfpOfYlIGGZGZtFcCAwEAAaNFMEMwDgYDVR0PAQH/BAQD
+    AgIEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFBeS9eFtM3iLTIReqhwQ
+    dhUpd+MlMA0GCSqGSIb3DQEBCwUAA4IBgQCYu3rfvzf3L/38L7iOWw4NU0x9jr4U
+    c/t6RAm2UPFP3mkpPFiRcw/1C27iJsMKTjFtk7C4TiZTeMdriwzdrnup5kvbs4hz
+    ml4NqFTXvB+Pg6rqveSUJwzqLgP9zbU12m3dVJrUn0beG/+X6YtnvFTjdWwsXJAk
+    1bGyd3bm3F030X5Tm8k3Yl0/6Tg+8mMYe2BhEm9uQLPIge3hq2IhXB9GkH39P2aT
+    51ZOWVvyK7JlNYahvbyvKRKZWbWnWdzbRh5ECE5AHRBDpZ8i5s/69ha/DsbFGdp3
+    RXWTz/tLedKUOsv7aHx58O+JBQghbIJRd+CoNcXOCzh2+IGindbzW1eQ/McIKaxu
+    EMZvKg//oqfB4fsv8ZxqOWzh+M/gKGF4l75oI/Xzjt2qMdJNXu2HmkAMYxOzyGaw
+    e3+ds1TBqxBjVcX5CO2WZYBmx5XaUgrSQczzgP845pcZDIcvYjuWAm/iiGYyazW6
+    B7owjybWMNBe4FmvwWTBHaOT0cWo4/jv2Qg=
+    -----END CERTIFICATE-----
 
 ---
 
@@ -65,7 +90,11 @@ spec:
               mountPath: /shared
             - name: ca-pemstore
               mountPath: /opt/seafile/seafile-server-12.0.9/seahub/thirdpart/certifi/cacert.pem  # Path to mount the certificate
-              subPath: tls.crt  # Reference the key from the ConfigMap
+              subPath: my-cert.pem  # Reference the key from the ConfigMap
+      initContainers:
+        - name: create-ssl-dir
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /opt/seafile/seafile-server-12.0.9/seahub/thirdpart/certifi/"]
       volumes:
         - name: ca-pemstore
           configMap:
