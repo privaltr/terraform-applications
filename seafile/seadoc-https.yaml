@@ -51,11 +51,37 @@ spec:
     tls:
       secretName: sdoc-server-https-cert  # This should match the certificate secret name
   routes:
+    # WebSocket Support
     - conditions:
-      - prefix: /sdoc-server
+        - header:
+            name: Connection
+            contains: Upgrade
+        - header:
+            name: Upgrade
+            contains: websocket
+      services:
+        - name: sdoc-server
+          port: 80
+          protocol: h2c  # WebSockets use HTTP/2
+          
+    # Rewrite and Proxy `/socket.io/*`
+    - conditions:
+        - prefix: /socket.io
       pathRewritePolicy:
         replacePrefix:
-          - replacement: /
+          - prefix: /socket.io
+            replacement: /socket.io
+      services:
+        - name: sdoc-server
+          port: 80
+
+    # Rewrite and Proxy `/sdoc-server/*`
+    - conditions:
+        - prefix: /sdoc-server
+      pathRewritePolicy:
+        replacePrefix:
+          - prefix: /sdoc-server
+            replacement: /
       services:
         - name: sdoc-server
           port: 80
