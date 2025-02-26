@@ -56,3 +56,20 @@ spec:
       services:
         - name: sdoc-server  # Replace with your service name (e.g., httpbin)
           port: 80
+
+# Seafile to sdoc-server Reverse Proxy Setup
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: seafile-to-sdoc-server  # This can be any name for the proxy route
+spec:
+  virtualhost:
+    fqdn: seafile.local-cluster.dev
+    tls:
+      secretName: seafile-https-cert  # Seafile TLS secret
+  routes:
+    - conditions:
+        - prefix: /sdoc-server/  # Requests to /sdoc-server will be proxied
+      services:
+        - name: sdoc-server  # This will route to sdoc-server
+          port: 80
