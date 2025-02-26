@@ -89,7 +89,7 @@ spec:
             - name: seafile-data
               mountPath: /shared
             - name: ca-pemstore
-              mountPath: /etc/ssl/certs/my-cert.pem  # Path to mount the certificate
+              mountPath: /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem  # Path to mount the certificate
               subPath: my-cert.pem  # Reference the key from the ConfigMap
       volumes:
         - name: ca-pemstore
