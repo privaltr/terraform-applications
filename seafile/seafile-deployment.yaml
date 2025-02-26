@@ -62,7 +62,7 @@ spec:
             - name: ENABLE_SEADOC
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "https://sdoc-server.local-cluster.dev/"
+              value: "https://sdoc-server.local-cluster.dev"
             - name: ENABLE_WIKI
               value: "true"
               
