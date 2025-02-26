@@ -54,6 +54,8 @@ spec:
                     echo \"Adding CSRF_TRUSTED_ORIGINS...\";
                     sleep 300;
                     echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
+                    echo \"Restarting container...\";
+                    kill 1;
                   else
                     echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
                   fi
