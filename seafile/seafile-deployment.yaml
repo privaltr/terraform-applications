@@ -15,9 +15,9 @@ spec:
       containers:
         - name: seafile
           #        image: seafileltd/seafile-mc:9.0.10
-          # image: seafileltd/seafile-mc:11.0-latest
-          # image: seafileltd/seafile-mc:12.0.9
-          image: seafileltd/seafile-mc:12.0-latest
+          image: seafileltd/seafile-mc:11.0-latest
+          # image: seafileltd/seafile-mc:12.0.9 #(not working)
+          # image: seafileltd/seafile-mc:12.0-latest #(not working)
           #image: docker.seadrive.org/seafileltd/seafile-pro-mc:11.0-latest
           env:
             - name: DB_HOST
@@ -32,8 +32,8 @@ spec:
               value: "admin_password" #admin password
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
-            - name: CSRF_TRUSTED_ORIGINS
-              value: "https://seafile.local-cluster.dev"
+            # - name: CSRF_TRUSTED_ORIGINS
+            #   value: "https://seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
           ports:
@@ -50,6 +50,7 @@ spec:
           #         CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
           #         if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
           #           echo \"Adding CSRF_TRUSTED_ORIGINS...\";
+          #           sleep 120s;
           #           echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
           #         else
           #           echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
