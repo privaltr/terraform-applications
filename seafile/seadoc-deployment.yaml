@@ -17,7 +17,6 @@ spec:
           image: seafileltd/sdoc-server:1.0-latest
           ports:
             - containerPort: 80
-            - containerPort: 7070
           env:
             # - name: SEAFILE_SERVER_PROTOCOL
             #   value: "https"
@@ -34,7 +33,7 @@ spec:
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
           volumeMounts:
-            - mountPath: /opt/sdoc-server/data
+            - mountPath: /shared
               name: sdoc-server-storage
       volumes:
         - name: sdoc-server-storage

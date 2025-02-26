@@ -55,4 +55,4 @@ spec:
       - prefix: /
       services:
         - name: sdoc-server  # Replace with your service name (e.g., httpbin)
-          port: 7070
+          port: 80
