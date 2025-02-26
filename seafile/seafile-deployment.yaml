@@ -23,7 +23,7 @@ spec:
             - name: DB_ROOT_PASSWD
               value: "db_dev" #db's password
             - name: TIME_ZONE
-              value: "Europe/Berlin"
+              value: "Europe/Amsterdam"
             - name: SEAFILE_ADMIN_EMAIL
               value: "admin@seafile.com" #admin email
             - name: SEAFILE_ADMIN_PASSWORD
@@ -32,6 +32,8 @@ spec:
               value: "false"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev" #hostname
+            - name: CSRF_COOKIE_SECURE
+              value: "False"
           ports:
             - containerPort: 80
           #        - containerPort: 443
