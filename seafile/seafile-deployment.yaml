@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seafile-config
+data:
+  seahub_settings.py: |
+    CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,7 +41,7 @@ spec:
             - name: CSRF_TRUSTED_ORIGINS
               value: "https://seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
-              value: "https://seafile.local-cluster.dev"
+              value: "seafile.local-cluster.dev"
           ports:
             - containerPort: 80
           #        - containerPort: 443
@@ -41,7 +49,13 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
+            - name: seafile-config-volume
+              mountPath: /opt/seafile/seafile-server-latest/seafile-server/seahub/settings.py
+              subPath: seahub_settings.py
       volumes:
+        - name: seafile-config-volume
+          configMap:
+            name: seafile-config
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
