@@ -57,7 +57,7 @@ spec:
         - name: seafile  # Replace with your service name (e.g., httpbin)
           port: 80
     - conditions:
-        - prefix: /sdoc-server/  # Requests to /sdoc-server will be proxied
+        - prefix: /sdoc-server  # Requests to /sdoc-server will be proxied
       services:
         - name: sdoc-server  # This will route to sdoc-server
           port: 80
