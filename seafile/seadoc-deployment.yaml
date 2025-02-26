@@ -44,10 +44,6 @@ spec:
             - name: ca-pemstore
               mountPath: /usr/local/share/ca-certificates/sdoc-server.crt  # Path to mount the certificate
               subPath: my-cert.pem  # Reference the key from the ConfigMap
-      initContainers:
-        - name: create-ssl-dir
-          image: busybox
-          command: ["sh", "-c", "update-ca-certificates"]
       volumes:
         - name: ca-pemstore
           configMap:
