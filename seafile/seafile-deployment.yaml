@@ -74,12 +74,12 @@ spec:
             - name: seafile-data
               mountPath: /shared
             - name: ca-pemstore
-              mountPath: /opt/seafile/seafile-server-12.0.9/seahub/thirdpart/certifi/cacert.pem  # Path to mount the certificate
+              mountPath: /usr/local/share/ca-certificates/sdoc-server.crt  # Path to mount the certificate
               subPath: my-cert.pem  # Reference the key from the ConfigMap
-      initContainers:
-        - name: create-ssl-dir
-          image: busybox
-          command: ["sh", "-c", "mkdir -p /opt/seafile/seafile-server-12.0.9/seahub/thirdpart/certifi/"]
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "update-ca-certificates"]
       volumes:
         - name: ca-pemstore
           configMap:
