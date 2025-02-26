@@ -52,10 +52,10 @@ spec:
                   CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
                   if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
                     echo \"Adding CSRF_TRUSTED_ORIGINS...\";
-                    sleep 300;
+                    sleep 120;
                     echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
                     echo \"Restarting container...\";
-                    kill 1;
+                    pkill -f seafile || true;
                   else
                     echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
                   fi
