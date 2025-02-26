@@ -39,9 +39,9 @@ spec:
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
           volumeMounts:
-            - name: seafile-data
-              mountPath: /shared
+            - mountPath: /shared
+              name: sdoc-server-storage
       volumes:
-        - name: seafile-data
+        - name: sdoc-server-storage
           persistentVolumeClaim:
-            claimName: seafile-data
+            claimName: sdoc-server-storage
