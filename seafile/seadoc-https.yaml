@@ -1,0 +1,58 @@
+# Root CA Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: root-cert  # Replace with the name for your root certificate secret
+  # annotations:
+  #   description: "Root CA for TLS Issuance"
+  annotations:
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+    # avp.kubernetes.io/secret-version: "1"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <tls.crt>
+  tls.key: |
+    <tls.key>
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer  # Replace with the name for your issuer
+spec:
+  ca:
+    secretName: root-cert  # This should match the secret name from above
+
+---
+# Certificate for the service (httpbin in this case)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate  # Replace with the service name
+spec:
+  secretName: sdoc-server-https-cert  # Replace with the secret name for the TLS certificate
+  dnsNames:
+    - sdoc-server.local-cluster.dev  # Replace with your service's fully qualified domain name
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer  # This should match the name of your issuer
+    kind: Issuer
+---
+# Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: sdoc-server  # Replace with your service name (e.g., httpbin)
+spec:
+  virtualhost:
+    fqdn: sdoc-server.local-cluster.dev  # Replace with your service's fully qualified domain name
+    tls:
+      secretName: sdoc-server-https-cert  # This should match the certificate secret name
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: sdoc-server  # Replace with your service name (e.g., httpbin)
+          port: 80

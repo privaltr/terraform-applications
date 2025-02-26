@@ -38,7 +38,7 @@ spec:
             - name: ENABLE_SEADOC
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "http://sdoc-server:80/sdoc-server"
+              value: "https://sdoc-server.local-cluster.dev/sdoc-server"
 
           ports:
             - containerPort: 80
