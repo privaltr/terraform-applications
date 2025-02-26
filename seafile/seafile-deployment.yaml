@@ -28,10 +28,12 @@ spec:
               value: "db_dev" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
-            - name: SEAFILE_ADMIN_EMAIL
+            - name: INIT_SEAFILE_ADMIN_EMAIL
               value: "admin@seafile.com" #admin email
-            - name: SEAFILE_ADMIN_PASSWORD
+            - name: INIT_SEAFILE_ADMIN_PASSWORD
               value: "admin_password" #admin password
+            - name: SEAFILE_SERVER_PROTOCOL
+              value: "https"           
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
             # - name: CSRF_TRUSTED_ORIGINS
@@ -45,21 +47,21 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "
-                  CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
-                  if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
-                    echo \"Adding CSRF_TRUSTED_ORIGINS...\";
-                    sleep 300s;
-                    echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
-                    echo \"Restarting container...\";
-                    pkill -f seafile || true;
-                  else
-                    echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
-                  fi
-                "]
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: ["/bin/sh", "-c", "
+          #         CONFIG_FILE='/shared/seafile/conf/seahub_settings.py';
+          #         if [ -f \"$CONFIG_FILE\" ] && ! grep -q 'CSRF_TRUSTED_ORIGINS' \"$CONFIG_FILE\"; then
+          #           echo \"Adding CSRF_TRUSTED_ORIGINS...\";
+          #           sleep 300s;
+          #           echo \"CSRF_TRUSTED_ORIGINS = ['https://seafile.local-cluster.dev']\" >> \"$CONFIG_FILE\";
+          #           echo \"Restarting container...\";
+          #           pkill -f seafile || true;
+          #         else
+          #           echo \"CSRF_TRUSTED_ORIGINS already set or file missing, skipping...\";
+          #         fi
+          #       "]
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
