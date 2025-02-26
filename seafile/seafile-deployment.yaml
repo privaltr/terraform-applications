@@ -33,10 +33,13 @@ spec:
               value: "https"           
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
-            # - name: CSRF_TRUSTED_ORIGINS
-            #   value: "https://seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
+            - name: ENABLE_SEADOC
+              value: "true"
+            - name: SEADOC_SERVER_URL
+              value: "http://sdoc-server:8000"
+
           ports:
             - containerPort: 80
             # - containerPort: 443
