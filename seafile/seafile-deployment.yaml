@@ -52,11 +52,11 @@ spec:
             - name: seafile-data
               mountPath: /shared
           volumeMounts:
-            - name: root-ca-volume
+            - name: root-cert
               mountPath: /etc/ssl/certs/root-cert.crt  # Or wherever your app expects it
               subPath: tls.crt
       volumes:
-        - name: root-ca-volume
+        - name: root-cert
           secret:
             secretName: root-cert
       volumes:
