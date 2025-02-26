@@ -65,6 +65,9 @@ spec:
               value: "https://sdoc-server.local-cluster.dev/sdoc-server"
             - name: ENABLE_WIKI
               value: "true"
+            - name: SEADOC_PRIVATE_KEY
+              value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"
+              
           ports:
             - containerPort: 80
             # - containerPort: 443
