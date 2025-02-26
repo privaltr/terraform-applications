@@ -56,3 +56,35 @@ spec:
       services:
         - name: seafile  # Replace with your service name (e.g., httpbin)
           port: 80
+
+# Certificate for the service (httpbin in this case)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate # Replace with the service name
+spec:
+  secretName: sdoc-server-https-cert  # Replace with the secret name for the TLS certificate
+  dnsNames:
+    - sdoc-server.local-cluster.dev  # Replace with your service's fully qualified domain name
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer  # This should match the name of your issuer
+    kind: Issuer
+---
+# Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: sdoc-server  # Replace with your service name (e.g., httpbin)
+spec:
+  virtualhost:
+    fqdn: sdoc-server.local-cluster.dev  # Replace with your service's fully qualified domain name
+    tls:
+      secretName: sdoc-server-https-cert  # This should match the certificate secret name
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: sdoc-server  # Replace with your service name (e.g., httpbin)
+          port: 80
