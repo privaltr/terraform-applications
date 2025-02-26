@@ -31,9 +31,9 @@ spec:
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
             - name: CSRF_TRUSTED_ORIGINS
-              value: "https://seafile.local-cluster.dev"
+              value: https://seafile.local-cluster.dev
             - name: SEAFILE_SERVER_HOSTNAME
-              value: "seafile.local-cluster.dev" #hostname
+              value: seafile.local-cluster.dev
           ports:
             - containerPort: 80
           #        - containerPort: 443
