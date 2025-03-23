@@ -217,7 +217,8 @@ spec:
         # Authentik Worker
         - name: authentik-worker
           image: ghcr.io/goauthentik/server:latest
-          command: ["/authentik/worker"]  # Run the worker process
+          command: ["ak"]  # Use the `ak` command
+          args: ["worker"]  # Pass the `worker` argument
           env:
             - name: AUTHENTIK_SECRET_KEY
               value: "PleaseGenerateASecureKey"  # Same as above
