@@ -195,6 +195,8 @@ spec:
         # Authentik Server
         - name: authentik-server
           image: ghcr.io/goauthentik/server:latest
+          command: ["ak"]  # Use the `ak` command
+          args: ["server"]  # Pass the `server` argument
           ports:
             - containerPort: 9000  # HTTP port
             # - containerPort: 9443  # HTTPS port
