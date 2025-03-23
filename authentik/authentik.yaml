@@ -37,7 +37,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: authentik-tls-certificate
+  name: tls-certificate
   namespace: authentik
 spec:
   secretName: authentik-https-cert
