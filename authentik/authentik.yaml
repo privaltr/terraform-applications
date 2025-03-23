@@ -173,14 +173,12 @@ spec:
     app: redis
 
 ---
-# Authentik Deployment
+# Authentik Deployment with Server and Worker
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: authentik
   namespace: authentik
-  annotations:
-    link.argocd.argoproj.io/external-link: https://authentik.local-cluster.dev  # Updated domain
 spec:
   replicas: 1
   selector:
@@ -194,8 +192,9 @@ spec:
         version: v1
     spec:
       containers:
-        - name: authentik
-          image: ghcr.io/goauthentik/server:latest  # Authentik official image
+        # Authentik Server
+        - name: authentik-server
+          image: ghcr.io/goauthentik/server:latest
           ports:
             - containerPort: 9000  # HTTP port
             # - containerPort: 9443  # HTTPS port
@@ -203,16 +202,37 @@ spec:
             - name: AUTHENTIK_SECRET_KEY
               value: "PleaseGenerateASecureKey"  # Replace with a secure secret key
             - name: AUTHENTIK_POSTGRESQL__HOST
-              value: "postgresql.authentik.svc.cluster.local"  # PostgreSQL service FQDN
+              value: "postgresql.authentik.svc.cluster.local"
             - name: AUTHENTIK_POSTGRESQL__USER
-              value: "authentik"  # PostgreSQL user
+              value: "authentik"
             - name: AUTHENTIK_POSTGRESQL__PASSWORD
-              value: "your-postgres-password"  # PostgreSQL password
+              value: "your-postgres-password"  # Replace with your PostgreSQL password
             - name: AUTHENTIK_POSTGRESQL__NAME
-              value: "authentik"  # PostgreSQL database name
+              value: "authentik"
             - name: AUTHENTIK_REDIS__HOST
-              value: "redis.authentik.svc.cluster.local"  # Redis service FQDN
-            - name: AUTHENTIK_REDIS__Pdord if configured
+              value: "redis.authentik.svc.cluster.local"
+            - name: AUTHENTIK_REDIS__PASSWORD
+              value: ""  # Redis password if configured
+
+        # Authentik Worker
+        - name: authentik-worker
+          image: ghcr.io/goauthentik/server:latest
+          command: ["/authentik/worker"]  # Run the worker process
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              value: "<your-secret-key>"  # Same as above
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: "postgresql.authentik.svc.cluster.local"
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: "authentik"
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              value: "your-postgres-password"  # Same as above
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: "authentik"
+            - name: AUTHENTIK_REDIS__HOST
+              value: "redis.authentik.svc.cluster.local"
+            - name: AUTHENTIK_REDIS__PASSWORD
+              value: ""  # Redis password if configured
 
 ---
 # Authentik Service
