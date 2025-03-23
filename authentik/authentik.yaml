@@ -173,46 +173,6 @@ spec:
     app: redis
 
 ---
-# Authentik Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: authentik
-  namespace: authentik
-  annotations:
-    link.argocd.argoproj.io/external-link: https://authentik.local-cluster.dev  # Updated domain
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: authentik
-      version: v1
-  template:
-    metadata:
-      labels:
-        app: authentik
-        version: v1
-    spec:
-      containers:
-        - name: authentik
-          image: ghcr.io/goauthentik/server:latest  # Authentik official image
-          ports:
-            - containerPort: 9000  # HTTP port
-            # - containerPort: 9443  # HTTPS port
-          env:
-            - name: AUTHENTIK_SECRET_KEY
-              value: "PleaseGenerateASecureKey"  # Replace with a secure secret key
-            - name: AUTHENTIK_POSTGRESQL__HOST
-              value: "postgresql.authentik.svc.cluster.local"  # PostgreSQL service FQDN
-            - name: AUTHENTIK_POSTGRESQL__USER
-              value: "authentik"  # PostgreSQL user
-            - name: AUTHENTIK_POSTGRESQL__PASSWORD
-              value: "your-postgres-password"  # PostgreSQL password
-            - name: AUTHENTIK_POSTGRESQL__NAME
-              value: "authentik"  # PostgreSQL database name
-            - name: AUTHENTIK_REDIS__HOST
-              value: "redis.authentik.svc.cluster.local"  # Redis service FQDN
-            - name: AUTHENTIK_REDIS__Pdord if configured
 # Authentik Deployment with Server and Worker
 apiVersion: apps/v1
 kind: Deployment
@@ -237,7 +197,7 @@ spec:
           image: ghcr.io/goauthentik/server:latest
           ports:
             - containerPort: 9000  # HTTP port
-            - containerPort: 9443  # HTTPS port
+            # - containerPort: 9443  # HTTPS port
           env:
             - name: AUTHENTIK_SECRET_KEY
               value: "PleaseGenerateASecureKey"  # Replace with a secure secret key
@@ -260,7 +220,7 @@ spec:
           command: ["/authentik/worker"]  # Run the worker process
           env:
             - name: AUTHENTIK_SECRET_KEY
-              value: "<your-secret-key>"  # Same as above
+              value: "PleaseGenerateASecureKey"  # Same as above
             - name: AUTHENTIK_POSTGRESQL__HOST
               value: "postgresql.authentik.svc.cluster.local"
             - name: AUTHENTIK_POSTGRESQL__USER
