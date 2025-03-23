@@ -1,0 +1,46 @@
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: authentik
+spec:
+  ca:
+    secretName: root-cert
+
+---
+# Certificate for Authentik
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-certificate
+  namespace: authentik
+spec:
+  secretName: authentik-https-cert
+  dnsNames:
+    - authentik.local-cluster.dev  # Updated domain
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+# Authentik Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  virtualhost:
+    fqdn: authentik.local-cluster.dev  # Updated domain
+    tls:
+      secretName: authentik-https-cert  # Matches the certificate secret name
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: authentik
+          port: 9000  # HTTP port

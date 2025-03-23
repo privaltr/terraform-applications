@@ -1,0 +1,133 @@
+---
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13  # Use the desired PostgreSQL version
+          env:
+            - name: POSTGRES_DB
+              value: "authentik"  # Database name
+            - name: POSTGRES_USER
+              value: "authentik"  # Database user
+            - name: POSTGRES_PASSWORD
+              value: "your-postgres-password"  # Replace with a secure password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: postgresql-pvc
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6  # Use the desired Redis version
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
+
+---
+# Authentik Deployment with Server and Worker
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik
+  namespace: authentik
+  annotations:
+    link.argocd.argoproj.io/external-link: https://https://authentik.local-cluster.dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: authentik
+        version: v1
+    spec:
+      containers:
+        # Authentik Server
+        - name: authentik-server
+          image: ghcr.io/goauthentik/server:latest
+          command: ["ak"]  # Use the `ak` command
+          args: ["server"]  # Pass the `server` argument
+          ports:
+            - containerPort: 9000  # HTTP port
+            # - containerPort: 9443  # HTTPS port
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              value: "PleaseGenerateASecureKey"  # Replace with a secure secret key
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: "postgresql.authentik.svc.cluster.local"
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: "authentik"
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              value: "your-postgres-password"  # Replace with your PostgreSQL password
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: "authentik"
+            - name: AUTHENTIK_REDIS__HOST
+              value: "redis.authentik.svc.cluster.local"
+            - name: AUTHENTIK_REDIS__PASSWORD
+              value: ""  # Redis password if configured
+
+        # Authentik Worker
+        - name: authentik-worker
+          image: ghcr.io/goauthentik/server:latest
+          command: ["ak"]  # Use the `ak` command
+          args: ["worker"]  # Pass the `worker` argument
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              value: "PleaseGenerateASecureKey"  # Same as above
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: "postgresql.authentik.svc.cluster.local"
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: "authentik"
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              value: "your-postgres-password"  # Same as above
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: "authentik"
+            - name: AUTHENTIK_REDIS__HOST
+              value: "redis.authentik.svc.cluster.local"
+            - name: AUTHENTIK_REDIS__PASSWORD
+              value: ""  # Redis password if configured

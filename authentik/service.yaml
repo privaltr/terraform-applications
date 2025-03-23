@@ -1,0 +1,48 @@
+---
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  namespace: authentik
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgresql
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: authentik
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+
+---
+# Authentik Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik
+  namespace: authentik
+  labels:
+    app: authentik
+    service: authentik
+spec:
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+    # - name: https
+    #   port: 9443
+    #   targetPort: 9443
+  selector:
+    app: authentik
