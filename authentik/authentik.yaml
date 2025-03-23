@@ -17,9 +17,9 @@ metadata:
 type: kubernetes.io/tls
 stringData:
   tls.crt: |
-    <tls.crt>  # Replace with your root certificate
+    <tls.crt>
   tls.key: |
-    <tls.key>  # Replace with your root private key
+    <tls.key>
 
 ---
 # Issuer
