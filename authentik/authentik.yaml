@@ -1,0 +1,256 @@
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: authentik
+
+---
+# Root CA Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: root-cert
+  namespace: authentik
+  annotations:
+    avp.kubernetes.io/path: "secret/data/tls/root-cert"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <tls.crt>  # Replace with your root certificate
+  tls.key: |
+    <tls.key>  # Replace with your root private key
+
+---
+# Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: authentik
+spec:
+  ca:
+    secretName: root-cert
+
+---
+# Certificate for Authentik
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: authentik-tls-certificate
+  namespace: authentik
+spec:
+  secretName: authentik-https-cert
+  dnsNames:
+    - authentik.local-cluster.dev  # Updated domain
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+# PostgreSQL PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc
+  namespace: authentik
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Adjust the size as needed
+
+---
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13  # Use the desired PostgreSQL version
+          env:
+            - name: POSTGRES_DB
+              value: "authentik"  # Database name
+            - name: POSTGRES_USER
+              value: "authentik"  # Database user
+            - name: POSTGRES_PASSWORD
+              value: "your-postgres-password"  # Replace with a secure password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: postgresql-pvc
+
+---
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  namespace: authentik
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgresql
+
+---
+# Redis PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: authentik
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi  # Adjust the size as needed
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6  # Use the desired Redis version
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: authentik
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+
+---
+# Authentik Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik
+  namespace: authentik
+  annotations:
+    link.argocd.argoproj.io/external-link: https://authentik.local-cluster.dev  # Updated domain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: authentik
+        version: v1
+    spec:
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:latest  # Authentik official image
+          ports:
+            - containerPort: 9000  # HTTP port
+            - containerPort: 9443  # HTTPS port
+          env:
+            - name: AUTHENTIK_SECRET_KEY
+              value: "<your-secret-key>"  # Replace with a secure secret key
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: "postgresql.authentik.svc.cluster.local"  # PostgreSQL service FQDN
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: "authentik"  # PostgreSQL user
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              value: "your-postgres-password"  # PostgreSQL password
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: "authentik"  # PostgreSQL database name
+            - name: AUTHENTIK_REDIS__HOST
+              value: "redis.authentik.svc.cluster.local"  # Redis service FQDN
+            - name: AUTHENTIK_REDIS__PASSWORD
+              value: ""  # Redis password if configured
+
+---
+# Authentik Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik
+  namespace: authentik
+  labels:
+    app: authentik
+    service: authentik
+spec:
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+    - name: https
+      port: 9443
+      targetPort: 9443
+  selector:
+    app: authentik
+
+---
+# Authentik Ingress (HTTPProxy)
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  virtualhost:
+    fqdn: authentik.local-cluster.dev  # Updated domain
+    tls:
+      secretName: authentik-https-cert  # Matches the certificate secret name
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: authentik
+          port: 9000  # HTTP port
