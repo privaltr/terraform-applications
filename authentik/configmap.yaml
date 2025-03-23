@@ -4,3 +4,5 @@ metadata:
   name: myapp-config
 data:
   EXTERNAL_LINK: "https://authentik.local-cluster.dev"
+---
+externalLink: "https://authentik.local-cluster.dev"

@@ -73,11 +73,11 @@ metadata:
   name: authentik
   namespace: authentik
   annotations:
-    link.argocd.argoproj.io/external-link:
-      valueFrom:
-        configMapKeyRef:
-          name: myapp-config
-          key: EXTERNAL_LINK 
+    link.argocd.argoproj.io/external-link: "{{ .Values.externalLink }}"
+      # valueFrom:
+      #   configMapKeyRef:
+      #     name: myapp-config
+      #     key: EXTERNAL_LINK 
 spec:
   replicas: 1
   selector:
