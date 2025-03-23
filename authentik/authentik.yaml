@@ -198,10 +198,10 @@ spec:
           image: ghcr.io/goauthentik/server:latest  # Authentik official image
           ports:
             - containerPort: 9000  # HTTP port
-            - containerPort: 9443  # HTTPS port
+            # - containerPort: 9443  # HTTPS port
           env:
             - name: AUTHENTIK_SECRET_KEY
-              value: "<your-secret-key>"  # Replace with a secure secret key
+              value: "PleaseGenerateASecureKey"  # Replace with a secure secret key
             - name: AUTHENTIK_POSTGRESQL__HOST
               value: "postgresql.authentik.svc.cluster.local"  # PostgreSQL service FQDN
             - name: AUTHENTIK_POSTGRESQL__USER
@@ -212,8 +212,7 @@ spec:
               value: "authentik"  # PostgreSQL database name
             - name: AUTHENTIK_REDIS__HOST
               value: "redis.authentik.svc.cluster.local"  # Redis service FQDN
-            - name: AUTHENTIK_REDIS__PASSWORD
-              value: ""  # Redis password if configured
+            - name: AUTHENTIK_REDIS__Pdord if configured
 
 ---
 # Authentik Service
@@ -230,9 +229,9 @@ spec:
     - name: http
       port: 9000
       targetPort: 9000
-    - name: https
-      port: 9443
-      targetPort: 9443
+    # - name: https
+    #   port: 9443
+    #   targetPort: 9443
   selector:
     app: authentik
 
