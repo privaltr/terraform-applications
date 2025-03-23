@@ -1,3 +1,4 @@
+
 ---
 # Namespace
 apiVersion: v1
@@ -179,6 +180,8 @@ kind: Deployment
 metadata:
   name: authentik
   namespace: authentik
+  annotations:
+    link.argocd.argoproj.io/external-link: https://https://authentik.local-cluster.dev
 spec:
   replicas: 1
   selector:
