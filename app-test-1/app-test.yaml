@@ -1,114 +1,88 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: app-test-1
----
-# Root CA Secret
+# app-test-1.yaml
 apiVersion: v1
-kind: Secret
+kind: Namespace
 metadata:
-  name: root-cert  # Replace with the name for your root certificate secret
-  # namespace: app-test-1  # Replace with your namespace
-  # annotations:
-  #   description: "Root CA for TLS Issuance"
-  annotations:
-    avp.kubernetes.io/path: "secret/data/tls/root-cert"
-    # avp.kubernetes.io/secret-version: "1"
-type: kubernetes.io/tls
-stringData:
-  tls.crt: |
-    <tls.crt>
-  tls.key: |
-    <tls.key>
+  name: app-test-1
 ---
-# Issuer
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: ca-issuer  # Replace with the name for your issuer
-  # namespace: app-test-1  # Replace with your namespace
-spec:
-  ca:
-    secretName: root-cert  # This should match the secret name from above
-
----
-# Certificate for the service (httpbin in this case)
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: tls-certificate  # Replace with the service name
-  # namespace: app-test-1  # Replace with your namespace
+  name: app-test-1-tls
+  namespace: app-test-1
 spec:
-  secretName: app-test-1-https-cert  # Replace with the secret name for the TLS certificate
+  secretName: app-test-1-https-cert
   dnsNames:
-    - app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
-  privateKey:
-    rotationPolicy: Always
+    - "app-test-1.local-cluster.dev"
   issuerRef:
-    name: ca-issuer  # This should match the name of your issuer
-    kind: Issuer
-
+    name: root-ca-issuer
+    kind: ClusterIssuer
 ---
-# Service
 apiVersion: v1
 kind: Service
 metadata:
- name: app-test-1 # Replace with your service name (e.g., httpbin)
-#  namespace: app-test-1 # Replace with your namespace
- labels:
-   app: app-test-1 # Replace with your service name (e.g., httpbin)
-   service: app-test-1 # Replace with your service name (e.g., httpbin)
+  name: app-test-1
+  namespace: app-test-1
 spec:
   ports:
   - name: http
     port: 8000
     targetPort: 80
   selector:
-    app: app-test-1   # Replace with your service name (e.g., httpbin)
-
+    app: app-test-1
 ---
-# Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-test-1 # Replace with your service name (e.g., httpbin)
-  # namespace: app-test-1 # Replace with your namespace
-  annotations:
-    link.argocd.argoproj.io/external-link: https://app-test-1.local-cluster.dev
+  name: app-test-1
+  namespace: app-test-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-test-1 # Replace with your service name (e.g., httpbin)
-      version: v1
+      app: app-test-1
   template:
     metadata:
       labels:
         app: app-test-1
-        version: v1 # Replace with your service name (e.g., httpbin)
     spec:
       containers:
-        - name: nginx # Replace with your service name (e.g., httpbin)
-          imagePullPolicy: IfNotPresent
-          image: nginx:latest # Replace with your service image (e.g., docker.io/mccutchen/go-httpbin)
-          ports:
-            - containerPort: 8080
-
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
 ---
-# Ingress (HTTPProxy)
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
 metadata:
-  name: app-test-1  # Replace with your service name (e.g., httpbin)
-  # namespace: app-test-1  # Replace with your namespace
+  name: app-test-1-gateway
+  namespace: app-test-1
 spec:
-  virtualhost:
-    fqdn: app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
     tls:
-      secretName: app-test-1-https-cert  # This should match the certificate secret name
-  routes:
-    - conditions:
-      - prefix: /
-      services:
-        - name: app-test-1  # Replace with your service name (e.g., httpbin)
-          port: 8000
+      mode: SIMPLE
+      credentialName: app-test-1-https-cert
+    hosts:
+    - "app-test-1.local-cluster.dev"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: app-test-1
+  namespace: app-test-1
+spec:
+  hosts:
+  - "app-test-1.local-cluster.dev"
+  gateways:
+  - app-test-1-gateway
+  http:
+  - route:
+    - destination:
+        host: app-test-1
+        port:
+          number: 8000
