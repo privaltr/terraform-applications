@@ -9,7 +9,7 @@ spec:
   dnsNames:
     - "app-test-1.local-cluster.dev"
   issuerRef:
-    name: ca-issuer
+    name: root-ca-issuer
     kind: ClusterIssuer
     group: cert-manager.io  # REQUIRED field
 
