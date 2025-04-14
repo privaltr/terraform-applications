@@ -97,7 +97,7 @@ spec:
         - destination:
             host: app-test-1.app-test-1.svc.cluster.local
             port:
-              number: 8000
+              number: 80
 
 ---
 apiVersion: networking.istio.io/v1beta1
