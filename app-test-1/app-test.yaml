@@ -14,22 +14,22 @@ spec:
     group: cert-manager.io  # REQUIRED field
 
 ---
-# # Service
-# apiVersion: v1
-# kind: Service
-# metadata:
-#  name: app-test-1 # Replace with your service name (e.g., httpbin)
-# #  namespace: app-test-1 # Replace with your namespace
-#  labels:
-#    app: app-test-1 # Replace with your service name (e.g., httpbin)
-#    service: app-test-1 # Replace with your service name (e.g., httpbin)
-# spec:
-#   ports:
-#   - name: http
-#     port: 8000
-#     targetPort: 80
-#   selector:
-#     app: app-test-1   # Replace with your service name (e.g., httpbin)
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+ name: app-test-1 # Replace with your service name (e.g., httpbin)
+#  namespace: app-test-1 # Replace with your namespace
+ labels:
+   app: app-test-1 # Replace with your service name (e.g., httpbin)
+   service: app-test-1 # Replace with your service name (e.g., httpbin)
+spec:
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 80
+  selector:
+    app: app-test-1   # Replace with your service name (e.g., httpbin)
 
 ---
 # Deployment
@@ -97,7 +97,7 @@ spec:
         - destination:
             host: app-test-1.app-test-1.svc.cluster.local
             port:
-              number: 8080
+              number: 8000
 
 ---
 apiVersion: networking.istio.io/v1beta1
