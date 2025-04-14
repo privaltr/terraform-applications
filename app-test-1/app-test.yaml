@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: app-test-1-tls
-  namespace: app-test-1
+  namespace: istio-system
 spec:
   secretName: app-test-1-https-cert
   dnsNames:
@@ -14,22 +14,22 @@ spec:
     group: cert-manager.io  # REQUIRED field
 
 ---
-# Service
-apiVersion: v1
-kind: Service
-metadata:
- name: app-test-1 # Replace with your service name (e.g., httpbin)
-#  namespace: app-test-1 # Replace with your namespace
- labels:
-   app: app-test-1 # Replace with your service name (e.g., httpbin)
-   service: app-test-1 # Replace with your service name (e.g., httpbin)
-spec:
-  ports:
-  - name: http
-    port: 8000
-    targetPort: 80
-  selector:
-    app: app-test-1   # Replace with your service name (e.g., httpbin)
+# # Service
+# apiVersion: v1
+# kind: Service
+# metadata:
+#  name: app-test-1 # Replace with your service name (e.g., httpbin)
+# #  namespace: app-test-1 # Replace with your namespace
+#  labels:
+#    app: app-test-1 # Replace with your service name (e.g., httpbin)
+#    service: app-test-1 # Replace with your service name (e.g., httpbin)
+# spec:
+#   ports:
+#   - name: http
+#     port: 8000
+#     targetPort: 80
+#   selector:
+#     app: app-test-1   # Replace with your service name (e.g., httpbin)
 
 ---
 # Deployment
@@ -37,7 +37,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-test-1 # Replace with your service name (e.g., httpbin)
-  # namespace: app-test-1 # Replace with your namespace
+  namespace: app-test-1 # Replace with your namespace
   annotations:
     link.argocd.argoproj.io/external-link: https://app-test-1.local-cluster.dev
 spec:
@@ -60,20 +60,61 @@ spec:
             - containerPort: 8080
 
 ---
-# Ingress (HTTPProxy)
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
+# # Ingress (HTTPProxy)
+# apiVersion: projectcontour.io/v1
+# kind: HTTPProxy
+# metadata:
+#   name: app-test-1  # Replace with your service name (e.g., httpbin)
+#   # namespace: app-test-1  # Replace with your namespace
+# spec:
+#   virtualhost:
+#     fqdn: app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
+#     tls:
+#       secretName: app-test-1-https-cert  # This should match the certificate secret name
+#   routes:
+#     - conditions:
+#       - prefix: /
+#       services:
+#         - name: app-test-1  # Replace with your service name (e.g., httpbin)
+#           port: 8000
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
 metadata:
-  name: app-test-1  # Replace with your service name (e.g., httpbin)
-  # namespace: app-test-1  # Replace with your namespace
+  name: app-test-1
+  namespace: app-test-1
 spec:
-  virtualhost:
-    fqdn: app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
-    tls:
-      secretName: app-test-1-https-cert  # This should match the certificate secret name
-  routes:
-    - conditions:
-      - prefix: /
-      services:
-        - name: app-test-1  # Replace with your service name (e.g., httpbin)
-          port: 8000
+  hosts:
+    - app-test-1.local-cluster.dev
+  gateways:
+    - app-test-1-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: app-test-1.app-test-1.svc.cluster.local
+            port:
+              number: 8000
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: app-test-1-gateway
+  namespace: app-test-1
+spec:
+  selector:
+    istio: ingressgateway  # This matches the Istio ingress gateway service
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: app-test-1-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
+      hosts:
+        - app-test-1.local-cluster.dev
