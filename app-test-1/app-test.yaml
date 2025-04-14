@@ -60,25 +60,6 @@ spec:
             - containerPort: 8080
 
 ---
-# # Ingress (HTTPProxy)
-# apiVersion: projectcontour.io/v1
-# kind: HTTPProxy
-# metadata:
-#   name: app-test-1  # Replace with your service name (e.g., httpbin)
-#   # namespace: app-test-1  # Replace with your namespace
-# spec:
-#   virtualhost:
-#     fqdn: app-test-1.local-cluster.dev  # Replace with your service's fully qualified domain name
-#     tls:
-#       secretName: app-test-1-https-cert  # This should match the certificate secret name
-#   routes:
-#     - conditions:
-#       - prefix: /
-#       services:
-#         - name: app-test-1  # Replace with your service name (e.g., httpbin)
-#           port: 8000
-
----
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
