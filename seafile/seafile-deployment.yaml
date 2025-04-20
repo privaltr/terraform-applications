@@ -50,7 +50,7 @@ spec:
             - name: ENABLE_SEADOC
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "http://seadoc"
+              value: "https://seadoc.local-cluster.dev"
             - name: ENABLE_WIKI
               value: "true"
               
