@@ -34,14 +34,6 @@ spec:
               value: "seahub_db" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
-            - name: CORS_ALLOWED_ORIGINS
-              value: "https://seafile.local-cluster.dev"
-            - name: CORS_ALLOWED_METHODS
-              value: "GET,POST,OPTIONS"
-            - name: CORS_ALLOWED_HEADERS
-              value: "Authorization,Content-Type,X-Requested-With"
-            - name: CORS_ALLOW_CREDENTIALS
-              value: "true"
           volumeMounts:
             - mountPath: /shared
               name: sdoc-server-storage
