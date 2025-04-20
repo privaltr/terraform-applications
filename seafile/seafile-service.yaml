@@ -11,3 +11,22 @@ spec:
     # nodePort: 30000
   selector:
     app: seafile
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: seafile
+spec:
+  hosts:
+    - seafile.local-cluster.dev
+  gateways:
+    - seafile-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: seafile.default.svc.cluster.local
+            port:
+              number: 80
