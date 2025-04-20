@@ -4,9 +4,9 @@ metadata:
   name: seadoc
 spec:
   selector:
-    app: seadoc
+    app: sdoc-server
   ports:
     - name: http
-      # protocol: TCP
+      protocol: TCP
       port: 80
       targetPort: 7070
