@@ -31,13 +31,11 @@ spec:
             - name: DB_PASSWORD
               value: "db_dev" #db's password
             - name: DB_NAME
-              value: "seahub_db" #db's password
+              value: "sdoc_db" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
-            - name: CORS_ALLOWED_ORIGINS
-              value: "https://seafile.local-cluster.dev"
-            - name: CORS_ALLOW_CREDENTIALS
-              value: "true"
+            - name: SDOC_SERVER_HOSTNAME
+              value: "https://seadoc.local-cluster.dev"
           volumeMounts:
             - mountPath: /shared
               name: sdoc-server-storage
