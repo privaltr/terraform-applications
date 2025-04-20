@@ -16,7 +16,7 @@ spec:
         - name: sdoc-server
           image: seafileltd/sdoc-server:1.0-latest
           ports:
-            - containerPort: 7070
+            - containerPort: 80
           env:
             - name: SEAHUB_SERVICE_URL
               value: "https://seafile.local-cluster.dev"
