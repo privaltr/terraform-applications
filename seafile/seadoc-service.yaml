@@ -10,3 +10,22 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 7070
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: seadoc
+spec:
+  hosts:
+    - seadoc.local-cluster.dev
+  gateways:
+    - seadoc-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: seadoc.default.svc.cluster.local
+            port:
+              number: 80
