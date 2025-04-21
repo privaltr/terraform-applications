@@ -18,8 +18,6 @@ spec:
           ports:
             - containerPort: 7070
           env:
-            # - name: SEAHUB_SERVICE_URL
-            #   value: "https://seafile.local-cluster.dev"
             - name: SEAHUB_SERVICE_URL
               value: "http://seafile.default.svc.cluster.local"
             - name: JWT_PRIVATE_KEY
