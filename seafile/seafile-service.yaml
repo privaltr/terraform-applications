@@ -22,16 +22,6 @@ spec:
   gateways:
     - seafile-gateway
   http:
-    # Route for main Seafile UI
-    - match:
-        - uri:
-            prefix: /
-      route:
-        - destination:
-            host: seafile.default.svc.cluster.local  # Adjust namespace if needed
-            port:
-              number: 80
-    
     # Route for SDoc under /sdoc-server/
     - match:
         - uri:
@@ -41,5 +31,14 @@ spec:
       route:
         - destination:
             host: sdoc-server.default.svc.cluster.local  # Adjust namespace
+            port:
+              number: 80
+    # Route for main Seafile UI
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: seafile.default.svc.cluster.local  # Adjust namespace if needed
             port:
               number: 80
