@@ -1,34 +1,34 @@
-# Certificate for the service (httpbin in this case)
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: seadoc-tls
-  namespace: istio-system
-spec:
-  secretName: seadoc-https-cert
-  dnsNames:
-    - "seadoc.local-cluster.dev"
-  issuerRef:
-    name: root-ca-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io  # REQUIRED field
+# # Certificate for the service (httpbin in this case)
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: seadoc-tls
+#   namespace: istio-system
+# spec:
+#   secretName: seadoc-https-cert
+#   dnsNames:
+#     - "seadoc.local-cluster.dev"
+#   issuerRef:
+#     name: root-ca-issuer
+#     kind: ClusterIssuer
+#     group: cert-manager.io  # REQUIRED field
 
----
+# ---
 
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: seadoc-gateway
-spec:
-  selector:
-    istio: ingressgateway  # This matches the Istio ingress gateway service
-  servers:
-    - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      tls:
-        mode: SIMPLE
-        credentialName: seadoc-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
-      hosts:
-        - seadoc.local-cluster.dev
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   name: seadoc-gateway
+# spec:
+#   selector:
+#     istio: ingressgateway  # This matches the Istio ingress gateway service
+#   servers:
+#     - port:
+#         number: 443
+#         name: https
+#         protocol: HTTPS
+#       tls:
+#         mode: SIMPLE
+#         credentialName: seadoc-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
+#       hosts:
+#         - seadoc.local-cluster.dev
