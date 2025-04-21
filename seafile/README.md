@@ -3,6 +3,7 @@
 # Checklist
 
 - [ ] Enable [seadoc](https://manual.seafile.com/11.0/extra_setup/setup_seadoc/) so the Wiki feature will work
+- [ ] Add onlyoffice 
 - [ ] Update config to Seafile 12
 
 ## Sources
