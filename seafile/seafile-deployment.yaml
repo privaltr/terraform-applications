@@ -52,7 +52,9 @@ spec:
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_PROTOCOL
               value: "https"    
-              
+            - name: SERVICE_URL
+              value: "https://seafile.local-cluster.dev"
+
           ports:
             - containerPort: 80
             # - containerPort: 443
