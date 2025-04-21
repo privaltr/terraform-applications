@@ -55,3 +55,14 @@ spec:
             host: seafile.default.svc.cluster.local
             port:
               number: 80
+    # Redirect to public hostname
+    - match:
+        - uri:
+            prefix: /  # Catch-all
+      rewrite:
+        uri: /  # Ensure rewrite to the correct hostname
+      route:
+        - destination:
+            host: seafile.local-cluster.dev  # Public hostname
+            port:
+              number: 80
