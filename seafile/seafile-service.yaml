@@ -22,17 +22,7 @@ spec:
   gateways:
     - seafile-gateway
   http:
-    # Route for SDoc under /sdoc-server/
-    - match:
-        - uri:
-            prefix: /sdoc-server/
-      rewrite:
-        uri: /  # SDoc server sees "/" instead of "/sdoc-server/"
-      route:
-        - destination:
-            host: sdoc-server.default.svc.cluster.local  # Adjust namespace
-            port:
-              number: 80
+    # 1. WebSocket support — must come first
     - match:
         - uri:
             prefix: /socket.io
@@ -40,18 +30,29 @@ spec:
         uri: /socket.io
       route:
         - destination:
-            host: sdoc-server.default.svc.cluster.local  # Adjust namespace
+            host: sdoc-server.default.svc.cluster.local
             port:
               number: 80
-      websocketUpgrade: true 
-    # Route for main Seafile UI
+      websocketUpgrade: true
+
+    # 2. SDoc path rewrite
+    - match:
+        - uri:
+            prefix: /sdoc-server/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: sdoc-server.default.svc.cluster.local
+            port:
+              number: 80
+
+    # 3. Main Seafile UI
     - match:
         - uri:
             prefix: /
       route:
         - destination:
-            host: seafile.default.svc.cluster.local  # Adjust namespace if needed
+            host: seafile.default.svc.cluster.local
             port:
               number: 80
-
-
