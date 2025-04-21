@@ -37,7 +37,7 @@ spec:
         - uri:
             prefix: /socket.io
       rewrite:
-        uri: /  # SDoc server sees "/" instead of "/sdoc-server/"
+        uri: /socket.io
       route:
         - destination:
             host: sdoc-server.default.svc.cluster.local  # Adjust namespace
