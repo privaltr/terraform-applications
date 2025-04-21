@@ -34,8 +34,6 @@ spec:
               value: "seahub_db" #db's password
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
-            - name: SDOC_SERVER_HOSTNAME
-              value: "https://seadoc.local-cluster.dev"
           volumeMounts:
             - name: sdoc-server-storage
               mountPath: /shared

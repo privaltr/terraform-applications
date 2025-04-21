@@ -15,18 +15,31 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: seafile
+  name: seafile-virtualservice
 spec:
   hosts:
-    - seafile.local-cluster.dev
+    - "seafile.local-cluster.dev"
   gateways:
     - seafile-gateway
   http:
+    # Route for main Seafile UI
     - match:
         - uri:
             prefix: /
       route:
         - destination:
-            host: seafile.default.svc.cluster.local
+            host: seafile.default.svc.cluster.local  # Adjust namespace if needed
+            port:
+              number: 80
+    
+    # Route for SDoc under /sdoc-server/
+    - match:
+        - uri:
+            prefix: /sdoc-server/
+      rewrite:
+        uri: /  # SDoc server sees "/" instead of "/sdoc-server/"
+      route:
+        - destination:
+            host: sdoc-server.default.svc.cluster.local  # Adjust namespace
             port:
               number: 80
