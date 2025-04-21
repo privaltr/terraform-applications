@@ -55,21 +55,21 @@ spec:
             host: seafile.default.svc.cluster.local
             port:
               number: 80
----
-apiVersion: networking.istio.io/v1beta1
-kind: ServiceEntry
-metadata:
-  name: seafile-external-dns
-  namespace: default
-spec:
-  hosts:
-    - seafile.local-cluster.dev
-  ports:
-    - number: 80
-      name: http
-      protocol: HTTP
-  resolution: DNS
-  location: MESH_INTERNAL
-  addresses: []  # Let DNS handle it
-  endpoints:
-    - address: seafile.default.svc.cluster.local
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: ServiceEntry
+# metadata:
+#   name: seafile-external-dns
+#   namespace: default
+# spec:
+#   hosts:
+#     - seafile.local-cluster.dev
+#   ports:
+#     - number: 80
+#       name: http
+#       protocol: HTTP
+#   resolution: DNS
+#   location: MESH_INTERNAL
+#   addresses: []  # Let DNS handle it
+#   endpoints:
+#     - address: seafile.default.svc.cluster.local

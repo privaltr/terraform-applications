@@ -53,7 +53,7 @@ spec:
             # - name: SEAFILE_SERVER_PROTOCOL
             #   value: "https"    
             - name: SEAFILE_SERVER_PROTOCOL
-              value: "http"           
+              value: "http"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.default.svc.cluster.local"
               
