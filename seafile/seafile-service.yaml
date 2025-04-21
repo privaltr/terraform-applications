@@ -43,6 +43,7 @@ spec:
             host: sdoc-server.default.svc.cluster.local  # Adjust namespace
             port:
               number: 80
+      websocketUpgrade: true 
     # Route for main Seafile UI
     - match:
         - uri:
