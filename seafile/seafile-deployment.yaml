@@ -48,16 +48,14 @@ spec:
               value: "true"
             - name: SEADOC_SERVER_URL
               value: "https://seafile.local-cluster.dev/sdoc-server"
-            - name: SEAFILE_SERVER_HOSTNAME
-              value: "seafile.local-cluster.dev"
-            - name: SEAFILE_SERVER_PROTOCOL
-              value: "https"    
-            - name: SERVICE_URL
-              value: "https://seafile.local-cluster.dev"
-            # - name: SEAFILE_SERVER_PROTOCOL
-            #   value: "http"           
             # - name: SEAFILE_SERVER_HOSTNAME
-            #   value: "seafile.default.svc.cluster.local"
+            #   value: "seafile.local-cluster.dev"
+            # - name: SEAFILE_SERVER_PROTOCOL
+            #   value: "https"    
+            - name: SEAFILE_SERVER_PROTOCOL
+              value: "http"           
+            - name: SEAFILE_SERVER_HOSTNAME
+              value: "seafile.default.svc.cluster.local"
               
           ports:
             - containerPort: 80
