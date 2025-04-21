@@ -52,8 +52,7 @@ spec:
               value: "https://seafile.local-cluster.dev/sdoc-server"
             - name: ENABLE_WIKI
               value: "true"
-            - name: FILE_CONVERTER_SERVER_URL
-              value: "https://seafile.local-cluster.dev/sdoc-server"   
+              
           ports:
             - containerPort: 80
             # - containerPort: 443

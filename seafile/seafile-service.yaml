@@ -33,6 +33,16 @@ spec:
             host: sdoc-server.default.svc.cluster.local  # Adjust namespace
             port:
               number: 80
+    - match:
+        - uri:
+            prefix: /socket.io
+      rewrite:
+        uri: /  # SDoc server sees "/" instead of "/sdoc-server/"
+      route:
+        - destination:
+            host: sdoc-server.default.svc.cluster.local  # Adjust namespace
+            port:
+              number: 80
     # Route for main Seafile UI
     - match:
         - uri:
@@ -42,3 +52,5 @@ spec:
             host: seafile.default.svc.cluster.local  # Adjust namespace if needed
             port:
               number: 80
+
+
