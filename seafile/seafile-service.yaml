@@ -32,7 +32,7 @@ spec:
         - destination:
             host: sdoc-server.default.svc.cluster.local
             port:
-              number: 7070
+              number: 80
 
     # 2. SDoc path rewrite
     - match:
@@ -44,7 +44,7 @@ spec:
         - destination:
             host: sdoc-server.default.svc.cluster.local
             port:
-              number: 7070
+              number: 80
 
     # 3. Main Seafile UI
     - match:
