@@ -15,20 +15,34 @@ spec:
 
 ---
 
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   name: seafile-gateway
+# spec:
+#   selector:
+#     istio: ingressgateway  # This matches the Istio ingress gateway service
+#   servers:
+#     - port:
+#         number: 443
+#         name: https
+#         protocol: HTTPS
+#       tls:
+#         mode: SIMPLE
+#         credentialName: seafile-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
+#       hosts:
+#         - seafile.local-cluster.dev
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: seafile-gateway
 spec:
   selector:
-    istio: ingressgateway  # This matches the Istio ingress gateway service
+    istio: ingressgateway
   servers:
     - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      tls:
-        mode: SIMPLE
-        credentialName: seafile-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
+        number: 80
+        name: http
+        protocol: HTTP
       hosts:
         - seafile.local-cluster.dev
