@@ -11,8 +11,8 @@ spec:
     metadata:
       labels:
         app: sdoc-server
-      annotations:
-        inject-certs: "enabled"  
+      # annotations:
+      #   inject-certs: "enabled"  
     spec:
       hostAliases:
       - ip: "172.18.0.200"
