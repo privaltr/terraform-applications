@@ -9,10 +9,10 @@ spec:
       app: seafile
   template:
     metadata:
-      annotations:
-        trust.cert-manager.io/inject-ca-from: "cert-manager/root-ca-bundle"  # Adjust namespace if different
       labels:
         app: seafile
+      annotations:
+        inject-certs: "enabled"  
     spec:
       hostAliases:
       - ip: "172.18.0.200"
