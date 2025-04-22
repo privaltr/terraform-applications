@@ -57,7 +57,7 @@ spec:
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_PROTOCOL
-              value: "http"    
+              value: "https"    
             # - name: SEAFILE_SERVER_PROTOCOL
             #   value: "http"
             # - name: SEAFILE_SERVER_HOSTNAME
