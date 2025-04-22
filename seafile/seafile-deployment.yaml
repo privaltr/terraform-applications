@@ -68,16 +68,16 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-            - name: root-ca-volume
-              mountPath: /usr/local/share/ca-certificates/rootCA.crt
-              subPath: tls.crt
+            - name: cert-volume
+              mountPath: /etc/ssl/certs
+              readOnly: true
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
-        - name: root-ca-volume
+        - name: cert-volume
           secret:
-            secretName: root-cert  # The root CA secret you created
+            secretName: seafile-https-cert  # This matches the secretName in your Certificate reso
       restartPolicy: Always
       # to get image from protected repository
       imagePullSecrets:
