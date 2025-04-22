@@ -70,20 +70,10 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-            - name: tls-certs
-              mountPath: /opt/seafile/ssl
-              readOnly: true
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "update-ca-certificates"]
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
-        - name: tls-certs
-          secret:
-            secretName: seafile-tls  # You'll need to create this secr
       restartPolicy: Always
       # to get image from protected repository
       imagePullSecrets:
