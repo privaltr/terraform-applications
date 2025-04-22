@@ -68,16 +68,10 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-            - name: cert-volume
-              mountPath: /etc/ssl/certs
-              readOnly: true
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
-        - name: cert-volume
-          secret:
-            secretName: seafile-https-cert  # This matches the secretName in your Certificate reso
       restartPolicy: Always
       # to get image from protected repository
       imagePullSecrets:
