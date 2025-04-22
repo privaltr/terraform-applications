@@ -53,7 +53,7 @@ spec:
             - name: ENABLE_WIKI
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "http://seafile.local-cluster.dev/sdoc-server"
+              value: "https://seafile.local-cluster.dev/sdoc-server"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_PROTOCOL
