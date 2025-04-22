@@ -12,6 +12,10 @@ spec:
       labels:
         app: seafile
     spec:
+      hostAliases:
+      - ip: "172.18.0.200"
+        hostnames:
+        - "seafile.local-cluster.dev"
       containers:
         - name: seafile
           image: seafileltd/seafile-mc:12.0-latest
@@ -48,14 +52,14 @@ spec:
               value: "true"
             - name: SEADOC_SERVER_URL
               value: "https://seafile.local-cluster.dev/sdoc-server"
-            # - name: SEAFILE_SERVER_HOSTNAME
-            #   value: "seafile.local-cluster.dev"
-            # - name: SEAFILE_SERVER_PROTOCOL
-            #   value: "https"    
-            - name: SEAFILE_SERVER_PROTOCOL
-              value: "http"
             - name: SEAFILE_SERVER_HOSTNAME
-              value: "seafile.default.svc.cluster.local"
+              value: "seafile.local-cluster.dev"
+            - name: SEAFILE_SERVER_PROTOCOL
+              value: "https"    
+            # - name: SEAFILE_SERVER_PROTOCOL
+            #   value: "http"
+            # - name: SEAFILE_SERVER_HOSTNAME
+            #   value: "seafile.default.svc.cluster.local"
               
           ports:
             - containerPort: 80
