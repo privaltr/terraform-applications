@@ -10,6 +10,10 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 7070
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 7070
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
