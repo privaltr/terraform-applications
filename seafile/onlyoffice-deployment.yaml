@@ -45,4 +45,6 @@ spec:
       # - name: onlyoffice-data
       #   persistentVolumeClaim:
       #     claimName: onlyoffice-data-pvc
+
 # https://manual.seafile.com/11.0/deploy/only_office/
+#https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx

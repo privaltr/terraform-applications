@@ -28,6 +28,8 @@ spec:
         - name: seafile
           image: trow.local-cluster.dev/seafile-mc:12.0-latest-ca
           env:
+            - name: NODE_EXTRA_CA_CERTS
+              value: "/usr/local/share/ca-certificates/rootCA.crt"
             - name: JWT_PRIVATE_KEY
               value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"  # Change this to a proper key
             - name: DB_HOST
