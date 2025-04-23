@@ -31,4 +31,4 @@ spec:
         mode: SIMPLE
         credentialName: seadoc-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
       hosts:
-        - sdoc-server.default.svc.cluster.local
+        - seadoc.local-cluster.dev

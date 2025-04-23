@@ -26,6 +26,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: seadoc.default.svc.cluster.local
+            host: sdoc-server.default.svc.cluster.local
             port:
               number: 80
