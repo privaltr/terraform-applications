@@ -56,11 +56,11 @@ spec:
             - name: ENABLE_WIKI
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "http://seadoc.local-cluster.dev"
+              value: "https://seadoc.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_PROTOCOL
-              value: "https"    
+              value: "http"    
             # - name: SEAFILE_SERVER_PROTOCOL
             #   value: "http"
             # - name: SEAFILE_SERVER_HOSTNAME
