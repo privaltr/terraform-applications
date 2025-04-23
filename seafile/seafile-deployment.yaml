@@ -11,8 +11,6 @@ spec:
     metadata:
       labels:
         app: seafile
-      # annotations:
-      #   inject-certs: "enabled"  
     spec:
       hostAliases:
       - ip: "172.18.0.200"
@@ -66,15 +64,8 @@ spec:
               value: "seafile.local-cluster.dev"
             - name: SEAFILE_SERVER_PROTOCOL
               value: "https"    
-            # - name: SEAFILE_SERVER_PROTOCOL
-            #   value: "http"
-            # - name: SEAFILE_SERVER_HOSTNAME
-            #   value: "seafile.default.svc.cluster.local"
-              
           ports:
             - containerPort: 80
-            # - containerPort: 443
-            #   name:  seafile-secure
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
