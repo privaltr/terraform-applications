@@ -52,9 +52,9 @@ spec:
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
             - name: ENABLE_SEADOC
-              value: "true"
+              value: "false"
             - name: ENABLE_WIKI
-              value: "true"
+              value: "false"
             - name: SEADOC_SERVER_URL
               value: "https://seadoc.local-cluster.dev"
             - name: SEAFILE_SERVER_HOSTNAME
