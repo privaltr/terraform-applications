@@ -22,29 +22,29 @@ spec:
   gateways:
     - seafile-gateway
   http:
-    # 1. WebSocket support — must come first
-    - match:
-        - uri:
-            prefix: /socket.io
-      rewrite:
-        uri: /socket.io
-      route:
-        - destination:
-            host: sdoc-server.default.svc.cluster.local
-            port:
-              number: 80
+    # # 1. WebSocket support — must come first
+    # - match:
+    #     - uri:
+    #         prefix: /socket.io
+    #   rewrite:
+    #     uri: /socket.io
+    #   route:
+    #     - destination:
+    #         host: sdoc-server.default.svc.cluster.local
+    #         port:
+    #           number: 80
 
-    # 2. SDoc path rewrite
-    - match:
-        - uri:
-            prefix: /sdoc-server/
-      rewrite:
-        uri: /sdoc-server/
-      route:
-        - destination:
-            host: sdoc-server.default.svc.cluster.local
-            port:
-              number: 80
+    # # 2. SDoc path rewrite
+    # - match:
+    #     - uri:
+    #         prefix: /sdoc-server/
+    #   rewrite:
+    #     uri: /
+    #   route:
+    #     - destination:
+    #         host: sdoc-server.default.svc.cluster.local
+    #         port:
+    #           number: 80
 
     # 3. Main Seafile UI
     - match:
