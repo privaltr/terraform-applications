@@ -27,6 +27,8 @@ spec:
         # - containerPort: 443
         #   name: https
         env:
+        - name: NODE_EXTRA_CA_CERTS
+          value: "/usr/local/share/ca-certificates/rootCA.crt"
         - name: JWT_ENABLED
           value: "true"
         - name: JWT_SECRET
