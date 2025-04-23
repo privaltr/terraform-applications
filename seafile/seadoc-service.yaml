@@ -22,6 +22,17 @@ spec:
     - seadoc-gateway
   http:
     - match:
+      - headers:
+          Connection:
+            exact: Upgrade
+          Upgrade:
+            exact: websocket
+      route:
+      - destination:
+          host: sdoc-server.default.svc.cluster.local  # Changed to SeaDoc
+          port:
+            number: 80
+    - match:
         - uri:
             prefix: /
       route:
