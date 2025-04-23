@@ -27,16 +27,16 @@ spec:
           value: "true"
         - name: JWT_SECRET
           value: "XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh"  # Replace with a strong key
-        volumeMounts:
-        - name: onlyoffice-logs
-          mountPath: /var/log/onlyoffice
-        - name: onlyoffice-data
-          mountPath: /var/www/onlyoffice/Data
-      volumes:
-      - name: onlyoffice-logs
-        persistentVolumeClaim:
-          claimName: onlyoffice-logs-pvc
-      - name: onlyoffice-data
-        persistentVolumeClaim:
-          claimName: onlyoffice-data-pvc
+      #   volumeMounts:
+      #   - name: onlyoffice-logs
+      #     mountPath: /var/log/onlyoffice
+      #   - name: onlyoffice-data
+      #     mountPath: /var/www/onlyoffice/Data
+      # volumes:
+      # - name: onlyoffice-logs
+      #   persistentVolumeClaim:
+      #     claimName: onlyoffice-logs-pvc
+      # - name: onlyoffice-data
+      #   persistentVolumeClaim:
+      #     claimName: onlyoffice-data-pvc
 # https://manual.seafile.com/11.0/deploy/only_office/
