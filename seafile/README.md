@@ -3,6 +3,7 @@
 # Checklist
 
 - [ ] Enable [seadoc](https://manual.seafile.com/11.0/extra_setup/setup_seadoc/) so the Wiki feature will work
+- [ ] fix self signed TLS 
 - [ ] Add onlyoffice 
 - [ ] Update config to Seafile 12
 
