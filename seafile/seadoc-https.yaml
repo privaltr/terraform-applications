@@ -32,3 +32,9 @@ spec:
         credentialName: seadoc-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
       hosts:
         - seadoc.local-cluster.dev
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - seadoc.local-cluster.dev
