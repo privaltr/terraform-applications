@@ -1,0 +1,40 @@
+# Certificate for the service (httpbin in this case)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: onlyoffice-tls
+  namespace: istio-system
+spec:
+  secretName: onlyoffice-https-cert
+  dnsNames:
+    - "onlyoffice.local-cluster.dev"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io  # REQUIRED field
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: onlyoffice-gateway
+spec:
+  selector:
+    istio: ingressgateway  # This matches the Istio ingress gateway service
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: onlyoffice-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
+      hosts:
+        - onlyoffice.local-cluster.dev
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - onlyoffice.local-cluster.dev
