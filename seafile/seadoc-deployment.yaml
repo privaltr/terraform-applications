@@ -20,7 +20,7 @@ spec:
         - "seafile.local-cluster.dev"
       containers:
         - name: sdoc-server
-          image: trow.trow.svc.cluster.local/sdoc-server:1.0-latest-ca
+          image: trow.trow.svc.cluster.local:8000/sdoc-server:1.0-latest-ca
           ports:
             - containerPort: 7070
           env:
