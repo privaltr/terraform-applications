@@ -21,8 +21,8 @@ spec:
       containers:
         - name: sdoc-server
           image: trow.local-cluster.dev/sdoc-server:1.0-latest-ca
-          # ports:
-          #   - containerPort: 7070
+          ports:
+            - containerPort: 7070
           env:
             - name: SEAHUB_SERVICE_URL
               value: "https://seafile.local-cluster.dev"
