@@ -20,7 +20,7 @@ spec:
         - "seafile.local-cluster.dev"
       containers:
         - name: seafile
-          image: trow.trow.svc.cluster.local:8000/seafile-mc:12.0-latest-ca
+          image: trow.trow.svc.cluster.local/seafile-mc:12.0-latest-ca
           env:
             - name: JWT_PRIVATE_KEY
               value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"  # Change this to a proper key
