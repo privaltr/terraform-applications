@@ -21,7 +21,7 @@ spec:
       #   - "seadoc.local-cluster.dev"
       containers:
         - name: sdoc-server
-          image: trow.local-cluster.dev/sdoc-server:1.0-latest-ca
+          image: trow.acc.ricksdomein.nl/sdoc-server:1.0-latest-ca
           ports:
             - containerPort: 7070
           env:

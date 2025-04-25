@@ -20,7 +20,7 @@ spec:
       #   - "seafile.local-cluster.dev"
       containers:
       - name: onlyoffice
-        image: trow.local-cluster.dev/documentserver-ca
+        image: trow.acc.ricksdomein.nl/documentserver-ca
         ports:
         - containerPort: 80
           name: http
