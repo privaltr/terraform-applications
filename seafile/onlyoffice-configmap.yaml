@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seahub-settings
+data:
+  seahub_settings.py: |
+    # -*- coding: utf-8 -*-
+    SECRET_KEY = "c6bqsx^n!mf(@%@$n9k()-o_5i$m@#doclb!24e5zm3c+u5t+p"
+    SERVICE_URL = "http://seafile.local-cluster.dev"
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'seahub_db',
+            'USER': 'seafile',
+            'PASSWORD': 'db_dev',
+            'HOST': 'mariadb',
+            'PORT': '3306',
+            'OPTIONS': {'charset': 'utf8mb4'},
+        }
+    }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+            'LOCATION': 'memcached:11211',
+        },
+        'locmem': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        },
+    }
+    COMPRESS_CACHE_BACKEND = 'locmem'
+
+    TIME_ZONE = 'Europe/Amsterdam'
+    FILE_SERVER_ROOT = 'https://seafile.local-cluster.dev/seafhttp'
+
+    ENABLE_ONLYOFFICE = True
+    VERIFY_ONLYOFFICE_CERTIFICATE = False
+    ONLYOFFICE_APIJS_URL = 'https://onlyoffice.local-cluster.dev/web-apps/apps/api/documents/api.js'
+    ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods')
+    ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx')
+    ONLYOFFICE_FORCE_SAVE = True
+    ONLYOFFICE_JWT_SECRET = 'XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh'
