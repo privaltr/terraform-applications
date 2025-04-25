@@ -15,10 +15,10 @@ spec:
       containers:
         - name: seafile
           image: trow.acc.ricksdomein.nl/seafile-mc:12.0-latest-ca
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /opt/seafile/conf/seahub_settings.py"]
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /opt/seafile/conf/seahub_settings.py"]
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
