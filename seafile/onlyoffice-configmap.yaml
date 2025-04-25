@@ -6,7 +6,7 @@ data:
   seahub_settings.py: |
     # -*- coding: utf-8 -*-
     SECRET_KEY = "c6bqsx^n!mf(@%@$n9k()-o_5i$m@#doclb!24e5zm3c+u5t+p"
-    SERVICE_URL = "http://seafile.local-cluster.dev"
+    SERVICE_URL = "http://seafile.acc.ricksdomein.nl"
 
     DATABASES = {
         'default': {
@@ -32,11 +32,11 @@ data:
     COMPRESS_CACHE_BACKEND = 'locmem'
 
     TIME_ZONE = 'Europe/Amsterdam'
-    FILE_SERVER_ROOT = 'https://seafile.local-cluster.dev/seafhttp'
+    FILE_SERVER_ROOT = 'https://seafile.acc.ricksdomein.nl/seafhttp'
 
     ENABLE_ONLYOFFICE = True
     VERIFY_ONLYOFFICE_CERTIFICATE = False
-    ONLYOFFICE_APIJS_URL = 'https://onlyoffice.local-cluster.dev/web-apps/apps/api/documents/api.js'
+    ONLYOFFICE_APIJS_URL = 'https://onlyoffice.acc.ricksdomein.nl/web-apps/apps/api/documents/api.js'
     ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods')
     ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx')
     ONLYOFFICE_FORCE_SAVE = True
