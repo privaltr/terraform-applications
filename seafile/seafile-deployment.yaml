@@ -12,6 +12,15 @@ spec:
       labels:
         app: seafile
     spec:
+      initContainers:
+        - name: append-onlyoffice-settings
+          image: busybox
+          command: ['sh', '-c', 'cat /onlyoffice/onlyoffice.py >> /opt/seafile/conf/seahub_settings.py']
+          volumeMounts:
+            - name: seafile-data
+              mountPath: /opt/seafile/conf
+            - name: onlyoffice-settings
+              mountPath: /onlyoffice
       containers:
         - name: seafile
           image: trow.acc.ricksdomein.nl/seafile-mc:12.0-latest-ca
@@ -56,9 +65,9 @@ spec:
               value: "https"    
           ports:
             - containerPort: 80
-          # volumeMounts:
-          #   - name: seafile-data
-          #     mountPath: /shared
+          volumeMounts:
+            - name: seafile-data
+              mountPath: /shared
           #   - name: seahub-settings
           #     mountPath: /opt/seafile/conf/seahub_settings.py
           #     subPath: seahub_settings.py
@@ -66,6 +75,9 @@ spec:
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
+        - name: onlyoffice-settings
+          configMap:
+            name: seahub-onlyoffice-settings
         # - name: seahub-settings
         #   configMap:
         #     name: seahub-settings
