@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: seafile-https-cert
   dnsNames:
-    - "seafile.local-cluster.dev"
+    - "seafile.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -31,10 +31,10 @@ spec:
         mode: SIMPLE
         credentialName: seafile-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
       hosts:
-        - seafile.local-cluster.dev
+        - seafile.acc.ricksdomein.nl
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - seafile.local-cluster.dev
+        - seafile.acc.ricksdomein.nl

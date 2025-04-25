@@ -21,7 +21,7 @@ metadata:
   name: seadoc
 spec:
   hosts:
-    - seadoc.local-cluster.dev
+    - seadoc.acc.ricksdomein.nl
   gateways:
     - seadoc-gateway
   http:

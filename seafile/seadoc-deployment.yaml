@@ -12,13 +12,6 @@ spec:
       labels:
         app: sdoc-server
     spec:
-      # hostAliases:
-      # - ip: "172.18.0.200"
-      #   hostnames:
-      #   - "seafile.local-cluster.dev"
-      # - ip: "172.18.0.200"
-      #   hostnames:
-      #   - "seadoc.local-cluster.dev"
       containers:
         - name: sdoc-server
           image: trow.acc.ricksdomein.nl/sdoc-server:1.0-latest-ca
@@ -28,20 +21,19 @@ spec:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
             - name: SEAHUB_SERVICE_URL
-              value: "https://seafile.local-cluster.dev"
-            # - name: SEAHUB_SERVICE_URL
+              value: "https://seafile.acc.ricksdomein.nl"
             - name: JWT_PRIVATE_KEY
-              value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"  # Change this to a proper key
+              value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"
             - name: DB_HOST
               value: "mariadb"
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
-              value: "seafile" #db's password
+              value: "seafile"
             - name: DB_PASSWORD
-              value: "db_dev" #db's password
+              value: "db_dev"
             - name: DB_NAME
-              value: "seahub_db" #db's password
+              value: "seahub_db"
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
           volumeMounts:

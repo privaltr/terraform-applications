@@ -22,7 +22,7 @@ metadata:
   name: seafile-virtualservice
 spec:
   hosts:
-    - "seafile.local-cluster.dev"
+    - "seafile.acc.ricksdomein.nl"
   gateways:
     - seafile-gateway
   http:

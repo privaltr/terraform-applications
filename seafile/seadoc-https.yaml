@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: seadoc-https-cert
   dnsNames:
-    - "seadoc.local-cluster.dev"
+    - "seadoc.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -31,10 +31,10 @@ spec:
         mode: SIMPLE
         credentialName: seadoc-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
       hosts:
-        - seadoc.local-cluster.dev
+        - seadoc.acc.ricksdomein.nl
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - seadoc.local-cluster.dev
+        - seadoc.acc.ricksdomein.nl

@@ -12,16 +12,6 @@ spec:
       labels:
         app: seafile
     spec:
-      # hostAliases:
-      # - ip: "172.18.0.200"
-      #   hostnames:
-      #   - "onlyoffice.local-cluster.dev"
-      # - ip: "172.18.0.200"
-      #   hostnames:
-      #   - "seafile.local-cluster.dev"
-      # - ip: "172.18.0.200"
-      #   hostnames:
-      #   - "seadoc.local-cluster.dev"
       containers:
         - name: seafile
           image: trow.acc.ricksdomein.nl/seafile-mc:12.0-latest-ca
@@ -29,17 +19,17 @@ spec:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
             - name: JWT_PRIVATE_KEY
-              value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"  # Change this to a proper key
+              value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"
             - name: DB_HOST
               value: "mariadb"
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
-              value: "seafile" #db's password
+              value: "seafile"
             - name: DB_PASSWORD
-              value: "db_dev" #db's password
+              value: "db_dev"
             - name: DB_ROOT_PASSWD
-              value: "db_dev" #db's password
+              value: "db_dev"
             - name: SEAFILE_MYSQL_DB_CCNET_DB_NAME
               value: "ccnet_db"
             - name: SEAFILE_MYSQL_DB_SEAFILE_DB_NAME
@@ -49,9 +39,9 @@ spec:
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
             - name: INIT_SEAFILE_ADMIN_EMAIL
-              value: "admin@seafile.com" #admin email
+              value: "admin@seafile.com"
             - name: INIT_SEAFILE_ADMIN_PASSWORD
-              value: "admin_password" #admin password       
+              value: "admin_password"   
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
             - name: ENABLE_SEADOC
@@ -59,9 +49,9 @@ spec:
             - name: ENABLE_WIKI
               value: "true"
             - name: SEADOC_SERVER_URL
-              value: "https://seadoc.local-cluster.dev"
+              value: "https://seadoc.acc.ricksdomein.nl"
             - name: SEAFILE_SERVER_HOSTNAME
-              value: "seafile.local-cluster.dev"
+              value: "seafile.acc.ricksdomein.nl"
             - name: SEAFILE_SERVER_PROTOCOL
               value: "https"    
           ports:
@@ -77,53 +67,3 @@ spec:
       # to get image from protected repository
       imagePullSecrets:
         - name: regcred
-
-# https://trow.local-cluster.dev/v2/_catalog
-# $ sudo kubectl --kubeconfig kubeconfig exec -it seafile-bbc45695c-skx9p -- /bin/bash
-# root@seafile-bbc45695c-skx9p:/opt/seafile# cd conf
-# root@seafile-bbc45695c-skx9p:/opt/seafile/conf# ls
-# gunicorn.conf.py  __pycache__  seafdav.conf  seafevents.conf  seafile.conf  seahub_settings.py
-# root@seafile-bbc45695c-skx9p:/opt/seafile/conf# cat seahub_settings.py 
-# # -*- coding: utf-8 -*-
-# SECRET_KEY = "c6bqsx^n!mf(@%@$n9k()-o_5i$m@#doclb!24e5zm3c+u5t+p"
-# SERVICE_URL = "http://seafile.local-cluster.dev"
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'seahub_db',
-#         'USER': 'seafile',
-#         'PASSWORD': 'db_dev',
-#         'HOST': 'mariadb',
-#         'PORT': '3306',
-#         'OPTIONS': {'charset': 'utf8mb4'},
-#     }
-# }
-
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
-#         'LOCATION': 'memcached:11211',
-#     },
-#     'locmem': {
-#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#     },
-# }
-# COMPRESS_CACHE_BACKEND = 'locmem'
-
-# TIME_ZONE = 'Europe/Amsterdam'
-# FILE_SERVER_ROOT = 'https://seafile.local-cluster.dev/seafhttp'
-
-# # Enable OnlyOffice
-# ENABLE_ONLYOFFICE = True
-# VERIFY_ONLYOFFICE_CERTIFICATE = False
-# ONLYOFFICE_APIJS_URL = 'https://onlyoffice.local-cluster.dev/web-apps/apps/api/documents/api.js'
-# ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods')
-# ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx')
-
-# # Enable force save to let user can save file when he/she press the save button on OnlyOffice file edit page.
-# ONLYOFFICE_FORCE_SAVE = True
-
-# # if JWT enabled
-# ONLYOFFICE_JWT_SECRET = 'XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh'

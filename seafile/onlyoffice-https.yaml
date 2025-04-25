@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: onlyoffice-https-cert
   dnsNames:
-    - "onlyoffice.local-cluster.dev"
+    - "onlyoffice.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -31,10 +31,10 @@ spec:
         mode: SIMPLE
         credentialName: onlyoffice-https-cert  # Must exist in the same namespace as istio ingress gateway (default is istio-system)
       hosts:
-        - onlyoffice.local-cluster.dev
+        - onlyoffice.acc.ricksdomein.nl
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - onlyoffice.local-cluster.dev
+        - onlyoffice.acc.ricksdomein.nl

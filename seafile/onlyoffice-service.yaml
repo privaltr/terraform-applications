@@ -21,7 +21,7 @@ metadata:
   name: onlyoffice
 spec:
   hosts:
-    - onlyoffice.local-cluster.dev
+    - onlyoffice.acc.ricksdomein.nl
   gateways:
     - onlyoffice-gateway
   http:
