@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: seahub-settings
+  name: seahub-onlyoffice-settings
 data:
   onlyoffice.py: |
     ENABLE_ONLYOFFICE = True
