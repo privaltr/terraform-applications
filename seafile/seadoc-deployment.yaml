@@ -12,13 +12,13 @@ spec:
       labels:
         app: sdoc-server
     spec:
-      hostAliases:
-      - ip: "172.18.0.200"
-        hostnames:
-        - "seafile.local-cluster.dev"
-      - ip: "172.18.0.200"
-        hostnames:
-        - "seadoc.local-cluster.dev"
+      # hostAliases:
+      # - ip: "172.18.0.200"
+      #   hostnames:
+      #   - "seafile.local-cluster.dev"
+      # - ip: "172.18.0.200"
+      #   hostnames:
+      #   - "seadoc.local-cluster.dev"
       containers:
         - name: sdoc-server
           image: trow.local-cluster.dev/sdoc-server:1.0-latest-ca
