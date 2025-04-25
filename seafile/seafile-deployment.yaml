@@ -56,12 +56,12 @@ spec:
               value: "https"    
           ports:
             - containerPort: 80
-          volumeMounts:
-            - name: seafile-data
-              mountPath: /shared
-            - name: seahub-settings
-              mountPath: /opt/seafile/conf/seahub_settings.py
-              subPath: seahub_settings.py
+          # volumeMounts:
+          #   - name: seafile-data
+          #     mountPath: /shared
+          #   - name: seahub-settings
+          #     mountPath: /opt/seafile/conf/seahub_settings.py
+          #     subPath: seahub_settings.py
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
