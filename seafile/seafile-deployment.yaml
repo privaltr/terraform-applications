@@ -12,18 +12,13 @@ spec:
       labels:
         app: seafile
     spec:
-      initContainers:
-        - name: append-onlyoffice-settings
-          image: busybox
-          command: ['sh', '-c', 'cat /onlyoffice/onlyoffice.py >> /opt/seafile/conf/seahub_settings.py']
-          volumeMounts:
-            - name: seafile-data
-              mountPath: /opt/seafile/conf
-            - name: onlyoffice-settings
-              mountPath: /onlyoffice
       containers:
         - name: seafile
           image: trow.acc.ricksdomein.nl/seafile-mc:12.0-latest-ca
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /opt/seafile/conf/seahub_settings.py"]
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
@@ -68,9 +63,8 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-          #   - name: seahub-settings
-          #     mountPath: /opt/seafile/conf/seahub_settings.py
-          #     subPath: seahub_settings.py
+            - name: onlyoffice-settings
+              mountPath: /onlyoffice
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
@@ -78,9 +72,6 @@ spec:
         - name: onlyoffice-settings
           configMap:
             name: seahub-onlyoffice-settings
-        # - name: seahub-settings
-        #   configMap:
-        #     name: seahub-settings
       restartPolicy: Always
       # to get image from protected repository
       imagePullSecrets:
