@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: seafile
-          image: trow.acc.ricksdomein.nl/seafile-mc:12.0-latest-ca
+          image: harbor.acc.ricksdomein.nl/library/seafile-mc:12.0-latest-ca
           lifecycle:
             postStart:
               exec:

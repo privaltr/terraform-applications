@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sdoc-server
-          image: trow.acc.ricksdomein.nl/sdoc-server:1.0-latest-ca
+          image: harbor.acc.ricksdomein.nl/library/sdoc-server:1.0-latest-ca
           ports:
             - containerPort: 7070
           env:

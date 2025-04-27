@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: onlyoffice
-        image: trow.acc.ricksdomein.nl/documentserver-ca
+        image: harbor.acc.ricksdomein.nl/library/documentserver-ca
         ports:
         - containerPort: 80
           name: http
