@@ -405,6 +405,75 @@ spec:
           emptyDir: {}
 
 ---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: deluge-config-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/deluge-config"  # Change to your host path
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: downloads-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Ti  # Adjust size
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/downloads"  # Change to your host path
+
+---
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: deluge-config-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      type: local  # Binds to PV with this label
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: downloads-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+  selector:
+    matchLabels:
+      type: local
+
+
 # Secret for VPN credentials (create this separately with kubectl)
 # kubectl create secret generic vpn-credentials --namespace media \
 #   --from-literal=privateKey='your_wireguard_private_key' \
