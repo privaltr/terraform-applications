@@ -267,6 +267,8 @@ spec:
       containers:
       # Gluetun VPN container
       - name: gluetun
+        annotations:
+          avp.kubernetes.io/path: "secret/data/tls/root-cert"
         securityContext:
           capabilities:
               add:
