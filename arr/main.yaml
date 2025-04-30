@@ -299,7 +299,7 @@ spec:
         #   httpGet:
         #     path: /health
         #     port: 9999
-          initialDelaySeconds: 30
+        #   initialDelaySeconds: 30
         volumeMounts:
           - mountPath: /gluetun
             name: gluetun-config
