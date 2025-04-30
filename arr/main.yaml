@@ -271,7 +271,7 @@ spec:
           capabilities:
               add:
                 - NET_ADMIN
-        image: qmcgaw/gluetun
+        image: qmcgaw/gluetun:v3.35.0
         env:
         - name: VPN_SERVICE_PROVIDER
           value: "private internet access"  # e.g., "nordvpn", "pia", "surfshark private internet access"
