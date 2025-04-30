@@ -1,0 +1,128 @@
+# Certificate for Vaultwarden
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vaultwarden-tls
+  namespace: istio-system
+spec:
+  secretName: vaultwarden-https-cert
+  dnsNames:
+    - "vaultwarden.local-cluster.dev"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+---
+# Service for Vaultwarden
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+  labels:
+    app: vaultwarden
+    service: vaultwarden
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  selector:
+    app: vaultwarden
+
+---
+# Deployment for Vaultwarden
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  annotations:
+    link.argocd.argoproj.io/external-link: https://vaultwarden.local-cluster.dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+        version: v1
+    spec:
+      containers:
+        - name: vaultwarden
+          imagePullPolicy: IfNotPresent
+          image: timshel/vaultwarden:1.33.2-4
+          ports:
+            - containerPort: 80
+          env:
+            - name: ADMIN_TOKEN
+              value: "your-secure-admin-token-here"  # Change this to a secure random token
+            - name: SIGNUPS_ALLOWED
+              value: "false"  # Set to true if you want to allow signups
+          volumeMounts:
+            - mountPath: /data
+              name: vaultwarden-data
+      volumes:
+        - name: vaultwarden-data
+          persistentVolumeClaim:
+            claimName: vaultwarden-data
+
+---
+# VirtualService for Vaultwarden
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  hosts:
+    - vaultwarden.local-cluster.dev
+  gateways:
+    - vaultwarden-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: vaultwarden.vaultwarden.svc.cluster.local
+            port:
+              number: 80
+
+---
+# Gateway for Vaultwarden
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: vaultwarden-gateway
+  namespace: vaultwarden
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: vaultwarden-https-cert
+      hosts:
+        - vaultwarden.local-cluster.dev
+
+---
+# PersistentVolumeClaim for Vaultwarden data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultwarden-data
+  namespace: vaultwarden
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
