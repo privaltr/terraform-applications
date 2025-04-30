@@ -316,10 +316,12 @@ spec:
       
       # Deluge container
       - name: deluge
-        annotations:
-          link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
         image: lscr.io/linuxserver/deluge:latest
         env:
+        - name: WEB_IP
+          value: "0.0.0.0"  # Listen on all interfaces
+        - name: WEB_PORT
+          value: "8112"
         - name: VPN_ENABLED
           value: "yes"
         - name: VPN_CLIENT
