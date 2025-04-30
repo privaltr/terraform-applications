@@ -1,0 +1,407 @@
+# Certificate for all applications
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: media-apps-tls
+  namespace: istio-system
+spec:
+  secretName: media-apps-https-cert
+  dnsNames:
+    - "radarr.acc.ricksdomein.nl"
+    - "sonarr.acc.ricksdomein.nl"
+    - "deluge.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+---
+# Radarr Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  namespace: media
+  labels:
+    app: radarr
+    service: radarr
+spec:
+  ports:
+  - name: http
+    port: 7878
+    targetPort: 7878
+  selector:
+    app: radarr
+
+---
+# Radarr Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: media
+  annotations:
+    link.argocd.argoproj.io/external-link: https://radarr.acc.ricksdomein.nl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      containers:
+      - name: radarr
+        image: lscr.io/linuxserver/radarr:latest
+        ports:
+          - containerPort: 7878
+        volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /media
+            name: media
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: radarr-config-pvc
+        - name: media
+          persistentVolumeClaim:
+            claimName: media-pvc
+
+---
+# Sonarr Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: media
+  labels:
+    app: sonarr
+    service: sonarr
+spec:
+  ports:
+  - name: http
+    port: 8989
+    targetPort: 8989
+  selector:
+    app: sonarr
+
+---
+# Sonarr Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: media
+  annotations:
+    link.argocd.argoproj.io/external-link: https://sonarr.acc.ricksdomein.nl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+      - name: sonarr
+        image: lscr.io/linuxserver/sonarr:latest
+        ports:
+          - containerPort: 8989
+        volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /media
+            name: media
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr-config-pvc
+        - name: media
+          persistentVolumeClaim:
+            claimName: media-pvc
+
+---
+# Deluge Service
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: deluge
+#   namespace: media
+#   labels:
+#     app: deluge
+#     service: deluge
+# spec:
+#   ports:
+#   - name: http
+#     port: 8112
+#     targetPort: 8112
+#   - name: torrent
+#     port: 6881
+#     targetPort: 6881
+#   selector:
+#     app: deluge
+
+# ---
+# # Deluge Deployment
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: deluge
+#   namespace: media
+#   annotations:
+#     link.argocd.argoproj.io/external-link: https://deluge.local-cluster.dev
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: deluge
+#   template:
+#     metadata:
+#       labels:
+#         app: deluge
+#     spec:
+#       containers:
+#       - name: deluge
+#         image: lscr.io/linuxserver/deluge:latest
+#         ports:
+#           - containerPort: 8112
+#           - containerPort: 6881
+#           - containerPort: 6881
+#             protocol: UDP
+#         volumeMounts:
+#           - mountPath: /config
+#             name: config
+#           - mountPath: /downloads
+#             name: downloads
+#       volumes:
+#         - name: config
+#           persistentVolumeClaim:
+#             claimName: deluge-config-pvc
+#         - name: downloads
+#           persistentVolumeClaim:
+#             claimName: downloads-pvc
+
+---
+# Gateway for all media apps
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: media-gateway
+  namespace: media
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: media-apps-https-cert
+      hosts:
+        - "radarr.acc.ricksdomein.nl"
+        - "sonarr.acc.ricksdomein.nl"
+        - "deluge.acc.ricksdomein.nl"
+
+---
+# Radarr VirtualService
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  hosts:
+    - "radarr.acc.ricksdomein.nl"
+  gateways:
+    - media-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: radarr.media.svc.cluster.local
+            port:
+              number: 7878
+
+---
+# Sonarr VirtualService
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  hosts:
+    - "sonarr.acc.ricksdomein.nl"
+  gateways:
+    - media-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: sonarr.media.svc.cluster.local
+            port:
+              number: 8989
+
+---
+# Deluge VirtualService
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: deluge
+  namespace: media
+spec:
+  hosts:
+    - "deluge.acc.ricksdomein.nl"
+  gateways:
+    - media-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: deluge.media.svc.cluster.local
+            port:
+              number: 8112
+
+---
+# Deluge Service (updated to include VPN ports)
+apiVersion: v1
+kind: Service
+metadata:
+  name: deluge
+  namespace: media
+  labels:
+    app: deluge
+    service: deluge
+spec:
+  ports:
+  - name: http
+    port: 8112
+    targetPort: 8112
+  - name: torrent
+    port: 6881
+    targetPort: 6881
+  selector:
+    app: deluge
+
+---
+# Deluge Deployment with VPN (Gluetun)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deluge
+  namespace: media
+  annotations:
+    link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
+    avp.kubernetes.io/path: "secret/data/pia/passwd"  # Path to your PIA creds in Vault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deluge
+  template:
+    annotations:
+      vault.hashicorp.com/agent-inject: "true"
+      #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
+      vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/data/pia/passwd"
+    metadata:
+      labels:
+        app: deluge
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+      # Gluetun VPN container
+      - name: gluetun
+        image: qmcgaw/gluetun
+        env:
+        - name: VPN_SERVICE_PROVIDER
+          value: "pia"  # e.g., "nordvpn", "pia", "surfshark"
+        - name: VPN_TYPE
+          value: "openvpn"  # "wireguard" or "openvpn"
+        - name: SERVER_COUNTRIES
+          value: "United States"  # or your preferred country
+        - name: OPENVPN_USER
+          valueFrom:
+            secretKeyRef:
+              name: pia-credentials
+              key: username
+        - name: OPENVPN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pia-credentials
+              key: password
+        - name: SERVER_REGIONS
+          value: "France"
+        ports:
+          - containerPort: 8112  # Deluge web UI
+          - containerPort: 6881  # Torrent port
+          - containerPort: 6881  # Torrent UDP port
+            protocol: UDP
+        volumeMounts:
+          - mountPath: /gluetun
+            name: gluetun-config
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+      
+      # Deluge container
+      - name: deluge
+        image: lscr.io/linuxserver/deluge:latest
+        env:
+        - name: VPN_ENABLED
+          value: "yes"
+        - name: VPN_CLIENT
+          value: "gluetun"
+        - name: LAN_NETWORK
+          value: "172.16.0.0/12"  # Adjust to your cluster network
+        - name: UMASK
+          value: "002"
+        ports:
+          - containerPort: 8112
+        volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /downloads
+            name: downloads
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: deluge-config-pvc
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: downloads-pvc
+        - name: gluetun-config
+          emptyDir: {}
+
+---
+# Secret for VPN credentials (create this separately with kubectl)
+# kubectl create secret generic vpn-credentials --namespace media \
+#   --from-literal=privateKey='your_wireguard_private_key' \
+#   --from-literal=addresses='your_wireguard_address' \
+#   --from-literal=presharedKey='your_wireguard_preshared_key'
