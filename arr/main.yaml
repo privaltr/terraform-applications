@@ -305,8 +305,8 @@ metadata:
   namespace: media
   annotations:
     link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
-    vault.hashicorp.com/namespace: "vault"
-    avp.kubernetes.io/path: "secret/data/pia/passwd"  # Path to your PIA creds in Vault
+    # vault.hashicorp.com/namespace: "vault"
+    avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
 spec:
   replicas: 1
   selector:
@@ -317,7 +317,7 @@ spec:
       vault.hashicorp.com/agent-inject: "true"
       #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
       vault.hashicorp.com/namespace: "vault"
-      vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/data/pia/passwd"
+      vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/pia"
     metadata:
       labels:
         app: deluge
