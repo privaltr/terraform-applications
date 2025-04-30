@@ -111,7 +111,7 @@ spec:
         mode: SIMPLE
         credentialName: vaultwarden-https-cert
       hosts:
-        - vaultwarden.local-cluster.dev
+        - vaultwarden.acc.ricksdomein.nl
 
 ---
 # PersistentVolumeClaim for Vaultwarden data
