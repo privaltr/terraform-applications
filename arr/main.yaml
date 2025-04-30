@@ -341,8 +341,8 @@ spec:
           value: "pia"  # e.g., "nordvpn", "pia", "surfshark"
         - name: VPN_TYPE
           value: "openvpn"  # "wireguard" or "openvpn"
-        - name: SERVER_COUNTRIES
-          value: "United States"  # or your preferred country
+        # - name: SERVER_COUNTRIES
+        #   value: "france"  # or your preferred country
         - name: OPENVPN_USER
           value: <username>
         #   valueFrom:
