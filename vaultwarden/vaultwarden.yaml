@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: vaultwarden-https-cert
   dnsNames:
-    - "vaultwarden.local-cluster.dev"
+    - "vaultwarden.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -38,7 +38,7 @@ metadata:
   name: vaultwarden
   namespace: vaultwarden
   annotations:
-    link.argocd.argoproj.io/external-link: https://vaultwarden.local-cluster.dev
+    link.argocd.argoproj.io/external-link: https://vaultwarden.acc.ricksdomein.nl
 spec:
   replicas: 1
   selector:
@@ -79,7 +79,7 @@ metadata:
   namespace: vaultwarden
 spec:
   hosts:
-    - vaultwarden.local-cluster.dev
+    - vaultwarden.acc.ricksdomein.nl
   gateways:
     - vaultwarden-gateway
   http:
