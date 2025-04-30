@@ -299,7 +299,9 @@ spec:
         - name: HEALTH_SERVER_ADDRESS
           value: ":9999"
         - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "172.16.0.0/12"  # Allow cluster communication
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow local network traffic
+        - name: FIREWALL
+          value: "off"  # Disable during troubleshooting
         ports:
           - containerPort: 8112
             name: webui
