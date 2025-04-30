@@ -356,7 +356,9 @@ spec:
           #     name: pia-credentials
           #     key: password
         - name: SERVER_REGIONS
-          value: "France"
+          value: "France"  # Using France specifically
+        - name: HEALTH_SERVER_ADDRESS
+          value: ":9999"
         ports:
           - containerPort: 8112  # Deluge web UI
           - containerPort: 6881  # Torrent port
