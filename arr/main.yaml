@@ -277,7 +277,7 @@ spec:
         image: qmcgaw/gluetun
         env:
         - name: VPN_SERVICE_PROVIDER
-          value: "pia"  # e.g., "nordvpn", "pia", "surfshark"
+          value: "private internet access"  # e.g., "nordvpn", "pia", "surfshark private internet access"
         - name: VPN_TYPE
           value: "openvpn"  # "wireguard" or "openvpn"
         # - name: SERVER_COUNTRIES
@@ -318,6 +318,8 @@ spec:
       - name: deluge
         image: lscr.io/linuxserver/deluge:latest
         env:
+        - name: TZ
+          value: "Europe/Amsterdam"
         - name: WEB_IP
           value: "0.0.0.0"  # Listen on all interfaces
         - name: WEB_PORT
