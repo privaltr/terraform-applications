@@ -406,40 +406,128 @@ spec:
 
 ---
 
+### Shared Media Volume (for both Radarr and Sonarr)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: media-pv
+  labels:
+    type: local
+    app: media-storage
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi  # Adjust based on your media library size
+  accessModes:
+    - ReadWriteMany  # Allows multiple pods to access
+  hostPath:
+    path: "/mnt/data/media"  # Must exist on node
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      type: local
+      app: media-storage
+
+---
+### Radarr Configuration Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: radarr-config-pv
+  labels:
+    type: local
+    app: radarr
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/radarr/config"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr-config-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      type: local
+      app: radarr
+
+---
+### Sonarr Configuration Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sonarr-config-pv
+  labels:
+    type: local
+    app: sonarr
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/sonarr/config"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-config-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      type: local
+      app: sonarr
+
+---
+### Deluge Configuration Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: deluge-config-pv
   labels:
     type: local
+    app: deluge
 spec:
   storageClassName: manual
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data/deluge-config"  # Change to your host path
+    path: "/mnt/data/deluge/config"
 ---
-
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: downloads-pv
-  labels:
-    type: local
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 1Ti  # Adjust size
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data/downloads"  # Change to your host path
-
----
-
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -451,12 +539,30 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
   selector:
     matchLabels:
-      type: local  # Binds to PV with this label
----
+      type: local
+      app: deluge
 
+---
+### Deluge Downloads Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: downloads-pv
+  labels:
+    type: local
+    app: deluge
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi  # Adjust based on your torrent needs
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/downloads"
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -468,10 +574,15 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Ti
+      storage: 5Gi
   selector:
     matchLabels:
       type: local
+      app: deluge
+
+
+
+
 
 
 # Secret for VPN credentials (create this separately with kubectl)
