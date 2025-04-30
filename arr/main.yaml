@@ -298,11 +298,21 @@ spec:
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
           value: ":9999"
+        - name: FIREWALL_OUTBOUND_SUBNETS
+          value: "172.16.0.0/12"  # Allow cluster communication
         ports:
-          - containerPort: 8112  # Deluge web UI
-          - containerPort: 6881  # Torrent port
-          - containerPort: 6881  # Torrent UDP port
+          - containerPort: 8112
+            name: webui
+          - containerPort: 6881
+            name: torrent-tcp
+          - containerPort: 6881
+            name: torrent-udp
             protocol: UDP
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9999
+          initialDelaySeconds: 30
         volumeMounts:
           - mountPath: /gluetun
             name: gluetun-config
