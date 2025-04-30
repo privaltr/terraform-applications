@@ -305,6 +305,7 @@ metadata:
   namespace: media
   annotations:
     link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
+    vault.hashicorp.com/namespace: "vault"
     avp.kubernetes.io/path: "secret/data/pia/passwd"  # Path to your PIA creds in Vault
 spec:
   replicas: 1
