@@ -303,10 +303,10 @@ kind: Deployment
 metadata:
   name: deluge
   namespace: media
-  annotations:
-    link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
-    # vault.hashicorp.com/namespace: "vault"
-    avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
+  # annotations:
+  #   link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
+  #   # vault.hashicorp.com/namespace: "vault"
+  #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
 spec:
   replicas: 1
   selector:
@@ -314,10 +314,11 @@ spec:
       app: deluge
   template:
     annotations:
-      vault.hashicorp.com/agent-inject: "true"
-      #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
-      # vault.hashicorp.com/namespace: "vault"
-      vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/pia"
+      avp.kubernetes.io/path: "secret/pia"
+      # vault.hashicorp.com/agent-inject: "true"
+      # #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
+      # # vault.hashicorp.com/namespace: "vault"
+      # vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/pia"
     metadata:
       labels:
         app: deluge
@@ -338,15 +339,17 @@ spec:
         - name: SERVER_COUNTRIES
           value: "United States"  # or your preferred country
         - name: OPENVPN_USER
-          valueFrom:
-            secretKeyRef:
-              name: pia-credentials
-              key: username
+          value: <username>
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: pia-credentials
+        #       key: username
         - name: OPENVPN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: pia-credentials
-              key: password
+          value: <password>
+          # valueFrom:
+          #   secretKeyRef:
+          #     name: pia-credentials
+          #     key: password
         - name: SERVER_REGIONS
           value: "France"
         ports:
