@@ -356,7 +356,7 @@ spec:
           #     name: pia-credentials
           #     key: password
         - name: SERVER_REGIONS
-          value: "France"  # Using France specifically
+          value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
           value: ":9999"
         ports:
