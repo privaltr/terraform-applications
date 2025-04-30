@@ -263,17 +263,14 @@ spec:
         app: deluge
     spec:
       securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: 0
       containers:
       # Gluetun VPN container
       - name: gluetun
         securityContext:
           runAsUser: 0  # Run as root (required for iptables)
           capabilities:
-            add:
-              - NET_ADMIN  # Required for VPN networking
+            add: ["NET_ADMIN", "NET_RAW"]
         image: qmcgaw/gluetun
         env:
         - name: VPN_SERVICE_PROVIDER
