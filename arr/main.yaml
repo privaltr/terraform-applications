@@ -316,7 +316,7 @@ spec:
     annotations:
       vault.hashicorp.com/agent-inject: "true"
       #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
-      vault.hashicorp.com/namespace: "vault"
+      # vault.hashicorp.com/namespace: "vault"
       vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/pia"
     metadata:
       labels:
