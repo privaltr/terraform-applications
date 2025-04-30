@@ -275,7 +275,7 @@ spec:
         env:
         - name: VPN_SERVICE_PROVIDER
           value: "private internet access"  # e.g., "nordvpn", "pia", "surfshark private internet access"
-        - VPN_TYPE:
+        - name: VPN_TYPE
           value: openvpn
         - name: OPENVPN_USER
           value: <username>
