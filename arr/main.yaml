@@ -242,8 +242,8 @@ kind: Deployment
 metadata:
   name: deluge
   namespace: media
-  annotations:
-    link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
+  # annotations:
+  #   link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
   #   # vault.hashicorp.com/namespace: "vault"
   #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
 spec:
@@ -316,6 +316,8 @@ spec:
       
       # Deluge container
       - name: deluge
+        annotations:
+          link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
         image: lscr.io/linuxserver/deluge:latest
         env:
         - name: VPN_ENABLED
