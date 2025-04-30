@@ -268,35 +268,23 @@ spec:
       # Gluetun VPN container
       - name: gluetun
         securityContext:
-          runAsUser: 0  # Run as root (required for iptables)
           capabilities:
-            add: ["NET_ADMIN", "NET_RAW"]
+              add:
+                - NET_ADMIN
         image: qmcgaw/gluetun
         env:
         - name: VPN_SERVICE_PROVIDER
           value: "private internet access"  # e.g., "nordvpn", "pia", "surfshark private internet access"
-        - name: VPN_TYPE
-          value: "openvpn"  # "wireguard" or "openvpn"
-        # - name: SERVER_COUNTRIES
-        #   value: "france"  # or your preferred country
         - name: OPENVPN_USER
           value: <username>
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: pia-credentials
-        #       key: username
         - name: OPENVPN_PASSWORD
           value: <password>
-          # valueFrom:
-          #   secretKeyRef:
-          #     name: pia-credentials
-          #     key: password
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
           value: ":9999"
-        - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow local network traffic
+        - name: FIREWALL_INPUT_PORTS
+          value: "8080"
         - name: FIREWALL
           value: "off"  # Disable during troubleshooting
         ports:
@@ -307,10 +295,10 @@ spec:
           - containerPort: 6881
             name: torrent-udp
             protocol: UDP
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 9999
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 9999
           initialDelaySeconds: 30
         volumeMounts:
           - mountPath: /gluetun
