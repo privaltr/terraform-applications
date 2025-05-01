@@ -299,7 +299,7 @@ spec:
         - name: DOT
           value: "off"
         - name: FIREWALL_INPUT_PORTS
-          value: "8112"
+          value: "8080"
         - name: FIREWALL_OUTBOUND_SUBNETS
           value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
         # - name: FIREWALL
@@ -311,7 +311,7 @@ spec:
         # # - name: HEALTH_VPN_DURATION_INITIAL
         # #   value: "1m"
         ports:
-          - containerPort: 8112
+          - containerPort: 8080
             name: webui
           - containerPort: 6881
             name: torrent-tcp
