@@ -264,8 +264,6 @@ spec:
     metadata:
       labels:
         app: deluge
-      annotations:
-        avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
     spec:
       securityContext:
         runAsUser: 0
@@ -274,8 +272,8 @@ spec:
       - name: gluetun
         securityContext:
           capabilities:
-              add:
-                - NET_ADMIN
+            add:
+              - NET_ADMIN
         image: qmcgaw/gluetun:v3.35.0
         env:
         - name: VPN_SERVICE_PROVIDER
@@ -283,9 +281,9 @@ spec:
         - name: VPN_TYPE
           value: openvpn
         - name: OPENVPN_USER
-          value: <secret#username>
+          value: <username>
         - name: OPENVPN_PASSWORD
-          value: <secret#password>
+          value: <password>
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
