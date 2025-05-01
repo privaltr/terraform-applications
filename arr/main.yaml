@@ -245,8 +245,8 @@ metadata:
     avp.kubernetes.io/path: "secret/data/pia"  # Path to your PIA secrets in Vault
 type: Opaque
 data:
-  OPENVPN_USER: <username>  # AVP will replace this with the value from Vault
-  OPENVPN_PASSWORD: <password>  # AVP will replace this with the value from Vault
+  username: <username>  # AVP will replace this with the value from Vault
+  password: <password>  # AVP will replace this with the value from Vault
 ---
 # Deluge Deployment with VPN (Gluetun)
 apiVersion: apps/v1
@@ -299,11 +299,11 @@ spec:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
               key: OPENVPN_USER
-        - name: OPENVPN_PASSWORD
+        - name: username
           valueFrom:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
-              key: OPENVPN_PASSWORD
+              key: password
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
