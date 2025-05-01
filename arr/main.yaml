@@ -249,6 +249,12 @@ metadata:
   #   # vault.hashicorp.com/namespace: "vault"
   #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
 spec:
+  source:
+    repoURL: https://github.com/privaltr/terraform-applications.git
+    targetRevision: HEAD
+    path: arr
+    plugin:
+      name: avp
   replicas: 1
   selector:
     matchLabels:
