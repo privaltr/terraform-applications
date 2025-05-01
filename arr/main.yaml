@@ -312,8 +312,6 @@ spec:
         #   value: "off"
         - name: FIREWALL_OUTBOUND_SUBNETS
           value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16" # Add your cluster networks
-        - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "10.0.0.0/8,172.16.0.0/12"
         ports:
           - containerPort: 8112
             name: webui
