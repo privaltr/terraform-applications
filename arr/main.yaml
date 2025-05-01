@@ -276,7 +276,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN", "NET_RAW"]
           privileged: true
-        image: qmcgaw/gluetun:v3.35.0
+        image: qmcgaw/gluetun:v3.40.0
         env:
         - name: VPN_SERVICE_PROVIDER
           value: "private internet access"  # e.g., "nordvpn", "pia", "surfshark private internet access"
@@ -298,10 +298,8 @@ spec:
           value: "Europe/Amsterdam"
         - name: DOT
           value: "off"
-        # - name: FIREWALL
-        #   value: "off"  # Disable during troubleshooting
-        - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+        - name: FIREWALL
+          value: "off"  # Disable during troubleshooting
         # - name: HEALTH_SERVER_ADDRESS
         #   value: ":9999"
         # - name: DNS_KEEP_NAMESERVER
