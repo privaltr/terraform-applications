@@ -236,6 +236,16 @@ spec:
     app: deluge
 
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pia-credentials
+  namespace: media
+  avp.kubernetes.io/path: "secret/pia"
+data:
+  OPENVPN_USER: <username>
+  OPENVPN_PASSWORD: <password>
+---
 # Deluge Deployment with VPN (Gluetun)
 apiVersion: apps/v1
 kind: Deployment
@@ -254,11 +264,11 @@ spec:
     matchLabels:
       app: deluge
   template:
-    metadata:
-      annotations:
-        avp.kubernetes.io/path: "secret/pia"
-        avp.kubernetes.io/secret-username: "username"  # Matches your Vault key
-        avp.kubernetes.io/secret-password: "password"  # Matches your Vault key
+    # metadata:
+    #   annotations:
+    #     avp.kubernetes.io/path: "secret/pia"
+    #     avp.kubernetes.io/secret-username: "username"  # Matches your Vault key
+    #     avp.kubernetes.io/secret-password: "password"  # Matches your Vault key
       # vault.hashicorp.com/agent-inject: "true"
       # #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
       # # vault.hashicorp.com/namespace: "vault"
