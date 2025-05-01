@@ -243,6 +243,7 @@ metadata:
   namespace: media
   annotations:
     avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
+    avp.kubernetes.io/kv-version: "1"
 type: Opaque
 data:
   username: <username>  # AVP will replace this with the value from Vault
