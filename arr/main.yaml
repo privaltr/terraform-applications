@@ -306,8 +306,8 @@ spec:
         # #   value: "--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6"
         # - name: OPENVPN_IPV6
         #   value: "off"
-        # - name: FIREWALL_OUTBOUND_SUBNETS
-        #   value: "0.0.0.0/0"
+        - name: FIREWALL_OUTBOUND_SUBNETS
+          value: "10.0.0.0/8,127.0.0.1/8,172.16.0.0/12"  # Allow LAN + localhost
         ports:
           - containerPort: 8112
             name: webui
@@ -342,10 +342,10 @@ spec:
           value: "0.0.0.0"  # Listen on all interfaces
         - name: WEB_PORT
           value: "8112"
-        - name: VPN_ENABLED
-          value: "yes"
-        - name: VPN_CLIENT
-          value: "gluetun"
+        # - name: VPN_ENABLED
+        #   value: "yes"
+        # - name: VPN_CLIENT
+        #   value: "gluetun"
         - name: LAN_NETWORK
           value: "172.16.0.0/12"  # Adjust to your cluster network
         - name: UMASK
