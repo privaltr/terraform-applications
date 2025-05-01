@@ -296,12 +296,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
-              key: username
+              key: OPENVPN_USER
         - name: OPENVPN_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
-              key: password
+              key: OPENVPN_PASSWORD
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
