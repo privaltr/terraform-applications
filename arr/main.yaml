@@ -294,16 +294,16 @@ spec:
               key: password
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
-        - name: HEALTH_SERVER_ADDRESS
-          value: ":9999"
+        # - name: HEALTH_SERVER_ADDRESS
+        #   value: ":9999"
         - name: FIREWALL
           value: "off"  # Disable during troubleshooting
         - name: DNS_KEEP_NAMESERVER
           value: "on"
-        - name: HEALTH_VPN_DURATION_INITIAL
-          value: "1m"
-        - name: OPENVPN_FLAGS
-          value: "--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6"
+        # - name: HEALTH_VPN_DURATION_INITIAL
+        #   value: "1m"
+        # - name: OPENVPN_FLAGS
+        #   value: "--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6"
         ports:
           - containerPort: 8112
             name: webui
@@ -312,11 +312,11 @@ spec:
           - containerPort: 6881
             name: torrent-udp
             protocol: UDP
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 9999
-          initialDelaySeconds: 30
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 9999
+        #   initialDelaySeconds: 30
         volumeMounts:
           - mountPath: /gluetun
             name: gluetun-config
