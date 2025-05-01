@@ -299,8 +299,8 @@ spec:
           valueFrom:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
-              key: OPENVPN_USER
-        - name: username
+              key: username
+        - name: OPENVPN_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pia-credentials  # Will be created by AVP
