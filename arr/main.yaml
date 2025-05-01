@@ -236,6 +236,29 @@ spec:
     app: deluge
 
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: arr
+  namespace: media
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/privaltr/terraform-applications.git
+    targetRevision: HEAD
+    path: arr
+    plugin:
+      name: avp
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
 # Deluge Deployment with VPN (Gluetun)
 apiVersion: apps/v1
 kind: Deployment
@@ -249,12 +272,6 @@ metadata:
   #   # vault.hashicorp.com/namespace: "vault"
   #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
 spec:
-  source:
-    repoURL: https://github.com/privaltr/terraform-applications.git
-    targetRevision: HEAD
-    path: arr
-    plugin:
-      name: avp
   replicas: 1
   selector:
     matchLabels:
