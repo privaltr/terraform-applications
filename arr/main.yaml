@@ -301,7 +301,7 @@ spec:
         # - name: FIREWALL
         #   value: "off"  # Disable during troubleshooting
         - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "172.16.0.0/12" # Add your cluster networks
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
         # - name: HEALTH_SERVER_ADDRESS
         #   value: ":9999"
         # - name: DNS_KEEP_NAMESERVER
