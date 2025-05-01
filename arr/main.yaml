@@ -241,10 +241,12 @@ kind: Secret
 metadata:
   name: pia-credentials
   namespace: media
-  avp.kubernetes.io/path: "secret/pia"
+  annotations:
+    avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
+type: Opaque
 data:
-  OPENVPN_USER: <username>
-  OPENVPN_PASSWORD: <password>
+  OPENVPN_USER: <username>  # AVP will replace this with the value from Vault
+  OPENVPN_PASSWORD: <password>  # AVP will replace this with the value from Vault
 ---
 # Deluge Deployment with VPN (Gluetun)
 apiVersion: apps/v1
