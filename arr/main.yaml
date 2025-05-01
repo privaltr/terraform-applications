@@ -294,6 +294,10 @@ spec:
               key: password
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
+        - name: TZ
+          value: "Europe/Amsterdam"
+        - name: DOT
+          value: "off"
         # - name: HEALTH_SERVER_ADDRESS
         #   value: ":9999"
         # - name: FIREWALL
