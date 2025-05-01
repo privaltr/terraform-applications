@@ -255,27 +255,14 @@ kind: Deployment
 metadata:
   name: deluge
   namespace: media
-  # annotations:
-  #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
-  # annotations:
-  #   link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
-  #   # vault.hashicorp.com/namespace: "vault"
-  #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA creds in Vault
+  annotations:
+    link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: deluge
   template:
-    # metadata:
-    #   annotations:
-    #     avp.kubernetes.io/path: "secret/pia"
-    #     avp.kubernetes.io/secret-username: "username"  # Matches your Vault key
-    #     avp.kubernetes.io/secret-password: "password"  # Matches your Vault key
-      # vault.hashicorp.com/agent-inject: "true"
-      # #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
-      # # vault.hashicorp.com/namespace: "vault"
-      # vault.hashicorp.com/agent-inject-secret-pia-credentials: "secret/pia"
     metadata:
       labels:
         app: deluge
@@ -321,11 +308,11 @@ spec:
           - containerPort: 6881
             name: torrent-udp
             protocol: UDP
-        # readinessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 9999
-        #   initialDelaySeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9999
+          initialDelaySeconds: 30
         volumeMounts:
           - mountPath: /gluetun
             name: gluetun-config
