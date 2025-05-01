@@ -242,8 +242,8 @@ kind: Deployment
 metadata:
   name: deluge
   namespace: media
-  annotations:
-    avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
+  # annotations:
+  #   avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
   # annotations:
   #   link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
   #   # vault.hashicorp.com/namespace: "vault"
@@ -254,9 +254,9 @@ spec:
     matchLabels:
       app: deluge
   template:
-    # metadata:
-    # annotations:
-    #   avp.kubernetes.io/path: "secret/pia"
+    metadata:
+      annotations:
+        avp.kubernetes.io/path: "secret/pia"
       # vault.hashicorp.com/agent-inject: "true"
       # #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
       # # vault.hashicorp.com/namespace: "vault"
@@ -283,9 +283,9 @@ spec:
         - name: VPN_TYPE
           value: openvpn
         - name: OPENVPN_USER
-          value: <username>
+          value: <secret#username>
         - name: OPENVPN_PASSWORD
-          value: <password>
+          value: <secret#password>
         - name: SERVER_REGIONS
           value: "france"  # Using France specifically
         - name: HEALTH_SERVER_ADDRESS
