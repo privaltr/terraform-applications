@@ -242,6 +242,8 @@ kind: Deployment
 metadata:
   name: deluge
   namespace: media
+  annotations:
+    avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
   # annotations:
   #   link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
   #   # vault.hashicorp.com/namespace: "vault"
@@ -252,8 +254,9 @@ spec:
     matchLabels:
       app: deluge
   template:
-    annotations:
-      avp.kubernetes.io/path: "secret/pia"
+    # metadata:
+    # annotations:
+    #   avp.kubernetes.io/path: "secret/pia"
       # vault.hashicorp.com/agent-inject: "true"
       # #vault.hashicorp.com/role: "media-apps"  # Vault role with access to the secret
       # # vault.hashicorp.com/namespace: "vault"
@@ -261,14 +264,14 @@ spec:
     metadata:
       labels:
         app: deluge
+      annotations:
+        avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
     spec:
       securityContext:
         runAsUser: 0
       containers:
       # Gluetun VPN container
       - name: gluetun
-        annotations:
-          avp.kubernetes.io/path: "secret/data/tls/root-cert"
         securityContext:
           capabilities:
               add:
