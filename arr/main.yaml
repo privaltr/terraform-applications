@@ -296,18 +296,18 @@ spec:
           value: "france"  # Using France specifically
         # - name: HEALTH_SERVER_ADDRESS
         #   value: ":9999"
-        - name: FIREWALL
-          value: "off"  # Disable during troubleshooting
-        - name: DNS_KEEP_NAMESERVER
-          value: "on"
-        # - name: HEALTH_VPN_DURATION_INITIAL
-        #   value: "1m"
-        # - name: OPENVPN_FLAGS
-        #   value: "--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6"
-        - name: OPENVPN_IPV6
-          value: "off"
-        - name: FIREWALL_OUTBOUND_SUBNETS
-          value: "0.0.0.0/0"
+        # - name: FIREWALL
+        #   value: "off"  # Disable during troubleshooting
+        # - name: DNS_KEEP_NAMESERVER
+        #   value: "on"
+        # # - name: HEALTH_VPN_DURATION_INITIAL
+        # #   value: "1m"
+        # # - name: OPENVPN_FLAGS
+        # #   value: "--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6"
+        # - name: OPENVPN_IPV6
+        #   value: "off"
+        # - name: FIREWALL_OUTBOUND_SUBNETS
+        #   value: "0.0.0.0/0"
         ports:
           - containerPort: 8112
             name: webui
