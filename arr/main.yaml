@@ -344,6 +344,10 @@ spec:
           value: "002"
         - name: WEBUI_PORT
           value: "8080"
+        - name: WEBUI_USERNAME
+          value: "admin"  # Change to your preferred username
+        - name: WEBUI_PASSWORD
+          value: "admin"  # Change to your secure password
         ports:
           - containerPort: 8080
         volumeMounts:
