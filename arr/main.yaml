@@ -312,11 +312,11 @@ spec:
         #   value: "off"
         # - name: FIREWALL_OUTBOUND_SUBNETS
         #   value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16" # Add your cluster networks
-      - name: FIREWALL_INBOUND_PORTS
-        value: "8112"  # Comma-separated if multiple ports (e.g., "8112,6881")
-      # Allow outbound traffic FROM port 8112 (for responses)
-      - name: FIREWALL_OUTBOUND_PORTS
-        value: "8112"
+        - name: FIREWALL_INBOUND_PORTS
+          value: "8112"  # Comma-separated if multiple ports (e.g., "8112,6881")
+        # Allow outbound traffic FROM port 8112 (for responses)
+        - name: FIREWALL_OUTBOUND_PORTS
+          value: "8112"
         ports:
           - containerPort: 8112
             name: webui
