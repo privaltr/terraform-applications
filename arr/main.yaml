@@ -245,9 +245,9 @@ metadata:
     avp.kubernetes.io/path: "secret/pia"  # Path to your PIA secrets in Vault
     avp.kubernetes.io/kv-version: "1"
 type: Opaque
-data:
-  username: <path:secret/pia#username>  # AVP will replace this with the value from Vault
-  password: <path:secret/pia#password>  # AVP will replace this with the value from Vault
+stringData:
+  username: <username>  # AVP will replace this with the value from Vault
+  password: <password>  # AVP will replace this with the value from Vault
 ---
 # Deluge Deployment with VPN (Gluetun)
 apiVersion: apps/v1
