@@ -9,7 +9,7 @@ spec:
   dnsNames:
     - "radarr.acc.ricksdomein.nl"
     - "sonarr.acc.ricksdomein.nl"
-    - "deluge.acc.ricksdomein.nl"
+    - "qbittorrent.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -146,7 +146,7 @@ spec:
       hosts:
         - "radarr.acc.ricksdomein.nl"
         - "sonarr.acc.ricksdomein.nl"
-        - "deluge.acc.ricksdomein.nl"
+        - "qbittorrent.acc.ricksdomein.nl"
 
 ---
 # Radarr VirtualService
@@ -193,15 +193,15 @@ spec:
               number: 8989
 
 ---
-# Deluge VirtualService
+# qbittorrent VirtualService
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: deluge
+  name: qbittorrent
   namespace: media
 spec:
   hosts:
-    - "deluge.acc.ricksdomein.nl"
+    - "qbittorrent.acc.ricksdomein.nl"
   gateways:
     - media-gateway
   http:
@@ -210,30 +210,30 @@ spec:
             prefix: /
       route:
         - destination:
-            host: deluge.media.svc.cluster.local
+            host: qbittorrent.media.svc.cluster.local
             port:
-              number: 8112
+              number: 8080
 
 ---
-# Deluge Service (updated to include VPN ports)
+# qbittorrent Service (updated to include VPN ports)
 apiVersion: v1
 kind: Service
 metadata:
-  name: deluge
+  name: qbittorrent
   namespace: media
   labels:
-    app: deluge
-    service: deluge
+    app: qbittorrent
+    service: qbittorrent
 spec:
   ports:
   - name: http
-    port: 8112
-    targetPort: 8112
+    port: 8080
+    targetPort: 8080
   - name: torrent
     port: 6881
     targetPort: 6881
   selector:
-    app: deluge
+    app: qbittorrent
 
 ---
 apiVersion: v1
@@ -249,23 +249,23 @@ stringData:
   username: <username>  # AVP will replace this with the value from Vault
   password: <password>  # AVP will replace this with the value from Vault
 ---
-# Deluge Deployment with VPN (Gluetun)
+# qbittorrent Deployment with VPN (Gluetun)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deluge
+  name: qbittorrent
   namespace: media
   annotations:
-    link.argocd.argoproj.io/external-link: https://deluge.acc.ricksdomein.nl
+    link.argocd.argoproj.io/external-link: https://qbittorrent.acc.ricksdomein.nl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deluge
+      app: qbittorrent
   template:
     metadata:
       labels:
-        app: deluge
+        app: qbittorrent
     spec:
       securityContext:
         runAsUser: 0
@@ -334,26 +334,18 @@ spec:
             memory: "256Mi"
             cpu: "500m"
       
-      # Deluge container
-      - name: deluge
-        image: lscr.io/linuxserver/deluge:latest
+      # qBittorrent container
+      - name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
         env:
         - name: TZ
           value: "Europe/Amsterdam"
-        # - name: WEB_IP
-        #   value: "0.0.0.0"  # Listen on all interfaces
-        # - name: WEB_PORT
-        #   value: "8112"
-        # - name: VPN_ENABLED
-        #   value: "yes"
-        # - name: VPN_CLIENT
-        #   value: "gluetun"
-        # - name: LAN_NETWORK
-        #   value: "172.16.0.0/12"  # Adjust to your cluster network
         - name: UMASK
           value: "002"
+        - name: WEBUI_PORT
+          value: "8080"
         ports:
-          - containerPort: 8112
+          - containerPort: 8080
         volumeMounts:
           - mountPath: /config
             name: config
@@ -369,7 +361,7 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: deluge-config-pvc
+            claimName: qbittorrent-config-pvc  # Consider renaming this PVC
         - name: downloads
           persistentVolumeClaim:
             claimName: downloads-pvc
@@ -483,14 +475,14 @@ spec:
       app: sonarr
 
 ---
-### Deluge Configuration Volume
+### qbittorrent Configuration Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: deluge-config-pv
+  name: qbittorrent-config-pv
   labels:
     type: local
-    app: deluge
+    app: qbittorrent
 spec:
   storageClassName: manual
   capacity:
@@ -498,12 +490,12 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data/deluge/config"
+    path: "/mnt/data/qbittorrent/config"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: deluge-config-pvc
+  name: qbittorrent-config-pvc
   namespace: media
 spec:
   storageClassName: manual
@@ -515,17 +507,17 @@ spec:
   selector:
     matchLabels:
       type: local
-      app: deluge
+      app: qbittorrent
 
 ---
-### Deluge Downloads Volume
+### qbittorrent Downloads Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: downloads-pv
   labels:
     type: local
-    app: deluge
+    app: qbittorrent
 spec:
   storageClassName: manual
   capacity:
@@ -550,7 +542,7 @@ spec:
   selector:
     matchLabels:
       type: local
-      app: deluge
+      app: qbittorrent
 
 
 
