@@ -342,10 +342,10 @@ spec:
         env:
         - name: TZ
           value: "Europe/Amsterdam"
-        - name: WEB_IP
-          value: "0.0.0.0"  # Listen on all interfaces
-        - name: WEB_PORT
-          value: "8112"
+        # - name: WEB_IP
+        #   value: "0.0.0.0"  # Listen on all interfaces
+        # - name: WEB_PORT
+        #   value: "8112"
         # - name: VPN_ENABLED
         #   value: "yes"
         # - name: VPN_CLIENT
