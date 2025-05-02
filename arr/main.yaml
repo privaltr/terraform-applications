@@ -10,11 +10,29 @@ spec:
     - "radarr.acc.ricksdomein.nl"
     - "sonarr.acc.ricksdomein.nl"
     - "qbittorrent.acc.ricksdomein.nl"
+    - "prowlarr.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
     group: cert-manager.io
 
+---
+# Prowlarr Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr
+  namespace: media
+  labels:
+    app: prowlarr
+    service: prowlarr
+spec:
+  ports:
+  - name: http
+    port: 9696
+    targetPort: 9696
+  selector:
+    app: prowlarr
 ---
 # Radarr Service
 apiVersion: v1
@@ -147,6 +165,7 @@ spec:
         - "radarr.acc.ricksdomein.nl"
         - "sonarr.acc.ricksdomein.nl"
         - "qbittorrent.acc.ricksdomein.nl"
+        - "prowlarr.acc.ricksdomein.nl"
 
 ---
 # Radarr VirtualService
@@ -214,6 +233,27 @@ spec:
             port:
               number: 8080
 
+---
+# Prowlarr VirtualService
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prowlarr
+  namespace: media
+spec:
+  hosts:
+    - "prowlarr.acc.ricksdomein.nl"
+  gateways:
+    - media-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: prowlarr.media.svc.cluster.local
+            port:
+              number: 9696
 ---
 # qbittorrent Service (updated to include VPN ports)
 apiVersion: v1
@@ -375,7 +415,37 @@ spec:
           emptyDir: {}
 
 ---
-
+# Prowlarr Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: media
+  annotations:
+    link.argocd.argoproj.io/external-link: https://prowlarr.acc.ricksdomein.nl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      containers:
+      - name: prowlarr
+        image: lscr.io/linuxserver/prowlarr:latest
+        ports:
+          - containerPort: 9696
+        volumeMounts:
+          - mountPath: /config
+            name: config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: prowlarr-config-pvc
+---
 ### Shared Media Volume (for both Radarr and Sonarr)
 apiVersion: v1
 kind: PersistentVolume
@@ -549,7 +619,40 @@ spec:
     matchLabels:
       type: local
       app: qbittorrent
-
+---
+### Prowlarr Configuration Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prowlarr-config-pv
+  labels:
+    type: local
+    app: prowlarr
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/prowlarr/config"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prowlarr-config-pvc
+  namespace: media
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      type: local
+      app: prowlarr
 
 
 
