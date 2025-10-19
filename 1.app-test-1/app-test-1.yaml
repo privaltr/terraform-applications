@@ -20,8 +20,6 @@ kind: Deployment
 metadata:
   name: app-test-1
   namespace: app-test-1
-  annotations:
-    link.argocd.argoproj.io/external-link: https://app-test-1.acc.ricksdomein.nl
 spec:
   replicas: 1
   selector:
