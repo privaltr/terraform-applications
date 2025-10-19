@@ -1,0 +1,88 @@
+# Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-test-1-tls
+  namespace: app-test-1
+spec:
+  secretName: app-test-1-https-cert
+  dnsNames:
+    - "app-test-1.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-test-1
+  namespace: app-test-1
+  labels:
+    app: app-test-1
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: https
+      port: 443
+      targetPort: 8080
+  selector:
+    app: app-test-1
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-test-1
+  namespace: app-test-1
+  annotations:
+    link.argocd.argoproj.io/external-link: https://app-test-1.acc.ricksdomein.nl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-test-1
+  template:
+    metadata:
+      labels:
+        app: app-test-1
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 8080
+
+---
+# NGINX Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-test-1
+  namespace: app-test-1
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - app-test-1.acc.ricksdomein.nl
+      secretName: app-test-1-https-cert
+    - host: app-test-1.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-test-1
+                port:
+                  number: 80
