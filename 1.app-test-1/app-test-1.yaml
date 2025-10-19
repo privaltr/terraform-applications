@@ -1,4 +1,4 @@
-# Certificate
+# Certificate (cert-manager)
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -12,23 +12,6 @@ spec:
     name: root-ca-issuer
     kind: ClusterIssuer
     group: cert-manager.io
-
----
-# Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: app-test-1
-  namespace: app-test-1
-  labels:
-    app: app-test-1
-spec:
-  ports:
-    - name: http
-      port: 80
-      targetPort: 8080
-  selector:
-    app: app-test-1
 
 ---
 # Deployment
@@ -54,6 +37,23 @@ spec:
           image: nginx:latest
           ports:
             - containerPort: 8080
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-test-1
+  namespace: app-test-1
+  labels:
+    app: app-test-1
+spec:
+  selector:
+    app: app-test-1
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
 
 ---
 # NGINX Ingress
@@ -83,4 +83,4 @@ spec:
               service:
                 name: app-test-1
                 port:
-                  number: 80
+                  number: 8
