@@ -76,6 +76,7 @@ spec:
     - hosts:
         - app-test-1.acc.ricksdomein.nl
       secretName: app-test-1-https-cert
+  rules:
     - host: app-test-1.acc.ricksdomein.nl
       http:
         paths:
