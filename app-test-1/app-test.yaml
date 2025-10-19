@@ -8,6 +8,7 @@ spec:
   secretName: app-test-1-https-cert
   dnsNames:
     - "app-test-1.local-cluster.dev"
+    - "app-test-1.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
