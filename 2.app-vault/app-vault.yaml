@@ -15,15 +15,25 @@ spec:
 
 ---
 # Secret (fetched via Vault)
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
-  name: test-vault-secret
+  name: es-external-secret
   namespace: app-vault
-stringData:
-  MY_TEST_SECRET: vault:kv-v2/argocd#MY_TEST_SECRET
----
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: es-cluster-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: test-vault-secret
+  data:
+  - secretKey: MY_TEST_SECRET 
+    remoteRef:
+      key: path_to_secret
+      property: password
 
+---
 # Deployment
 apiVersion: apps/v1
 kind: Deployment
