@@ -2,12 +2,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: app-vault-tls
-  namespace: app-vault
+  name: app-secret-tls
 spec:
-  secretName: app-vault-https-cert
+  secretName: app-secret-https-cert
   dnsNames:
-    - "app-vault.acc.ricksdomein.nl"
+    - "app-secret.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -19,14 +18,13 @@ apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: es-external-secret
-  namespace: app-vault
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
     name: es-secret-store
     kind: ClusterSecretStore
   target:
-    name: test-vault-secret
+    name: app-secret-secret
   data:
   - secretKey: MY_TEST_SECRET 
     remoteRef:
@@ -38,17 +36,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-vault
-  namespace: app-vault
+  name: app-secret
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-vault
+      app: app-secret
   template:
     metadata:
       labels:
-        app: app-vault
+        app: app-secret
     spec:
       containers:
         - name: nginx
@@ -59,7 +56,7 @@ spec:
             - name: MY_TEST_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: test-vault-secret
+                  name: test-secret-secret
                   key: MY_TEST_SECRET
 
 ---
@@ -67,13 +64,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-vault
-  namespace: app-vault
+  name: app-secret
   labels:
-    app: app-vault
+    app: app-secret
 spec:
   selector:
-    app: app-vault
+    app: app-secret
   ports:
     - name: http
       port: 80
@@ -84,8 +80,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-vault
-  namespace: app-vault
+  name: app-secret
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -95,16 +90,16 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - app-vault.acc.ricksdomein.nl
-      secretName: app-vault-https-cert
+        - app-secret.acc.ricksdomein.nl
+      secretName: app-secret-https-cert
   rules:
-    - host: app-vault.acc.ricksdomein.nl
+    - host: app-secret.acc.ricksdomein.nl
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: app-vault
+                name: app-secret
                 port:
                   number: 80
