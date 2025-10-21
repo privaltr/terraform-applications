@@ -1,0 +1,39 @@
+# Certificate for the service (httpbin in this case)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: seadoc-tls
+spec:
+  secretName: seadoc-https-cert
+  dnsNames:
+    - "seadoc.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io  # REQUIRED field
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: seadoc-gateway
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - seadoc.acc.ricksdomein.nl
+      secretName: seadoc-https-cert
+  rules:
+    - host: seadoc.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: seadoc
+                port:
+                  number: 80

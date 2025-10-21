@@ -1,0 +1,56 @@
+# # PersistentVolume for Logs
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: onlyoffice-logs-pv
+# spec:
+#   capacity:
+#     storage: 5Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: /app/onlyoffice/DocumentServer/logs
+#     type: DirectoryOrCreate
+
+# ---
+# # PersistentVolume for Data
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: onlyoffice-data-pv
+# spec:
+#   capacity:
+#     storage: 20Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: /app/onlyoffice/DocumentServer/data
+#     type: DirectoryOrCreate
+
+# ---
+# # PVC for Logs
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: onlyoffice-logs-pvc
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   volumeName: onlyoffice-logs-pv
+
+# ---
+# # PVC for Data
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: onlyoffice-data-pvc
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 20Gi
+#   volumeName: onlyoffice-data-pv
