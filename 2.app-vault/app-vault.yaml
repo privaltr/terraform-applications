@@ -21,9 +21,9 @@ metadata:
   name: es-external-secret
   namespace: app-vault
 spec:
-  refreshInterval: 1h
+  refreshInterval: 1h0m0s
   secretStoreRef:
-    name: es-cluster-secret-store
+    name: es-secret-store
     kind: ClusterSecretStore
   target:
     name: test-vault-secret
