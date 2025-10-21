@@ -20,8 +20,10 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"  # Remove size limit
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"    # 2 hours for slow connections
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"    # 1 hour for processing
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"         # Helps with large uploads
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"      # Buffer size
 spec:
   ingressClassName: nginx
   tls:
