@@ -74,5 +74,5 @@ spec:
             name: seahub-onlyoffice-settings
       restartPolicy: Always
       # to get image from protected repository
-      imagePullSecrets:
-        - name: regcred
+      # imagePullSecrets:
+      #   - name: regcred
