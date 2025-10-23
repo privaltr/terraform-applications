@@ -12,20 +12,23 @@ spec:
       labels:
         app: seafile
     spec:
+      initContainers:
+      - name: copy-onlyoffice-config
+        image: busybox
+        command: ['sh', '-c']
+        args:
+          - |
+            echo "Copying OnlyOffice config..."
+            mkdir -p /shared/seafile/conf/
+            cat /onlyoffice/onlyoffice.py > /shared/seafile/conf/seahub_settings.py
+        volumeMounts:
+        - name: seafile-data
+          mountPath: /shared
+        - name: onlyoffice-settings
+      mountPath: /onlyoffice
       containers:
         - name: seafile
           image: harbor.acc.ricksdomein.nl/library/seafile-mc:13.0-latest-ca
-          readinessProbe:
-            exec:
-              command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py"]
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            failureThreshold: 10      # Allow many failures
-            timeoutSeconds: 5
-          # lifecycle:
-          #   postStart:
-          #     exec:
-          #       command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py"]
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
@@ -55,9 +58,9 @@ spec:
               value: "admin_password"   
             - name: SEAFILE_SERVER_LETSENCRYPT
               value: "false"
-            - name: ENABLE_SEADOC
-              value: "true"
             - name: ENABLE_WIKI
+              value: "true"
+            - name: ENABLE_SEADOC
               value: "true"
             - name: SEADOC_SERVER_URL
               value: "https://seadoc.acc.ricksdomein.nl"
