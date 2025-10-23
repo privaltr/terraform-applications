@@ -25,7 +25,7 @@ spec:
         - name: seafile-data
           mountPath: /shared
         - name: onlyoffice-settings
-      mountPath: /onlyoffice
+          mountPath: /onlyoffice
       containers:
         - name: seafile
           image: harbor.acc.ricksdomein.nl/library/seafile-mc:13.0-latest-ca
