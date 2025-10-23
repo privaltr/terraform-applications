@@ -22,6 +22,10 @@ spec:
             periodSeconds: 10
             failureThreshold: 10      # Allow many failures
             timeoutSeconds: 5
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py"]
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
@@ -64,8 +68,6 @@ spec:
             - name: SITE_ROOT
               value: "/"
             - name: NON_ROOT
-              value: "false"
-            - name: ENABLE_SEAFILE_AI
               value: "false"
             - name: SEAFILE_LOG_TO_STDOUT
               value: "false"
