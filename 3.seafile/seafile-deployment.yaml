@@ -12,23 +12,31 @@ spec:
       labels:
         app: seafile
     spec:
-      initContainers:
-      - name: copy-onlyoffice-config
-        image: busybox
-        command: ['sh', '-c']
-        args:
-          - |
-            echo "Copying OnlyOffice config..."
-            mkdir -p /shared/seafile/conf/
-            cat /onlyoffice/onlyoffice.py > /shared/seafile/conf/seahub_settings.py
-        volumeMounts:
-        - name: seafile-data
-          mountPath: /shared
-        - name: onlyoffice-settings
-          mountPath: /onlyoffice
       containers:
         - name: seafile
           image: harbor.acc.ricksdomein.nl/library/seafile-mc:13.0-latest-ca
+          lifecycle:
+            postStart:
+              exec:
+                command: 
+                - /bin/sh
+                - -c
+                - |
+                  # Wait for the file to exist
+                  counter=0
+                  while [ ! -f /shared/seafile/conf/seahub_settings.py ] && [ $counter -lt 60 ]; do
+                    echo "Waiting for seahub_settings.py... ($counter/60)"
+                    sleep 5
+                    ((counter++))
+                  done
+                  
+                  if [ -f /shared/seafile/conf/seahub_settings.py ]; then
+                    echo "Adding OnlyOffice config"
+                    cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py
+                    echo "Config added successfully"
+                  else
+                    echo "ERROR: seahub_settings.py never appeared!"
+                  fi
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
