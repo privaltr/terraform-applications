@@ -12,27 +12,27 @@ spec:
       labels:
         app: seafile
     spec:
-      initContainers:
-      - name: setup-onlyoffice
-        image: busybox
-        command: ['sh', '-c']
-        args:
-          - |
-            echo "Waiting for Seafile config directory..."
-            while [ ! -d /shared/seafile/conf ]; do sleep 5; done
-            echo "Waiting for seahub_settings.py..."
-            while [ ! -f /shared/seafile/conf/seahub_settings.py ]; do sleep 5; done
-            echo "Adding OnlyOffice configuration..."
-            cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py
-            echo "OnlyOffice setup completed"
-        volumeMounts:
-        - name: seafile-data
-          mountPath: /shared
-        - name: onlyoffice-settings
-          mountPath: /onlyoffice
       containers:
         - name: seafile
           image: harbor.acc.ricksdomein.nl/library/seafile-mc:12.0-latest-ca
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Start Seafile in background
+              /path/to/seafile-start-script.sh &
+              
+              # Wait for config file to be created
+              while [ ! -f /shared/seafile/conf/seahub_settings.py ]; do
+                echo "Waiting for seahub_settings.py..."
+                sleep 10
+              done
+              
+              # Add OnlyOffice config
+              echo "Adding OnlyOffice configuration..."
+              cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py
+              
+              # Wait for Seafile process
+              wait
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
