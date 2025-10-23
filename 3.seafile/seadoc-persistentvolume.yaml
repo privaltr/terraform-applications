@@ -1,11 +1,11 @@
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: sdoc-server-storage
-spec:
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: /opt/sdoc-data
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: sdoc-server-storage
+# spec:
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: /opt/sdoc-data
