@@ -18,8 +18,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Start Seafile in background
-              /path/to/seafile-start-script.sh &
+              # Start the actual Seafile startup script
+              /sbin/my_init &
               
               # Wait for config file to be created
               while [ ! -f /shared/seafile/conf/seahub_settings.py ]; do
