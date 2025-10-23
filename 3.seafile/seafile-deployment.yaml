@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: seafile
-          image: harbor.acc.ricksdomein.nl/library/seafile-mc:12.0-latest-ca
+          image: harbor.acc.ricksdomein.nl/library/seafile-mc:13.0-latest-ca
           readinessProbe:
             exec:
               command: ["test", "-f", "/shared/seafile/conf/seahub_settings.py"]
@@ -27,15 +27,15 @@ spec:
               value: "/usr/local/share/ca-certificates/rootCA.crt"
             - name: JWT_PRIVATE_KEY
               value: "A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu"
-            - name: DB_HOST
+            - name: SEAFILE_MYSQL_DB_HOST
               value: "mariadb"
-            - name: DB_PORT
+            - name: SEAFILE_MYSQL_DB_PORT
               value: "3306"
-            - name: DB_USER
+            - name: SEAFILE_MYSQL_DB_USER
               value: "seafile"
-            - name: DB_PASSWORD
+            - name: SEAFILE_MYSQL_DB_PASSWORD
               value: "db_dev"
-            - name: DB_ROOT_PASSWD
+            - name: INIT_SEAFILE_MYSQL_ROOT_PASSWORD
               value: "db_dev"
             - name: SEAFILE_MYSQL_DB_CCNET_DB_NAME
               value: "ccnet_db"
@@ -60,7 +60,41 @@ spec:
             - name: SEAFILE_SERVER_HOSTNAME
               value: "seafile.acc.ricksdomein.nl"
             - name: SEAFILE_SERVER_PROTOCOL
-              value: "https"    
+              value: "https" 
+            - name: SITE_ROOT
+              value: "/"
+            - name: NON_ROOT
+              value: "false"
+            - name: ENABLE_SEAFILE_AI
+              value: "false"
+            - name: SEAFILE_LOG_TO_STDOUT
+              value: "false"
+            - name: CACHE_PROVIDER
+              value: "redis"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              value: "your-redis-password-here"
+            - name: MEMCACHED_HOST
+              value: "memcached"
+            - name: MEMCACHED_PORT
+              value: "11211"
+            - name: ENABLE_NOTIFICATION_SERVER
+              value: "false"
+            - name: INNER_NOTIFICATION_SERVER_URL
+              value: "http://notification-server:8083"
+            - name: NOTIFICATION_SERVER_URL
+              value: "https://seafile.acc.ricksdomein.nl/notification"
+            - name: ENABLE_SEAFILE_AI
+              value: "false"
+            - name: SEAFILE_AI_SERVER_URL
+              value: "http://seafile-ai:8888"
+            - name: SEAFILE_AI_SECRET_KEY
+              value: ""
+            - name: MD_FILE_COUNT_LIMIT
+              value: "-100000"
           ports:
             - containerPort: 80
           volumeMounts:

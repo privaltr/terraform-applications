@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sdoc-server
-          image: harbor.acc.ricksdomein.nl/library/sdoc-server:1.0-latest-ca
+          image: harbor.acc.ricksdomein.nl/library/sdoc-server:2.0-latest-ca
           ports:
             - containerPort: 80
           env:
@@ -36,6 +36,8 @@ spec:
               value: "seahub_db"
             - name: TIME_ZONE
               value: "Europe/Amsterdam"
+            - name: NON_ROOT
+              value: "false"
           volumeMounts:
             - name: sdoc-server-storage
               mountPath: /shared
