@@ -91,10 +91,10 @@ spec:
               value: "https://seafile.acc.ricksdomein.nl/notification"
             - name: ENABLE_SEAFILE_AI
               value: "false"
-            - name: SEAFILE_AI_SERVER_URL
-              value: "http://seafile-ai:8888"
-            - name: SEAFILE_AI_SECRET_KEY
-              value: ""
+            # - name: SEAFILE_AI_SERVER_URL
+            #   value: "http://seafile-ai:8888"
+            # - name: SEAFILE_AI_SECRET_KEY
+            #   value: ""
             - name: MD_FILE_COUNT_LIMIT
               value: "-100000"
           ports:
