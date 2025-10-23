@@ -17,7 +17,7 @@ spec:
           image: harbor.acc.ricksdomein.nl/library/seafile-mc:13.0-latest-ca
           readinessProbe:
             exec:
-              command: ["test", "-f", "/shared/seafile/conf/seahub_settings.py"]
+              command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py"]
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 10      # Allow many failures
@@ -25,22 +25,7 @@ spec:
           # lifecycle:
           #   postStart:
           #     exec:
-          #       command: 
-          #         - /bin/sh
-          #         - -c
-          #         - |
-          #           # Wait for directory and file to be created
-          #           echo "Waiting for Seafile config directory..."
-          #           while [ ! -d /shared/seafile/conf ]; do
-          #             sleep 5
-          #           done
-          #           echo "Waiting for seahub_settings.py..."
-          #           while [ ! -f /shared/seafile/conf/seahub_settings.py ]; do
-          #             sleep 5
-          #           done
-          #           echo "Adding OnlyOffice configuration..."
-          #           cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py
-          #           echo "OnlyOffice config added successfully"
+          #       command: ["/bin/sh", "-c", "cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py"]
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/rootCA.crt"
