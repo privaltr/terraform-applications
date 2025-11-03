@@ -31,8 +31,8 @@ spec:
                   done
                   
                   if [ -f /shared/seafile/conf/seahub_settings.py ]; then
-                    echo "Adding OnlyOffice config"
-                    cat /onlyoffice/onlyoffice.py >> /shared/seafile/conf/seahub_settings.py
+                    echo "Adding seahub settings"
+                    cat /seahub/seahub_settings.py >> /shared/seafile/conf/seahub_settings.py
                     echo "Config added successfully"
                   else
                     echo "ERROR: seahub_settings.py never appeared!"
@@ -113,15 +113,15 @@ spec:
           volumeMounts:
             - name: seafile-data
               mountPath: /shared
-            - name: onlyoffice-settings
-              mountPath: /onlyoffice
+            - name: seahub-settings
+              mountPath: /seahub
       volumes:
         - name: seafile-data
           persistentVolumeClaim:
             claimName: seafile-data
-        - name: onlyoffice-settings
+        - name: seahub-settings
           configMap:
-            name: seahub-onlyoffice-settings
+            name: seahub-settings
       restartPolicy: Always
       # to get image from protected repository
       # imagePullSecrets:
