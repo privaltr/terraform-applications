@@ -19,7 +19,7 @@ spec:
             - containerPort: 80
           env:
             - name: NODE_EXTRA_CA_CERTS
-              value: "/usr/local/share/ca-certificates/rootCA.crt"
+              value: "/usr/local/share/ca-certificates/acc.ricksdomein.nl.crt"
             - name: SEAHUB_SERVICE_URL
               value: "https://seafile.acc.ricksdomein.nl"
             - name: JWT_PRIVATE_KEY
