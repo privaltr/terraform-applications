@@ -49,6 +49,6 @@ data:
     }
 
     # Optionally set the following variable to automatically redirect users to the login page
-    LOGIN_URL = 'https://seafile.acc.ricksdomein.nl/oauth/login/'
+    #LOGIN_URL = 'https://seafile.acc.ricksdomein.nl/oauth/login/'
 
     DISABLE_ADFS_USER_PWD_LOGIN = True
