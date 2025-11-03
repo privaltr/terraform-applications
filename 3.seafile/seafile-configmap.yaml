@@ -34,8 +34,9 @@ data:
 
     OAUTH_REDIRECT_URL = 'https://seafile.acc.ricksdomein.nl/oauth/callback/'
 
-    OAUTH_PROVIDER = 'authentik'
+    
     OAUTH_PROVIDER_DOMAIN = 'authentik.acc.ricksdomein.nl'
+    OAUTH_PROVIDER = 'authentik'
     OAUTH_AUTHORIZATION_URL = 'https://authentik.acc.ricksdomein.nl/application/o/authorize/'
     OAUTH_TOKEN_URL = 'https://authentik.acc.ricksdomein.nl/application/o/token/'
     OAUTH_USER_INFO_URL = 'https://authentik.acc.ricksdomein.nl/application/o/userinfo/'
