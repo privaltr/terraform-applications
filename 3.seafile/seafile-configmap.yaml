@@ -44,10 +44,9 @@ data:
     OAUTH_SCOPE = ["openid", "profile", "email"]
 
     OAUTH_ATTRIBUTE_MAP = {
-        "id": (True, "email"),
         "name": (False, "name"),
         "email": (False, "contact_email"),
-        "uid": (True, "uid"),
+        "uid": (True, "uid"),   # Seafile v11.0 + 
     }
 
     # Optionally set the following variable to automatically redirect users to the login page
