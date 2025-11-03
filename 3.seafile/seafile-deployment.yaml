@@ -21,23 +21,7 @@ spec:
                 command: 
                 - /bin/sh
                 - -c
-                - |
-                  # Wait for the file to exist
-                  counter=0
-                  while [ ! -f /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem ] && [ $counter -lt 60 ]; do
-                    echo "Waiting for cacert.pem... ($counter/60)"
-                    sleep 5
-                    ((counter++))
-                  done
-                  
-                  if [ -f /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem ]; then
-                    echo "Adding cert"
-                    cat /usr/local/share/ca-certificates/acc.ricksdomein.nl.crt >> /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem
-                    echo "Cert added successfully"
-                  else
-                    echo "ERROR: cacert.pem never appeared!"
-                  fi
-                  
+                - |   
                   # Wait for the file to exist
                   counter=0
                   while [ ! -f /shared/seafile/conf/seahub_settings.py ] && [ $counter -lt 60 ]; do
@@ -53,6 +37,23 @@ spec:
                   else
                     echo "ERROR: seahub_settings.py never appeared!"
                   fi
+
+                  counter=0
+                  while [ ! -f /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem ] && [ $counter -lt 60 ]; do
+                    echo "Waiting for cacert.pem... ($counter/60)"
+                    sleep 5
+                    ((counter++))
+                  done
+                  
+                  if [ -f /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem ]; then
+                    echo "Adding cert"
+                    cat /usr/local/share/ca-certificates/acc.ricksdomein.nl.crt >> /opt/seafile/seafile-server-latest/seahub/thirdpart/certifi/cacert.pem
+                    echo "Cert added successfully"
+                  else
+                    echo "ERROR: cacert.pem never appeared!"
+                  fi
+
+
                   ./opt/seafile/seafile-server-latest/seahub.sh restart
                   
           env:
