@@ -44,9 +44,10 @@ data:
     OAUTH_SCOPE = ["openid", "profile", "email"]
 
     OAUTH_ATTRIBUTE_MAP = {
-        "email": (True, "email"),
+        "id": (True, "email"),
         "name": (False, "name"),
-        "sub": (False, "uid"),
+        "email": (False, "contact_email"),
+        "uid": (True, "uid"),
     }
 
     # Optionally set the following variable to automatically redirect users to the login page
