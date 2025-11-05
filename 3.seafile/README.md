@@ -1,10 +1,19 @@
 # Seafile
 
+```bash
+vault kv put kv/seafile INIT_SEAFILE_ADMIN_EMAIL=admin@seafile.com
+vault kv patch kv/seafile INIT_SEAFILE_ADMIN_PASSWORD=admin_password
+vault kv patch kv/seafile REDIS_PASSWORD=your-redis-password-here
+vault kv patch kv/seafile JWT_PRIVATE_KEY=A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu
+```
+
+
+
 # Checklist
 
 - [X] Enable [seadoc](https://manual.seafile.com/11.0/extra_setup/setup_seadoc/) so the Wiki feature will work
-- [ ] fix self signed TLS 
-- [ ] Add onlyoffice 
+- [X] fix self signed TLS 
+- [X] Add onlyoffice 
 - [X] Update config to Seafile 13
 
 ## Sources
