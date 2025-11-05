@@ -1,57 +1,75 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
-  name: seahub-settings
-data:
-  seahub_settings.py: |
-    ENABLE_SIGNUP = False
+  name: es-seahub-settings
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: seahub-settings
+  template:
+    type: Opaque
+    data:
+      seahub_settings.py: |
+        ENABLE_SIGNUP = False
 
-    # ONLY OFFICE
-    ENABLE_ONLYOFFICE = True
-    VERIFY_ONLYOFFICE_CERTIFICATE = False
-    ONLYOFFICE_APIJS_URL = 'https://onlyoffice.acc.ricksdomein.nl/web-apps/apps/api/documents/api.js'
-    ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'ppsx', 'pps', 'csv')
-    ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'csv')
-    ONLYOFFICE_FORCE_SAVE = True
-    ONLYOFFICE_JWT_SECRET = 'XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh'
-    OFFICE_PREVIEW_MAX_SIZE = 30 * 1024 * 1024 # preview size, 30 MB
+        # ONLY OFFICE
+        ENABLE_ONLYOFFICE = True
+        VERIFY_ONLYOFFICE_CERTIFICATE = False
+        ONLYOFFICE_APIJS_URL = 'https://onlyoffice.acc.ricksdomein.nl/web-apps/apps/api/documents/api.js'
+        ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'ppsx', 'pps', 'csv')
+        ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'csv')
+        ONLYOFFICE_FORCE_SAVE = True
+        ONLYOFFICE_JWT_SECRET = 'XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh'
+        OFFICE_PREVIEW_MAX_SIZE = 30 * 1024 * 1024 # preview size, 30 MB
 
-    # Authentik
-    CSRF_TRUSTED_ORIGINS = ['https://seafile.acc.ricksdomein.nl']
+        # Authentik
+        CSRF_TRUSTED_ORIGINS = ['https://seafile.acc.ricksdomein.nl']
 
-    OAUTH_ENABLE_INSECURE_TRANSPORT = True
+        OAUTH_ENABLE_INSECURE_TRANSPORT = True
 
-    ENABLE_OAUTH = True
+        ENABLE_OAUTH = True
 
-    # Automatically creates a user in Seafile when they log in for the first time. Defaults to True.
-    OAUTH_CREATE_UNKNOWN_USER = True
+        # Automatically creates a user in Seafile when they log in for the first time. Defaults to True.
+        OAUTH_CREATE_UNKNOWN_USER = True
 
-    # Automatically activate Seafile users when they log in for the first time. Defaults to True.
-    OAUTH_ACTIVATE_USER_AFTER_CREATION = True
+        # Automatically activate Seafile users when they log in for the first time. Defaults to True.
+        OAUTH_ACTIVATE_USER_AFTER_CREATION = True
 
-    OAUTH_CLIENT_ID = 'kyuPSaHIc2DAoBHxqQck78dyJzdi28KBDZsHCu3i'
-    OAUTH_CLIENT_SECRET = 'LkrXmwZkFZgIGp4wdIHWkGY31Hs6laSvpPbSOPvMfZsxqhAAN3FkRRpt9ucHBRo63FFX4eLaDsn4JGolrq77LVI83QBr9Wk8ST44CUmeplU7AMkcM1DumkshFJIQyyhW'
+        OAUTH_CLIENT_ID = "{{ .OAUTH_CLIENT_ID }}"
+        OAUTH_CLIENT_SECRET = "{{ .OAUTH_CLIENT_SECRET }}"
 
-    OAUTH_REDIRECT_URL = 'https://seafile.acc.ricksdomein.nl/oauth/callback/'
+        OAUTH_REDIRECT_URL = 'https://seafile.acc.ricksdomein.nl/oauth/callback/'
 
-    
-    OAUTH_PROVIDER_DOMAIN = 'authentik.acc.ricksdomein.nl'
-    OAUTH_PROVIDER = 'authentik'
-    OAUTH_AUTHORIZATION_URL = 'https://authentik.acc.ricksdomein.nl/application/o/authorize/'
-    OAUTH_TOKEN_URL = 'https://authentik.acc.ricksdomein.nl/application/o/token/'
-    OAUTH_USER_INFO_URL = 'https://authentik.acc.ricksdomein.nl/application/o/userinfo/'
+        
+        OAUTH_PROVIDER_DOMAIN = 'authentik.acc.ricksdomein.nl'
+        OAUTH_PROVIDER = 'authentik'
+        OAUTH_AUTHORIZATION_URL = 'https://authentik.acc.ricksdomein.nl/application/o/authorize/'
+        OAUTH_TOKEN_URL = 'https://authentik.acc.ricksdomein.nl/application/o/token/'
+        OAUTH_USER_INFO_URL = 'https://authentik.acc.ricksdomein.nl/application/o/userinfo/'
 
-    OAUTH_SCOPE = ["openid", "profile", "email"]
+        OAUTH_SCOPE = ["openid", "profile", "email"]
 
-    OAUTH_ATTRIBUTE_MAP = {
-        "sub":   (True,  "uid"),          # Map the 'sub' claim to Seafile `uid`, required
-        "email": (True,  "email"),        # Map the 'email' claim to Seafile `email`, required
-        "name":  (False, "name"),         # Map the 'name' claim to Seafile `name`, optional
-        # optionally:
-        # "preferred_username": (False, "username"),
-    }
+        OAUTH_ATTRIBUTE_MAP = {
+            "sub":   (True,  "uid"),          # Map the 'sub' claim to Seafile `uid`, required
+            "email": (True,  "email"),        # Map the 'email' claim to Seafile `email`, required
+            "name":  (False, "name"),         # Map the 'name' claim to Seafile `name`, optional
+            # optionally:
+            # "preferred_username": (False, "username"),
+        }
 
-    # Optionally set the following variable to automatically redirect users to the login page
-    LOGIN_URL = 'https://seafile.acc.ricksdomein.nl/oauth/login/'
+        # Optionally set the following variable to automatically redirect users to the login page
+        LOGIN_URL = 'https://seafile.acc.ricksdomein.nl/oauth/login/'
 
-    DISABLE_ADFS_USER_PWD_LOGIN = True
+        DISABLE_ADFS_USER_PWD_LOGIN = True
+  data:
+    - secretKey: OAUTH_CLIENT_ID
+      remoteRef:
+        key: seafile
+        property: OAUTH_CLIENT_ID
+    - secretKey: OAUTH_CLIENT_SECRET
+      remoteRef:
+        key: seafile
+        property: OAUTH_CLIENT_SECRET
