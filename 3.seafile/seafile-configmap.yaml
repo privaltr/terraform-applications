@@ -11,6 +11,13 @@ spec:
     name: seahub-settings
   template:
     type: Opaque
+    templateData:
+      OAUTH_CLIENT_ID:
+        key: seafile
+        property: OAUTH_CLIENT_ID
+      OAUTH_CLIENT_SECRET:
+        key: seafile
+        property: OAUTH_CLIENT_SECRET
     data:
       seahub_settings.py: |
         ENABLE_SIGNUP = False
@@ -64,12 +71,3 @@ spec:
         LOGIN_URL = 'https://seafile.acc.ricksdomein.nl/oauth/login/'
 
         DISABLE_ADFS_USER_PWD_LOGIN = True
-  data:
-    - secretKey: OAUTH_CLIENT_ID
-      remoteRef:
-        key: seafile
-        property: OAUTH_CLIENT_ID
-    - secretKey: OAUTH_CLIENT_SECRET
-      remoteRef:
-        key: seafile
-        property: OAUTH_CLIENT_SECRET
