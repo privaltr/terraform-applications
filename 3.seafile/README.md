@@ -5,6 +5,8 @@ vault kv put kv/seafile INIT_SEAFILE_ADMIN_EMAIL=admin@seafile.com
 vault kv patch kv/seafile INIT_SEAFILE_ADMIN_PASSWORD=admin_password
 vault kv patch kv/seafile REDIS_PASSWORD=your-redis-password-here
 vault kv patch kv/seafile JWT_PRIVATE_KEY=A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu
+vault kv patch kv/seafile SEAFILE_MYSQL_DB_PASSWORD=db_dev
+vault kv patch kv/seafile INIT_SEAFILE_MYSQL_ROOT_PASSWORD=db_dev
 ```
 
 

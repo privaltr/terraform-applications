@@ -71,9 +71,15 @@ spec:
             - name: SEAFILE_MYSQL_DB_USER
               value: "seafile"
             - name: SEAFILE_MYSQL_DB_PASSWORD
-              value: "db_dev"
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret-secret
+                  key: SEAFILE_MYSQL_DB_PASSWORD
             - name: INIT_SEAFILE_MYSQL_ROOT_PASSWORD
-              value: "db_dev"
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret-secret
+                  key: INIT_SEAFILE_MYSQL_ROOT_PASSWORD
             - name: SEAFILE_MYSQL_DB_CCNET_DB_NAME
               value: "ccnet_db"
             - name: SEAFILE_MYSQL_DB_SEAFILE_DB_NAME
@@ -187,3 +193,11 @@ spec:
     remoteRef:
       key: seafile
       property: JWT_PRIVATE_KEY
+  - secretKey: SEAFILE_MYSQL_DB_PASSWORD 
+    remoteRef:
+      key: seafile
+      property: SEAFILE_MYSQL_DB_PASSWORD
+  - secretKey: INIT_SEAFILE_MYSQL_ROOT_PASSWORD 
+    remoteRef:
+      key: seafile
+      property: INIT_SEAFILE_MYSQL_ROOT_PASSWORD
