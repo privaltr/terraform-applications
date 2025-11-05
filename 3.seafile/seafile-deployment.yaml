@@ -157,8 +157,8 @@ spec:
           persistentVolumeClaim:
             claimName: seafile-data
         - name: seahub-settings
-          configMap:
-            name: seahub-settings
+          secret:
+            secretName: seahub-settings
       restartPolicy: Always
       # to get image from protected repository
       # imagePullSecrets:
