@@ -157,6 +157,7 @@ spec:
             backend:
               service:
                 name: ak-outpost-outpost
+                namespace: authentik
                 port:
                   number: 9000 
           - path: /
