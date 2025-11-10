@@ -2,55 +2,56 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: qbittorrent-config
+  name: prowlarr-config
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: longhorn
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: ConfigMap
 metadata:
-  name: qbittorrent-downloads
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 100Gi
+  name: prowlarr-configmap
+data:
+  config.xml: |
+    <Config>
+      <LogLevel>info</LogLevel>
+      <UrlBase></UrlBase>
+      <BindAddress>*</BindAddress>
+      <Port>9696</Port>
+      <SslPort>6969</SslPort>
+      <EnableSsl>false</EnableSsl>
+      <LaunchBrowser>false</LaunchBrowser>
+      <AuthenticationMethod>None</AuthenticationMethod>
+      <UpdateMechanism>Docker</UpdateMechanism>
+      <Branch>master</Branch>
+    </Config>
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: qbittorrent
+  name: prowlarr
   labels:
-    app: qbittorrent
+    app: prowlarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: qbittorrent
+      app: prowlarr
   template:
     metadata:
       labels:
-        app: qbittorrent
+        app: prowlarr
     spec:
       containers:
-      - name: qbittorrent
-        image: lscr.io/linuxserver/qbittorrent:latest
+      - name: prowlarr
+        image: lscr.io/linuxserver/prowlarr:latest
         ports:
         - name: webui
-          containerPort: 8080
-        - name: torrent-tcp
-          containerPort: 6881
-          protocol: TCP
-        - name: torrent-udp
-          containerPort: 6881
-          protocol: UDP
+          containerPort: 9696
         env:
         - name: PUID
           value: "1000"
@@ -58,70 +59,41 @@ spec:
           value: "1000"
         - name: TZ
           value: "UTC"
-        - name: WEBUI_PORT
-          value: "8080"
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: qbittorrent-conf
-          mountPath: /config/qBittorrent/qBittorrent.conf
-          subPath: qBittorrent.conf
-        - name: downloads
-          mountPath: /downloads
+        - name: prowlarr-conf
+          mountPath: /config/config.xml
+          subPath: config.xml
       volumes:
       - name: config
         persistentVolumeClaim:
-          claimName: qbittorrent-config
-      - name: downloads
-        persistentVolumeClaim:
-          claimName: qbittorrent-downloads
-      - name: qbittorrent-conf
+          claimName: prowlarr-config
+      - name: prowlarr-conf
         configMap:
-          name: qbittorrent-configmap
+          name: prowlarr-configmap
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: qbittorrent
+  name: prowlarr
 spec:
   type: ClusterIP
   selector:
-    app: qbittorrent
+    app: prowlarr
   ports:
   - name: webui
-    port: 8080
-    targetPort: 8080
-  - name: torrent-tcp
-    port: 6881
-    targetPort: 6881
-    protocol: TCP
-  - name: torrent-udp
-    port: 6881
-    targetPort: 6881
-    protocol: UDP
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: qbittorrent-configmap
-data:
-  qBittorrent.conf: |
-    [Preferences]
-    [Preferences]
-    WebUI\Address=*
-    WebUI\AuthSubnetWhitelist=0.0.0.0/0
-    WebUI\AuthSubnetWhitelistEnabled=true
-    WebUI\LocalHostAuth=false
-    WebUI\ServerDomains=*
+    port: 9696
+    targetPort: 9696
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: qbittorrent-tls
+  name: prowlarr-tls
 spec:
-  secretName: qbittorrent-https-cert
+  secretName: prowlarr-https-cert
   dnsNames:
-    - "qbittorrent.acc.ricksdomein.nl"
+    - "prowlarr.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -130,13 +102,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: qbittorrent-ingress
+  name: prowlarr-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/auth-url: |-
       https://outpost.acc.ricksdomein.nl/outpost.goauthentik.io/auth/nginx
     nginx.ingress.kubernetes.io/auth-signin: |-
-      https://qbittorrent.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
+      https://prowlarr.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
     nginx.ingress.kubernetes.io/auth-response-headers: |-
       Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
     nginx.ingress.kubernetes.io/auth-snippet: |
@@ -146,10 +118,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - qbittorrent.acc.ricksdomein.nl
-      secretName: qbittorrent-https-cert
+        - prowlarr.acc.ricksdomein.nl
+      secretName: prowlarr-https-cert
   rules:
-    - host: qbittorrent.acc.ricksdomein.nl
+    - host: prowlarr.acc.ricksdomein.nl
       http:
         paths:
           - path: /outpost.goauthentik.io/
@@ -158,14 +130,14 @@ spec:
               service:
                 name: ak-outpost-outpost
                 port:
-                  number: 9000 
+                  number: 9000
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: qbittorrent
+                name: prowlarr
                 port:
-                  number: 8080
+                  number: 9696
 ---
 apiVersion: v1
 kind: Service
