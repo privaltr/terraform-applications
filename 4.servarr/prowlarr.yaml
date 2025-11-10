@@ -18,16 +18,21 @@ metadata:
 data:
   config.xml: |
     <Config>
-      <LogLevel>info</LogLevel>
-      <UrlBase></UrlBase>
       <BindAddress>*</BindAddress>
       <Port>9696</Port>
       <SslPort>6969</SslPort>
-      <EnableSsl>false</EnableSsl>
-      <LaunchBrowser>false</LaunchBrowser>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <ApiKey>decd67e4991f4bafbd3476bb1828fc36</ApiKey>
       <AuthenticationMethod>None</AuthenticationMethod>
-      <UpdateMechanism>Docker</UpdateMechanism>
+      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
       <Branch>master</Branch>
+      <LogLevel>debug</LogLevel>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <UrlBase></UrlBase>
+      <InstanceName>Prowlarr</InstanceName>
+      <UpdateMechanism>Docker</UpdateMechanism>
     </Config>
 ---
 apiVersion: apps/v1
@@ -59,19 +64,19 @@ spec:
           value: "1000"
         - name: TZ
           value: "UTC"
-      #   volumeMounts:
+        volumeMounts:
       #   - name: config
       #     mountPath: /config
-      #   - name: prowlarr-conf
-      #     mountPath: /config/config.xml
-      #     subPath: config.xml
-      # volumes:
+        - name: prowlarr-conf
+          mountPath: /config/config.xml
+          subPath: config.xml
+      volumes:
       # - name: config
       #   persistentVolumeClaim:
       #     claimName: prowlarr-config
-      # - name: prowlarr-conf
-      #   configMap:
-      #     name: prowlarr-configmap
+      - name: prowlarr-conf
+        configMap:
+          name: prowlarr-configmap
 ---
 apiVersion: v1
 kind: Service
