@@ -24,7 +24,7 @@ data:
       <EnableSsl>False</EnableSsl>
       <LaunchBrowser>True</LaunchBrowser>
       <ApiKey>decd67e4991f4bafbd3476bb1828fc36</ApiKey>
-      <AuthenticationMethod>None</AuthenticationMethod>
+      <AuthenticationMethod>External</AuthenticationMethod>
       <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
       <Branch>master</Branch>
       <LogLevel>debug</LogLevel>
