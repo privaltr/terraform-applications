@@ -67,9 +67,6 @@ spec:
 
 ---
 # ---------------------------------------------------------------------
-# DATABASE_URL Secret (using Kubernetes string interpolation)
-# ---------------------------------------------------------------------
-# ---------------------------------------------------------------------
 # DATABASE_URL Secret (using dataFrom with template)
 # ---------------------------------------------------------------------
 apiVersion: external-secrets.io/v1
@@ -86,9 +83,15 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-database-url
-  dataFrom:
-    - extract:
+  data:
+    - secretKey: username
+      remoteRef:
         key: vaultwarden/postgres
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: vaultwarden/postgres
+        property: password
   template:
     type: Opaque
     data:
