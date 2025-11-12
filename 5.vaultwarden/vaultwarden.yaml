@@ -82,11 +82,12 @@ spec:
     name: es-secret-store
     kind: ClusterSecretStore
   target:
-    template:
-      engineVersion: v2
-      data:
-        # password: "{{ .mysecret }}"               # If you are using plain manifests or gitops tools
-        DATABASE_URL: "{{ `postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10` }}"         # If you are using helm
+    target:
+  template:
+    engineVersion: v2
+    data:
+      DATABASE_URL: |
+        postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
   data:
     - secretKey: username
       remoteRef:
