@@ -94,8 +94,7 @@ spec:
         property: password
   template:
     type: Opaque
-    engineVersion: v2
-    data:
+    stringData:
       DATABASE_URL: "postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
 ---
 # ---------------------------------------------------------------------
