@@ -128,7 +128,7 @@ data:
   SMTP_HOST: "smtp.protonmail.ch"
   SMTP_FROM: "mail@ricksdomein.nl"
   SMTP_PORT: "587"
-  SMTP_SECURITY: "force_tls"
+  SMTP_SECURITY: "starttls"
   SMTP_AUTH_MECHANISM: "Plain"
   SIGNUPS_ALLOWED: "false"
   SSO_ENABLED: "true"
