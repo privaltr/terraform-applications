@@ -83,15 +83,9 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-database-url
-  data:
-    - secretKey: username
-      remoteRef:
+  dataFrom:
+    - extract:
         key: vaultwarden/postgres
-        property: username
-    - secretKey: password
-      remoteRef:
-        key: vaultwarden/postgres
-        property: password
   template:
     type: Opaque
     data:
