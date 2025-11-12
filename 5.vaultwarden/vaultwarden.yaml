@@ -138,6 +138,7 @@ data:
   SSO_ROLES_ENABLED: "false"
   SSO_ROLES_DEFAULT_TO_USER: "true"
   SSO_ROLES_TOKEN_PATH: "/application/o/userinfo/groups"
+  SSO_AUTO_CREATE: "true"
 
 ---
 # ---------------------------------------------------------------------
@@ -266,6 +267,11 @@ spec:
                 configMapKeyRef:
                   name: vaultwarden-sso-config
                   key: SSO_ROLES_TOKEN_PATH
+            - name: SSO_AUTO_CREATE
+              valueFrom:
+                configMapKeyRef:
+                  name: vaultwarden-sso-config
+                  key: SSO_AUTO_CREATE
           ports:
             - containerPort: 80
           volumeMounts:
