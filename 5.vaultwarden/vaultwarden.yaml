@@ -135,7 +135,7 @@ data:
   SSO_ONLY: "true"
   SSO_FRONTEND: "override"
   SSO_AUTHORITY: "https://authentik.acc.ricksdomein.nl/application/o/vaultwarden/"
-  SSO_ROLES_ENABLED: "true"
+  SSO_ROLES_ENABLED: "false"
   SSO_ROLES_DEFAULT_TO_USER: "true"
   SSO_ROLES_TOKEN_PATH: "/application/o/userinfo/groups"
 
