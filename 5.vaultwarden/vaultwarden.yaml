@@ -96,6 +96,37 @@ spec:
     type: Opaque
     stringData:
       DATABASE_URL: "postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
+
+
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: vaultwarden-database-url
+  namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "1.5"
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    template:
+      engineVersion: v2
+      data:
+        name: admin
+        # password: "{{ .mysecret }}"               # If you are using plain manifests or gitops tools
+        password: "{{ `postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10` }}"         # If you are using helm
+  data:
+    - secretKey: username
+      remoteRef:
+        key: vaultwarden/postgres
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: vaultwarden/postgres
+        property: password
+
 ---
 # ---------------------------------------------------------------------
 # ConfigMap (non-sensitive values)
