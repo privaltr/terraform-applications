@@ -11,7 +11,7 @@ metadata:
 spec:
   secretName: vaultwarden-sso-https-cert
   dnsNames:
-    - "vault.acc.ricksdomein.nl"
+    - "vaultwarden.acc.ricksdomein.nl"
   issuerRef:
     name: root-ca-issuer
     kind: ClusterIssuer
@@ -291,10 +291,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - "vault.acc.ricksdomein.nl"
+        - "vaultwarden.acc.ricksdomein.nl"
       secretName: vaultwarden-sso-https-cert
   rules:
-    - host: "vault.acc.ricksdomein.nl"
+    - host: "vaultwarden.acc.ricksdomein.nl"
       http:
         paths:
           - path: /
