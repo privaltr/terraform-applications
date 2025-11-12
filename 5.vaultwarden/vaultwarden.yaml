@@ -325,15 +325,6 @@ spec:
     - host: "vaultwarden.acc.ricksdomein.nl"
       http:
         paths:
-          - path: /admin
-            pathType: Prefix
-            backend:
-              service:
-                name: vaultwarden-sso
-                port:
-                  number: 80
-            # Annotation only applies to this path
-            nginx.ingress.kubernetes.io/whitelist-source-range: "192.168.100.0/24"
           - path: /
             pathType: Prefix
             backend:
@@ -341,3 +332,32 @@ spec:
                 name: vaultwarden-sso
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vaultwarden-sso-admin
+  namespace: vaultwarden
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "192.168.2.0/24"
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: vaultwarden.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: vaultwarden-sso
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - vaultwarden.acc.ricksdomein.nl
+      secretName: vaultwarden-sso-https-cert
