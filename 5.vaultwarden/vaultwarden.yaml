@@ -72,13 +72,16 @@ spec:
 # ---------------------------------------------------------------------
 # DATABASE_URL Secret (depends on base secrets)
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DATABASE_URL Secret (using template with dataFrom)
+# ---------------------------------------------------------------------
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: vaultwarden-database-url
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "1.5"   # Apply after base secrets
+    argocd.argoproj.io/sync-wave: "1.5"
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
@@ -86,14 +89,14 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-database-url
-    template:
-      type: Opaque
-      engineVersion: v2
-  data:
-    - secretKey: DATABASE_URL
-      template: >-
-        postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
-
+  dataFrom:
+    - extract:
+        key: vaultwarden/postgres
+  # Template goes at the spec level, not under target
+  template:
+    type: Opaque
+    data:
+      DATABASE_URL: "postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
 ---
 # ---------------------------------------------------------------------
 # ConfigMap (non-sensitive values)
