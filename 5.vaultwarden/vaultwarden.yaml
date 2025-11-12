@@ -108,7 +108,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 data:
-  DOMAIN: "https://vault.acc.ricksdomein.nl"
+  DOMAIN: "https://vaultwarden.acc.ricksdomein.nl"
   SMTP_HOST: "smtp.acc.ricksdomein.nl"
   SMTP_FROM: "vaultwarden@acc.ricksdomein.nl"
   SMTP_PORT: "465"
@@ -118,7 +118,7 @@ data:
   SSO_ENABLED: "true"
   SSO_ONLY: "true"
   SSO_FRONTEND: "override"
-  SSO_AUTHORITY: "https://authentik.ricksdomein.nl/application/o/vaultwarden/"
+  SSO_AUTHORITY: "https://authentik.acc.ricksdomein.nl/application/o/vaultwarden/"
   SSO_ROLES_ENABLED: "true"
   SSO_ROLES_DEFAULT_TO_USER: "true"
   SSO_ROLES_TOKEN_PATH: "/application/o/userinfo/groups"
