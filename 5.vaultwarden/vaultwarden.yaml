@@ -75,6 +75,9 @@ spec:
 # ---------------------------------------------------------------------
 # DATABASE_URL Secret (using template with dataFrom)
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DATABASE_URL Secret (explicit data mapping with template)
+# ---------------------------------------------------------------------
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -89,10 +92,15 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-database-url
-  dataFrom:
-    - extract:
+  data:
+    - secretKey: POSTGRES_USER
+      remoteRef:
         key: vaultwarden/postgres
-  # Template goes at the spec level, not under target
+        property: username
+    - secretKey: POSTGRES_PASSWORD
+      remoteRef:
+        key: vaultwarden/postgres
+        property: password
   template:
     type: Opaque
     data:
