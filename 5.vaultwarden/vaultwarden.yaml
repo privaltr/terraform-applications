@@ -85,9 +85,6 @@ spec:
     template:
       engineVersion: v2
       data:
-        test: "{{ .username }}"               # If you are using plain manifests or gitops tools
-        test2: "{{ .username }} {{ .password }}"               # If you are using plain manifests or gitops tools
-        password: "{{ `{{ .username }}` }}"         # If you are using helm
         DATABASE_URL: "postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"         # If you are using helm
   data:
     - secretKey: username
