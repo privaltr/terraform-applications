@@ -125,9 +125,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 data:
   DOMAIN: "https://vaultwarden.acc.ricksdomein.nl"
-  SMTP_HOST: "mail.ricksdomein.nl"
-  SMTP_FROM: "vaultwarden@ricksdomein.nl"
-  SMTP_PORT: "465"
+  SMTP_HOST: "smtp.protonmail.ch"
+  SMTP_FROM: "mail@ricksdomein.nl"
+  SMTP_PORT: "587"
   SMTP_SECURITY: "force_tls"
   SMTP_AUTH_MECHANISM: "Plain"
   SIGNUPS_ALLOWED: "false"
