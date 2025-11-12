@@ -91,7 +91,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 data:
-  DOMAIN: "vault.acc.ricksdomein.nl"
+  DOMAIN: "https://vault.acc.ricksdomein.nl"
   SMTP_HOST: "smtp.acc.ricksdomein.nl"
   SMTP_FROM: "vaultwarden@acc.ricksdomein.nl"
   SMTP_PORT: "465"
