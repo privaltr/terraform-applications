@@ -37,9 +37,6 @@ spec:
     name: vaultwarden-sso-secret
     template:
       type: Opaque
-      data:
-        DATABASE_URL: >-
-          postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
   data:
     - secretKey: POSTGRES_USER
       remoteRef:
@@ -69,6 +66,12 @@ spec:
       remoteRef:
         key: vaultwarden/sso
         property: client_secret
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: vaultwarden/postgres
+        property: username
+      template: >-
+        postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
 
 ---
 # ---------------------------------------------------------------------
