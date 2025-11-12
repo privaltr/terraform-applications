@@ -1,0 +1,116 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: vaultwarden-postgres-secret
+  namespace: vaultwarden
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: vaultwarden-postgres-secret
+  data:
+    - secretKey: POSTGRES_USER
+      remoteRef:
+        key: vaultwarden/postgres
+        property: username
+    - secretKey: POSTGRES_PASSWORD
+      remoteRef:
+        key: vaultwarden/postgres
+        property: password
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultwarden-postgres-pvc
+  namespace: vaultwarden
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vaultwarden-postgres
+  namespace: vaultwarden
+spec:
+  serviceName: vaultwarden-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden-postgres
+  template:
+    metadata:
+      labels:
+        app: vaultwarden-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: vaultwarden
+          volumeMounts:
+            - name: vaultwarden-postgres-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready -d "$POSTGRES_DB" -U "$POSTGRES_USER"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: vaultwarden-postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden-postgres
+  namespace: vaultwarden
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: vaultwarden-postgres
+  type: ClusterIP
