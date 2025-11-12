@@ -35,9 +35,6 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-sso-secret
-    template:
-      type: Opaque
-      engineVersion: v2
   data:
     - secretKey: POSTGRES_USER
       remoteRef:
@@ -70,41 +67,18 @@ spec:
 
 ---
 # ---------------------------------------------------------------------
-# DATABASE_URL Secret (depends on base secrets)
+# DATABASE_URL Secret (using Kubernetes string interpolation)
 # ---------------------------------------------------------------------
-# ---------------------------------------------------------------------
-# DATABASE_URL Secret (using template with dataFrom)
-# ---------------------------------------------------------------------
-# ---------------------------------------------------------------------
-# DATABASE_URL Secret (explicit data mapping with template)
-# ---------------------------------------------------------------------
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
+apiVersion: v1
+kind: Secret
 metadata:
   name: vaultwarden-database-url
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "1.5"
-spec:
-  refreshInterval: 1h0m0s
-  secretStoreRef:
-    name: es-secret-store
-    kind: ClusterSecretStore
-  target:
-    name: vaultwarden-database-url
-  data:
-    - secretKey: POSTGRES_USER
-      remoteRef:
-        key: vaultwarden/postgres
-        property: username
-    - secretKey: POSTGRES_PASSWORD
-      remoteRef:
-        key: vaultwarden/postgres
-        property: password
-  template:
-    type: Opaque
-    data:
-      DATABASE_URL: "postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
+    argocd.argoproj.io/sync-wave: "2"
+type: Opaque
+stringData:
+  DATABASE_URL: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
 ---
 # ---------------------------------------------------------------------
 # ConfigMap (non-sensitive values)
@@ -117,7 +91,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 data:
-  VAULTWARDEN_DOMAIN: "vault.acc.ricksdomein.nl"
+  DOMAIN: "vault.acc.ricksdomein.nl"
   SMTP_HOST: "smtp.acc.ricksdomein.nl"
   SMTP_FROM: "vaultwarden@acc.ricksdomein.nl"
   SMTP_PORT: "465"
@@ -142,7 +116,7 @@ metadata:
   name: vaultwarden-sso
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   replicas: 1
   selector:
@@ -193,7 +167,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: vaultwarden-sso-config
-                  key: VAULTWARDEN_DOMAIN
+                  key: DOMAIN
             - name: SMTP_HOST
               valueFrom:
                 configMapKeyRef:
@@ -272,7 +246,7 @@ metadata:
   name: vaultwarden-sso
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   selector:
     app: vaultwarden-sso
@@ -295,7 +269,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
   tls:
