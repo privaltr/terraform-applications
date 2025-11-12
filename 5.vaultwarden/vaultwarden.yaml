@@ -67,7 +67,7 @@ spec:
 
 ---
 # ---------------------------------------------------------------------
-# DATABASE_URL Secret (using dataFrom with template)
+# DATABASE_URL Secret (FIXED - template only, no data entries)
 # ---------------------------------------------------------------------
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -83,11 +83,18 @@ spec:
     kind: ClusterSecretStore
   target:
     name: vaultwarden-database-url
-  dataFrom:
-    - extract:
+  data:
+    - secretKey: username
+      remoteRef:
         key: vaultwarden/postgres
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: vaultwarden/postgres
+        property: password
   template:
     type: Opaque
+    engineVersion: v2
     data:
       DATABASE_URL: "postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
 ---
