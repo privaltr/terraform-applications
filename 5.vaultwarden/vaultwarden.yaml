@@ -19,7 +19,7 @@ spec:
 
 ---
 # ---------------------------------------------------------------------
-# Secrets from Vault
+# Base Secrets from Vault
 # ---------------------------------------------------------------------
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -67,6 +67,29 @@ spec:
       remoteRef:
         key: vaultwarden/sso
         property: client_secret
+
+---
+# ---------------------------------------------------------------------
+# DATABASE_URL Secret (depends on base secrets)
+# ---------------------------------------------------------------------
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: vaultwarden-database-url
+  namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "1.5"   # Apply after base secrets
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: vaultwarden-database-url
+    template:
+      type: Opaque
+      engineVersion: v2
+  data:
     - secretKey: DATABASE_URL
       template: >-
         postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
@@ -81,7 +104,7 @@ metadata:
   name: vaultwarden-sso-config
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Apply alongside secrets
+    argocd.argoproj.io/sync-wave: "1"
 data:
   VAULTWARDEN_DOMAIN: "vault.acc.ricksdomein.nl"
   SMTP_HOST: "smtp.acc.ricksdomein.nl"
@@ -100,7 +123,7 @@ data:
 
 ---
 # ---------------------------------------------------------------------
-# Vaultwarden SSO Deployment
+# Vaultwarden Deployment
 # ---------------------------------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
@@ -108,7 +131,7 @@ metadata:
   name: vaultwarden-sso
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "2"   # Deploy **after** ExternalSecret & ConfigMap
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   replicas: 1
   selector:
@@ -123,11 +146,11 @@ spec:
         - name: vaultwarden-sso
           image: timshel/vaultwarden:1.33.2-4
           env:
-            # Sensitive envs
+            # Sensitive secrets
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: vaultwarden-sso-secret
+                  name: vaultwarden-database-url
                   key: DATABASE_URL
             - name: ADMIN_TOKEN
               valueFrom:
@@ -154,18 +177,12 @@ spec:
                 secretKeyRef:
                   name: vaultwarden-sso-secret
                   key: SSO_CLIENT_SECRET
-
             # Non-sensitive config
             - name: DOMAIN
               valueFrom:
                 configMapKeyRef:
                   name: vaultwarden-sso-config
                   key: VAULTWARDEN_DOMAIN
-            - name: SSO_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: vaultwarden-sso-config
-                  key: SSO_ENABLED
             - name: SMTP_HOST
               valueFrom:
                 configMapKeyRef:
@@ -196,6 +213,11 @@ spec:
                 configMapKeyRef:
                   name: vaultwarden-sso-config
                   key: SIGNUPS_ALLOWED
+            - name: SSO_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: vaultwarden-sso-config
+                  key: SSO_ENABLED
             - name: SSO_ONLY
               valueFrom:
                 configMapKeyRef:
@@ -251,7 +273,7 @@ spec:
 
 ---
 # ---------------------------------------------------------------------
-# Ingress
+# Vaultwarden Ingress
 # ---------------------------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -262,7 +284,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    argocd.argoproj.io/sync-wave: "3"  # Apply ingress last
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   ingressClassName: nginx
   tls:
