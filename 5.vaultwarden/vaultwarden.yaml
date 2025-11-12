@@ -27,7 +27,7 @@ metadata:
   name: vaultwarden-sso-secrets
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "1"   # Apply after TLS certificate
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
@@ -68,9 +68,6 @@ spec:
         key: vaultwarden/sso
         property: client_secret
     - secretKey: DATABASE_URL
-      remoteRef:
-        key: vaultwarden/postgres
-        property: username
       template: >-
         postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
 
