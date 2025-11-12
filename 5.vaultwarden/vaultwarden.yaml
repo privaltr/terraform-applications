@@ -146,7 +146,7 @@ spec:
     spec:
       containers:
         - name: vaultwarden-sso
-          image: timshel/vaultwarden:1.33.2-4
+          image: harbor.acc.ricksdomein.nl/library/vaultwarden:1.34.1-6-ca
           env:
             # Sensitive secrets
             - name: DATABASE_URL
