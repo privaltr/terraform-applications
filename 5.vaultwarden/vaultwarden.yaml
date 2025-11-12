@@ -6,6 +6,8 @@ kind: Certificate
 metadata:
   name: vaultwarden-sso-tls
   namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   secretName: vaultwarden-sso-https-cert
   dnsNames:
@@ -24,6 +26,8 @@ kind: ExternalSecret
 metadata:
   name: vaultwarden-sso-secrets
   namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"   # Apply after TLS certificate
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
@@ -34,7 +38,6 @@ spec:
     template:
       type: Opaque
       data:
-        # Compose the Postgres connection string dynamically
         DATABASE_URL: >-
           postgres://{{ .POSTGRES_USER }}:{{ .POSTGRES_PASSWORD }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10
   data:
@@ -76,6 +79,8 @@ kind: ConfigMap
 metadata:
   name: vaultwarden-sso-config
   namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"  # Apply alongside secrets
 data:
   VAULTWARDEN_DOMAIN: "vault.acc.ricksdomein.nl"
   SMTP_HOST: "smtp.acc.ricksdomein.nl"
@@ -101,6 +106,8 @@ kind: Deployment
 metadata:
   name: vaultwarden-sso
   namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"   # Deploy **after** ExternalSecret & ConfigMap
 spec:
   replicas: 1
   selector:
@@ -116,21 +123,6 @@ spec:
           image: timshel/vaultwarden:1.33.2-4
           env:
             # Sensitive envs
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden-sso-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden-sso-secret
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden-sso-secret
-                  key: POSTGRES_DB
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -245,6 +237,8 @@ kind: Service
 metadata:
   name: vaultwarden-sso
   namespace: vaultwarden
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   selector:
     app: vaultwarden-sso
@@ -267,6 +261,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    argocd.argoproj.io/sync-wave: "3"  # Apply ingress last
 spec:
   ingressClassName: nginx
   tls:
