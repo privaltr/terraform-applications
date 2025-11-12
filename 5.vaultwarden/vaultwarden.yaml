@@ -69,16 +69,30 @@ spec:
 # ---------------------------------------------------------------------
 # DATABASE_URL Secret (using Kubernetes string interpolation)
 # ---------------------------------------------------------------------
-apiVersion: v1
-kind: Secret
+# ---------------------------------------------------------------------
+# DATABASE_URL Secret (using dataFrom with template)
+# ---------------------------------------------------------------------
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
 metadata:
   name: vaultwarden-database-url
   namespace: vaultwarden
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
-type: Opaque
-stringData:
-  DATABASE_URL: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
+    argocd.argoproj.io/sync-wave: "1.5"
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: vaultwarden-database-url
+  dataFrom:
+    - extract:
+        key: vaultwarden/postgres
+  template:
+    type: Opaque
+    data:
+      DATABASE_URL: "postgres://{{ .username }}:{{ .password }}@vaultwarden-postgres.vaultwarden.svc.cluster.local:5432/vaultwarden?sslmode=disable&connect_timeout=10"
 ---
 # ---------------------------------------------------------------------
 # ConfigMap (non-sensitive values)
