@@ -41,7 +41,7 @@ spec:
     - secretKey: POSTGRES_USER
       remoteRef:
         key: vaultwarden/postgres
-        property: user
+        property: username
     - secretKey: POSTGRES_PASSWORD
       remoteRef:
         key: vaultwarden/postgres
