@@ -131,44 +131,6 @@ spec:
         - protocol: TCP
           port: 8080
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: vpn-gateway-dns-access
-  namespace: servarr
-spec:
-  podSelector:
-    matchLabels:
-      app: vpn-gateway
-  policyTypes:
-    - Egress
-  egress:
-    # Allow DNS to cluster DNS service
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-        - protocol: TCP
-          port: 9153
-
-    # Allow VPN gateway to reach VPN server
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-      ports:
-        - protocol: UDP
-          port: 1194
-        - protocol: TCP
-          port: 1194
----
 apiVersion: v1
 kind: Service
 metadata:
