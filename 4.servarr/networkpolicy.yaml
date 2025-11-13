@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-internet-for-media-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - prowlarr
+          - qbittorrent
+  policyTypes:
+    - Egress
+  egress:
+    # Allow only to the VPN pod
+    - to:
+        - podSelector:
+            matchLabels:
+              app: vpn-gateway
+    # Optionally allow DNS inside the cluster (for name resolution) !!DNS leaks!!
+    - to:
+        - namespaceSelector: {}
+          ports:
+            - protocol: UDP
+              port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ui-access
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - prowlarr
+          - qbittorrent
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 10.0.0.0/8   # replace with your LAN or admin CIDR
+      ports:
+        - protocol: TCP
+          port: 9696  # Prowlarr UI
+        - protocol: TCP
+          port: 8080  # qBittorrent UI

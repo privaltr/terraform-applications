@@ -46,7 +46,7 @@ metadata:
   labels:
     app: prowlarr
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   replicas: 1
   selector:
@@ -89,7 +89,7 @@ kind: Service
 metadata:
   name: prowlarr
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "6"
 spec:
   type: ClusterIP
   selector:
@@ -129,7 +129,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-snippet: |
       proxy_set_header X-Forwarded-Host $http_host;
       proxy_set_header X-Forwarded-Proto $scheme;
-    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/sync-wave: "7"
 spec:
   ingressClassName: nginx
   tls:
