@@ -41,10 +41,10 @@ spec:
               value: "on"
             - name: DNS_KEEP_NAMESERVER
               value: "on"
-            - name: DNS_PLAINTEXT_ADDRESS
-              value: "0.0.0.0:53"
-            - name: DOT
-              value: "off"
+            - name: DNS_ADDRESS
+              value: "0.0.0.0"  # Remove the port
+            - name: DNS_SERVER
+              value: "off"  # Instead of DOT=off
             - name: DNS_UPDATE_PERIOD
               value: "24h"
           ports:
