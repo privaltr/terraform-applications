@@ -3,6 +3,8 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: onlyoffice-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   secretName: onlyoffice-https-cert
   dnsNames:
@@ -20,6 +22,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   ingressClassName: nginx
   tls:

@@ -4,6 +4,8 @@ metadata:
   name: onlyoffice
   labels:
     app: onlyoffice
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   selector:
     app: onlyoffice

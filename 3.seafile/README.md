@@ -7,6 +7,9 @@ vault kv patch kv/seafile REDIS_PASSWORD=your-redis-password-here
 vault kv patch kv/seafile JWT_PRIVATE_KEY=A3s85fwpaq2iipd5gY7TvwholJ23BedJDvfjfReu
 vault kv patch kv/seafile SEAFILE_MYSQL_DB_PASSWORD=db_dev
 vault kv patch kv/seafile INIT_SEAFILE_MYSQL_ROOT_PASSWORD=db_dev
+vault kv patch kv/seafile OAUTH_CLIENT_ID=kyuPSaHIc2DAoBHxqQck78dyJzdi28KBDZsHCu3i
+vault kv patch kv/seafile OAUTH_CLIENT_SECRET=LkrXmwZkFZgIGp4wdIHWkGY31Hs6laSvpPbSOPvMfZsxqhAAN3FkRRpt9ucHBRo63FFX4eLaDsn4JGolrq77LVI83QBr9Wk8ST44CUmeplU7AMkcM1DumkshFJIQyyhW
+vault kv patch kv/seafile ONLYOFFICE_JWT_SECRET=XG4FcDp9Rvj8K2QwS5tZv6YbAa3uH1NmJ7eLkP0qOxIiUyVlWoEh
 ```
 
 

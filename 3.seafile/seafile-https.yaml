@@ -2,6 +2,8 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: seafile-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   secretName: seafile-https-cert
   dnsNames:
@@ -24,6 +26,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-buffering: "off"  # Turn off for large files
+    argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
   tls:

@@ -4,6 +4,8 @@ metadata:
   name: seafile
   labels:
     app: seafile
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   ports:
   - name: http
