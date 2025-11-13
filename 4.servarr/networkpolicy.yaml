@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: deny-internet-for-media-apps
-  namespace: media-vpn
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
