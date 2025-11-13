@@ -22,6 +22,7 @@ spec:
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
+            privileged: true
           env:
             - name: VPN_SERVICE_PROVIDER
               value: private internet access
@@ -38,9 +39,11 @@ spec:
             - name: VPN_PORT_FORWARDING
               value: "on"
             - name: FIREWALL
-              value: "on"
+              value: "false"
             - name: SERVER_REGIONS
               value: "Netherlands,Switzerland,Romania"
+            - name: IPV6
+              value: "off"
             # Add HTTP proxy configuration
             - name: HTTPPROXY
               value: "on"
