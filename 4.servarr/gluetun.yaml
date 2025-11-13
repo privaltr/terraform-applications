@@ -39,6 +39,13 @@ spec:
                   key: OPENVPN_PASSWORD
             - name: SERVER_REGIONS
               value: "Netherlands,Switzerland,Romania"
+            # DNS Configuration
+            - name: DNS_PLAINTEXT_ADDRESS
+              value: "1.1.1.1"  # Use Cloudflare DNS
+            - name: DNS_KEEP_NAMESERVER
+              value: "off"
+            - name: DOT
+              value: "on"  # DNS over TLS for security
             # Security
             - name: FIREWALL
               value: "on"
