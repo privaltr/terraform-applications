@@ -16,7 +16,6 @@ spec:
       labels:
         app: vpn-gateway
     spec:
-      hostNetwork: true  # Add this line
       containers:
         - name: vpn
           image: qmcgaw/gluetun:latest
@@ -25,9 +24,7 @@ spec:
               add:
                 - NET_ADMIN
                 - SYS_MODULE
-            privileged: true  # Add this for better device access
           env:
-            # Update these environment variables to new names:
             - name: VPN_SERVICE_PROVIDER
               value: private internet access
             - name: OPENVPN_USER
@@ -42,45 +39,33 @@ spec:
                   key: OPENVPN_PASSWORD
             - name: SERVER_REGIONS
               value: "Netherlands,Switzerland,Romania"
-            
-            # Updated DNS Configuration
-            - name: DNS_ADDRESS  # Changed from DNS_PLAINTEXT_ADDRESS
-              value: "127.0.0.1"  # Use local DNS instead of 1.1.1.1
-            - name: DNS_SERVER  # Changed from DOT
-              value: "on"
+            # DNS Configuration
+            - name: DNS_PLAINTEXT_ADDRESS
+              value: "1.1.1.1"  # Use Cloudflare DNS
             - name: DNS_KEEP_NAMESERVER
               value: "off"
-            
+            - name: DOT
+              value: "on"  # DNS over TLS for security
             # IPv6 Configuration
             - name: IPV6
-              value: "off"
-            
+              value: "off"  # Disable IPv6
             # Security
             - name: FIREWALL
               value: "on"
             - name: KILL_SWITCH
               value: "on"
-            
-            # Updated Port forwarding
-            - name: VPN_PORT_FORWARDING  # Changed from PORT_FORWARDING
+            # Port forwarding (if needed)
+            - name: PORT_FORWARDING
               value: "off"
-            
-            # Updated HTTP proxy
+            # Enable HTTP proxy
             - name: HTTPPROXY
               value: "on"
             - name: HTTPPROXY_LOG
               value: "on"
-            - name: HTTPPROXY_LISTENING_ADDRESS  # Changed from HTTPPROXY_PORT
-              value: ":8080"
-            
-            # Add these for better stability:
-            - name: HEALTH_TARGET_ADDRESS
-              value: "cloudflare.com:443"
-            - name: HEALTH_SERVER_LISTENING_ADDRESS
-              value: "127.0.0.1:9999"
-            
+            - name: HTTPPROXY_PORT
+              value: "8080"
           ports:
-            - containerPort: 8080
+            - containerPort: 8080  # HTTP proxy
               name: http-proxy
 ---
 apiVersion: external-secrets.io/v1
