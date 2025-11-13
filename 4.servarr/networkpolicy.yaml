@@ -15,15 +15,21 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow DNS resolution
+    # 1️⃣ Allow DNS resolution - FIXED
     - to:
-        - ipBlock:
-            cidr: 10.96.0.10/32  # CoreDNS
+        - namespaceSelector: {}  # Allow DNS to any namespace
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
       ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
+    # Alternative: Allow DNS by service IP range
+    - to:
+        - ipBlock:
+            cidr: 10.96.0.0/12  # Kubernetes service CIDR
 
     # 2️⃣ Allow connection to VPN gateway pod
     - to:
@@ -32,16 +38,16 @@ spec:
               app: vpn-gateway
       ports:
         - protocol: TCP
-          port: 8080  # qBittorrent web UI through VPN
+          port: 8080
         - protocol: TCP  
-          port: 9696  # Prowlarr through VPN
+          port: 9090
 
-    # 3️⃣ Allow Kubernetes API
+    # 3️⃣ Allow Kubernetes API (already present)
     - to:
         - ipBlock:
             cidr: 10.96.0.0/12
 
-    # 4️⃣ Allow LAN access
+    # 4️⃣ Allow LAN access (already present)
     - to:
         - ipBlock:
             cidr: 10.10.0.0/24
@@ -49,7 +55,7 @@ spec:
         - ipBlock:
             cidr: 192.168.2.0/24
 
-    # 5️⃣ Allow communication between apps
+    # 5️⃣ Allow communication between apps (already present)
     - to:
         - podSelector:
             matchLabels:
