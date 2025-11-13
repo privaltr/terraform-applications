@@ -15,7 +15,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow traffic to VPN gateway pod
+    # 1️⃣ Allow traffic to VPN gateway pod AND through VPN
     - to:
         - podSelector:
             matchLabels:
@@ -26,25 +26,27 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # 2️⃣ Allow AuthentiK traffic
+    # 2️⃣ Allow ALL traffic through VPN (after connection established)
     - to:
-        - podSelector:
-            matchLabels:
-              app: authentik-server
-      ports:
-        - protocol: TCP
-          port: 9000
-    - to:
-        - podSelector:
-            matchLabels:
-              app: authentik-outpost
-      ports:
-        - protocol: TCP
-          port: 9000
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - ipBlock:
+            cidr: ::/0
 
-    # 3️⃣ Allow DNS
+    # 3️⃣ Allow DNS to specific DNS servers
     - to:
-        - namespaceSelector: {}
+        - ipBlock:
+            cidr: 10.96.0.10/32  # CoreDNS usually
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - ipBlock:
+            cidr: 8.8.8.8/32
+        - ipBlock:
+            cidr: 1.1.1.1/32
       ports:
         - protocol: UDP
           port: 53
@@ -73,6 +75,14 @@ spec:
         - podSelector:
             matchLabels:
               app: qbittorrent
+
+    # 7️⃣ Allow NTP (time synchronization)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: UDP
+          port: 123
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
