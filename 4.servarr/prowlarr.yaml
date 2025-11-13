@@ -71,11 +71,9 @@ spec:
         - name: TZ
           value: "UTC"
         - name: HTTP_PROXY
-          value: "http://vpn-gateway:8080"
+          value: "http://vpn-gateway.svc.cluster.local:8080"
         - name: HTTPS_PROXY  
-          value: "http://vpn-gateway:8080"
-        - name: NO_PROXY
-          value: "vpn-gateway,10.96.0.10,.svc,.svc.cluster.local,localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16"
+          value: "http://vpn-gateway.svc.cluster.local:8080"
         volumeMounts:
       #   - name: config
       #     mountPath: /config
