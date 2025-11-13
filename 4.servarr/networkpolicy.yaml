@@ -22,20 +22,28 @@ spec:
               app: vpn-gateway
       ports:
         - protocol: UDP
-          port: 1194  # or whatever port your VPN uses
+          port: 1194
         - protocol: TCP
-          port: 8080  # for VPN admin UI if needed
+          port: 8080
 
-    # 2️⃣ Allow AuthentiK traffic (in-cluster)
+    # 2️⃣ Allow AuthentiK traffic (in-cluster) - FIXED
     - to:
         - podSelector:
             matchLabels:
               app: authentik
       ports:
         - protocol: TCP
-          port: 9000  # authentik port
+          port: 9000
+    # ADD: Allow traffic to Authentik outpost
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: outpost  # typical outpost label
+      ports:
+        - protocol: TCP
+          port: 9000
 
-    # 3️⃣ Allow DNS (crucial for service discovery)
+    # 3️⃣ Allow DNS
     - to:
         - namespaceSelector: {}
       ports:
@@ -44,10 +52,10 @@ spec:
         - protocol: TCP
           port: 53
 
-    # 4️⃣ Allow Kubernetes API (for service discovery)
+    # 4️⃣ Allow Kubernetes API
     - to:
         - ipBlock:
-            cidr: 10.96.0.0/12  # typical Kubernetes service CIDR
+            cidr: 10.96.0.0/12
 
     # 5️⃣ Allow LAN subnets
     - to:
@@ -92,23 +100,37 @@ spec:
             cidr: 192.168.2.0/24
       ports:
         - protocol: TCP
-          port: 9696  # Prowlarr UI
+          port: 9696
         - protocol: TCP
-          port: 8080  # qBittorrent UI
+          port: 8080
 
-    # Allow from ingress controller/load balancer
+    # Allow from ingress controller
     - from:
         - namespaceSelector:
             matchLabels:
-              name: ingress-nginx  # namespace name where nginx controller lives
+              name: ingress-nginx
           podSelector:
             matchLabels:
-              app: ingress-nginx-controller  # pod label of your nginx controller
+              app: ingress-nginx-controller
       ports:
         - protocol: TCP
-          port: 9696  # Prowlarr UI
+          port: 9696
         - protocol: TCP
-          port: 8080  # qBittorrent UI
+          port: 8080
+
+    # ADD: Allow from Authentik outpost (CRITICAL FIX)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik  # authentik namespace
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: outpost  # outpost pod label
+      ports:
+        - protocol: TCP
+          port: 9696
+        - protocol: TCP
+          port: 8080
 ---
 apiVersion: v1
 kind: Service
