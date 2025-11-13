@@ -1,7 +1,9 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: restrict-media-apps-egress
+  namespace: servarr  # Add this if the policy is in servarr namespace
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
@@ -15,7 +17,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow DNS resolution - FIXED
+    # 1️⃣ Allow DNS resolution
     - to:
         - namespaceSelector: {}  # Allow DNS to any namespace
           podSelector:
@@ -26,14 +28,13 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # Alternative: Allow DNS by service IP range
-    - to:
-        - ipBlock:
-            cidr: 10.96.0.0/12  # Kubernetes service CIDR
 
-    # 2️⃣ Allow connection to VPN gateway pod
+    # 2️⃣ Allow connection to VPN gateway pod IN SERVARR NAMESPACE
     - to:
-        - podSelector:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: servarr
+          podSelector:
             matchLabels:
               app: vpn-gateway
       ports:
@@ -42,12 +43,12 @@ spec:
         - protocol: TCP  
           port: 9090
 
-    # 3️⃣ Allow Kubernetes API (already present)
+    # 3️⃣ Allow Kubernetes API
     - to:
         - ipBlock:
             cidr: 10.96.0.0/12
 
-    # 4️⃣ Allow LAN access (already present)
+    # 4️⃣ Allow LAN access
     - to:
         - ipBlock:
             cidr: 10.10.0.0/24
@@ -55,7 +56,7 @@ spec:
         - ipBlock:
             cidr: 192.168.2.0/24
 
-    # 5️⃣ Allow communication between apps (already present)
+    # 5️⃣ Allow communication between apps
     - to:
         - podSelector:
             matchLabels:
