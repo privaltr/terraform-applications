@@ -70,10 +70,11 @@ spec:
           value: "1000"
         - name: TZ
           value: "UTC"
+        # Updated proxy configuration
         - name: HTTP_PROXY
-          value: "http://vpn-gateway:8080"
+          value: "http://vpn-gateway:8888"  # Changed port to 8888
         - name: HTTPS_PROXY  
-          value: "http://vpn-gateway:8080"
+          value: "http://vpn-gateway:8888"  # Changed port to 8888
         - name: NO_PROXY
           value: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,.svc,.cluster.local"
         volumeMounts:

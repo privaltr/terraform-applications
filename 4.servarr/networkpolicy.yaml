@@ -39,7 +39,7 @@ spec:
               app: vpn-gateway
       ports:
         - protocol: TCP
-          port: 8080
+          port: 8888  # Updated port
         - protocol: TCP  
           port: 9090
 

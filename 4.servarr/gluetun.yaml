@@ -47,7 +47,7 @@ spec:
             - name: HTTPPROXY_LOG
               value: "on"
             - name: HTTPPROXY_PORT
-              value: "8080"
+              value: "8888"
             # Add SOCKS5 proxy configuration  
             - name: SOCKS5
               value: "on"
@@ -55,7 +55,7 @@ spec:
               value: "9090"
           ports:
             - containerPort: 8000 # Gluetun control port
-            - containerPort: 8080 # HTTP proxy port
+            - containerPort: 8888 # HTTP proxy port
             - containerPort: 9090 # SOCKS5 proxy port
           # resources:
           #   requests:
@@ -100,8 +100,8 @@ spec:
     app: vpn-gateway
   ports:
     - name: http-proxy
-      port: 8080
-      targetPort: 8080
+      port: 8888
+      targetPort: 8888
     - name: socks5-proxy
       port: 9090
       targetPort: 9090
