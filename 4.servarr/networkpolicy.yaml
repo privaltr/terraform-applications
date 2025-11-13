@@ -30,14 +30,14 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app: authentik-server  # authentik server
+              app: authentik-server
       ports:
         - protocol: TCP
           port: 9000
     - to:
         - podSelector:
             matchLabels:
-              app: authentik-outpost  # outpost pods
+              app: authentik-outpost
       ports:
         - protocol: TCP
           port: 9000
@@ -103,28 +103,28 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # Allow from ingress controller
+    # Allow from ingress controller (CORRECTED LABELS)
     - from:
         - namespaceSelector:
             matchLabels:
-              name: ingress-nginx
+              app.kubernetes.io/name: ingress-nginx
           podSelector:
             matchLabels:
-              app: ingress-nginx-controller
+              app.kubernetes.io/name: ingress-nginx
       ports:
         - protocol: TCP
           port: 9696
         - protocol: TCP
           port: 8080
 
-    # CRITICAL FIX: Allow from Authentik outpost
+    # Allow from Authentik outpost (CORRECTED LABELS)
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: authentik
           podSelector:
             matchLabels:
-              app: authentik-outpost  # This matches your outpost pod
+              app: authentik-outpost
       ports:
         - protocol: TCP
           port: 9696
