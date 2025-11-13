@@ -139,8 +139,6 @@ data:
   SSO_ROLES_DEFAULT_TO_USER: "true"
   SSO_ROLES_TOKEN_PATH: "/application/o/userinfo/groups"
   SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: "false"
-  IDENTITY_OPENID_SCOPE: "openid profile email offline_access"
-
 ---
 # ---------------------------------------------------------------------
 # Vaultwarden Deployment
@@ -272,12 +270,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: vaultwarden-sso-config
-                  key: SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION  
-            - name: IDENTITY_OPENID_SCOPE
-              valueFrom:
-                configMapKeyRef:
-                  name: vaultwarden-sso-config
-                  key: IDENTITY_OPENID_SCOPE    
+                  key: SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION     
           ports:
             - containerPort: 80
           volumeMounts:
