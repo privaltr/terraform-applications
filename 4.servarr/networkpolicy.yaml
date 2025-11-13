@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: deny-internet-for-media-apps
+  name: restrict-media-apps-egress
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
@@ -15,24 +15,41 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow traffic to VPN gateway pod (all internet goes via VPN)
+    # 1️⃣ Allow traffic to VPN gateway pod
     - to:
         - podSelector:
             matchLabels:
               app: vpn-gateway
+      ports:
+        - protocol: UDP
+          port: 1194  # or whatever port your VPN uses
+        - protocol: TCP
+          port: 8080  # for VPN admin UI if needed
 
-    # 2️⃣ Allow AuthentiK traffic
-    # If AuthentiK is internal in-cluster:
+    # 2️⃣ Allow AuthentiK traffic (in-cluster)
     - to:
         - podSelector:
             matchLabels:
               app: authentik
-    # If AuthentiK is external, add its public IP/subnet instead:
-    # - to:
-    #     - ipBlock:
-    #         cidr: 203.0.113.25/32
+      ports:
+        - protocol: TCP
+          port: 9000  # authentik port
 
-    # 3️⃣ Optional: allow LAN subnets if needed (replace with your network)
+    # 3️⃣ Allow DNS (crucial for service discovery)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # 4️⃣ Allow Kubernetes API (for service discovery)
+    - to:
+        - ipBlock:
+            cidr: 10.96.0.0/12  # typical Kubernetes service CIDR
+
+    # 5️⃣ Allow LAN subnets
     - to:
         - ipBlock:
             cidr: 10.10.0.0/24
@@ -40,17 +57,20 @@ spec:
         - ipBlock:
             cidr: 192.168.2.0/24
 
-    # ✅ DNS through VPN only (no leaks) - comment out if you want cluster DNS
-    # - to:
-    #     - namespaceSelector: {}
-    #       ports:
-    #         - protocol: UDP
-    #           port: 53
+    # 6️⃣ Allow communication between Prowlarr and qBittorrent
+    - to:
+        - podSelector:
+            matchLabels:
+              app: prowlarr
+    - to:
+        - podSelector:
+            matchLabels:
+              app: qbittorrent
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-ui-access
+  name: allow-media-apps-ui-access
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
@@ -64,11 +84,26 @@ spec:
   policyTypes:
     - Ingress
   ingress:
+    # Allow from internal networks
     - from:
         - ipBlock:
-            cidr: 10.0.0.0/8 
+            cidr: 10.0.0.0/8
         - ipBlock:
             cidr: 192.168.2.0/24
+      ports:
+        - protocol: TCP
+          port: 9696  # Prowlarr UI
+        - protocol: TCP
+          port: 8080  # qBittorrent UI
+
+    # Allow from ingress controller/load balancer
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx  # namespace name where nginx controller lives
+          podSelector:
+            matchLabels:
+              app: ingress-nginx-controller  # pod label of your nginx controller
       ports:
         - protocol: TCP
           port: 9696  # Prowlarr UI
