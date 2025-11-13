@@ -40,7 +40,7 @@ spec:
             - name: FIREWALL
               value: "on"
             - name: SERVER_REGIONS
-              value: "The Americas,france"
+              value: "Netherlands,Switzerland,Romania"
             # Add HTTP proxy configuration
             - name: HTTPPROXY
               value: "on"
