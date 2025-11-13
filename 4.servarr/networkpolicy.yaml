@@ -72,20 +72,18 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow DNS resolution first
+    # Allow DNS to CoreDNS
     - to:
         - ipBlock:
-            cidr: 10.96.0.0/12  # Kubernetes service CIDR (includes CoreDNS)
+            cidr: 10.96.0.0/12
       ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
 
-    # 2️⃣ Then allow internet access (both IPv4 and IPv6)
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
+    # Allow ALL outbound traffic for the VPN pod
+    - {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
