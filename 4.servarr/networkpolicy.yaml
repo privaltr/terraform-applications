@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: deny-internet-for-media-apps
+  namespace: media-vpn
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
@@ -15,23 +16,37 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # Allow only to the VPN pod
+    # 1️⃣ Allow traffic to VPN gateway pod (all internet goes via VPN)
     - to:
         - podSelector:
             matchLabels:
               app: vpn-gateway
-    # Optionally allow DNS inside the cluster (for name resolution) !!DNS leaks!!
+
+    # 2️⃣ Allow AuthentiK traffic
+    # If AuthentiK is internal in-cluster:
     - to:
-        - namespaceSelector: {}
-          ports:
-            - protocol: UDP
-              port: 53
+        - podSelector:
+            matchLabels:
+              app: authentik
+    # If AuthentiK is external, add its public IP/subnet instead:
+    # - to:
+    #     - ipBlock:
+    #         cidr: 203.0.113.25/32
+
+    # 3️⃣ Optional: allow LAN subnets if needed (replace with your network)
     - to:
         - ipBlock:
             cidr: 10.10.0.0/24
     - to:
         - ipBlock:
             cidr: 192.168.2.0/24
+
+    # ✅ DNS through VPN only (no leaks) - comment out if you want cluster DNS
+    # - to:
+    #     - namespaceSelector: {}
+    #       ports:
+    #         - protocol: UDP
+    #           port: 53
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -52,7 +67,7 @@ spec:
   ingress:
     - from:
         - ipBlock:
-            cidr: 10.0.0.0/8   # replace with your LAN or admin CIDR
+            cidr: 10.0.0.0/8 
         - ipBlock:
             cidr: 192.168.2.0/24
       ports:
