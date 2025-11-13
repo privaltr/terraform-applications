@@ -24,7 +24,7 @@ spec:
               add: ["NET_ADMIN"]
           env:
             - name: VPN_SERVICE_PROVIDER
-              value: pia
+              value: private internet access
             - name: OPENVPN_USER
               valueFrom:
                 secretKeyRef:
@@ -39,8 +39,8 @@ spec:
               value: "on"
             - name: FIREWALL
               value: "on"
-            # - name: SERVER_COUNTRIES
-            #   value: "France"
+            - name: SERVER_REGIONS
+              value: "france"
             # Add HTTP proxy configuration
             - name: HTTPPROXY
               value: "on"
