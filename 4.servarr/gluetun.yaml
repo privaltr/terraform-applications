@@ -54,9 +54,6 @@ spec:
             # Port forwarding (if needed)
             - name: PORT_FORWARDING
               value: "off"
-            # Health checking
-            - name: HEALTH_SERVER_ADDRESS
-              value: "0.0.0.0:9999"
             # Enable HTTP proxy
             - name: HTTPPROXY
               value: "on"
@@ -67,20 +64,6 @@ spec:
           ports:
             - containerPort: 8080  # HTTP proxy
               name: http-proxy
-            - containerPort: 9999  # Health check
-              name: health
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 9999
-            initialDelaySeconds: 30
-            periodSeconds: 30
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 9999
-            initialDelaySeconds: 5
-            periodSeconds: 10
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -118,6 +101,3 @@ spec:
     - name: http-proxy
       port: 8080
       targetPort: 8080
-    - name: health
-      port: 9999
-      targetPort: 9999
