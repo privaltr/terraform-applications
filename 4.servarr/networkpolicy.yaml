@@ -15,50 +15,33 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow traffic to VPN gateway pod AND through VPN
+    # 1️⃣ Allow DNS resolution
+    - to:
+        - ipBlock:
+            cidr: 10.96.0.10/32  # CoreDNS
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # 2️⃣ Allow connection to VPN gateway pod
     - to:
         - podSelector:
             matchLabels:
               app: vpn-gateway
       ports:
-        - protocol: UDP
-          port: 1194
         - protocol: TCP
-          port: 8080
+          port: 8080  # qBittorrent web UI through VPN
+        - protocol: TCP  
+          port: 9696  # Prowlarr through VPN
 
-    # 2️⃣ Allow ALL traffic through VPN (after connection established)
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-        - ipBlock:
-            cidr: ::/0
-
-    # 3️⃣ Allow DNS to specific DNS servers
-    - to:
-        - ipBlock:
-            cidr: 10.96.0.10/32  # CoreDNS usually
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-    - to:
-        - ipBlock:
-            cidr: 8.8.8.8/32
-        - ipBlock:
-            cidr: 1.1.1.1/32
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-
-    # 4️⃣ Allow Kubernetes API
+    # 3️⃣ Allow Kubernetes API
     - to:
         - ipBlock:
             cidr: 10.96.0.0/12
 
-    # 5️⃣ Allow LAN subnets
+    # 4️⃣ Allow LAN access
     - to:
         - ipBlock:
             cidr: 10.10.0.0/24
@@ -66,7 +49,7 @@ spec:
         - ipBlock:
             cidr: 192.168.2.0/24
 
-    # 6️⃣ Allow communication between apps
+    # 5️⃣ Allow communication between apps
     - to:
         - podSelector:
             matchLabels:
@@ -75,14 +58,24 @@ spec:
         - podSelector:
             matchLabels:
               app: qbittorrent
-
-    # 7️⃣ Allow NTP (time synchronization)
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vpn-to-internet
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  podSelector:
+    matchLabels:
+      app: vpn-gateway
+  policyTypes:
+    - Egress
+  egress:
+    # Allow VPN pod to access internet
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
-      ports:
-        - protocol: UDP
-          port: 123
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -113,7 +106,7 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # Allow from ingress controller (CORRECTED LABELS)
+    # Allow from ingress controller
     - from:
         - namespaceSelector:
             matchLabels:
@@ -127,7 +120,7 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # Allow from Authentik outpost (CORRECTED LABELS)
+    # Allow from Authentik outpost
     - from:
         - namespaceSelector:
             matchLabels:
