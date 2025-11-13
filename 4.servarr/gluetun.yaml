@@ -46,6 +46,9 @@ spec:
               value: "off"
             - name: DOT
               value: "on"  # DNS over TLS for security
+            # IPv6 Configuration
+            - name: IPV6
+              value: "off"  # Disable IPv6
             # Security
             - name: FIREWALL
               value: "on"
