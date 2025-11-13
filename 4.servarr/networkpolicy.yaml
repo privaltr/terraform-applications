@@ -15,7 +15,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # 1️⃣ Allow traffic to VPN gateway pod AND through VPN
+    # Allow VPN connection
     - to:
         - podSelector:
             matchLabels:
@@ -26,47 +26,25 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # 2️⃣ Allow ALL traffic through VPN (after connection established)
+    # Allow DNS (critical)
     - to:
         - ipBlock:
-            cidr: 0.0.0.0/0
-        - ipBlock:
-            cidr: ::/0
-
-    # 3️⃣ Allow DNS to specific DNS servers
-    - to:
-        - ipBlock:
-            cidr: 10.96.0.10/32  # CoreDNS usually
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-    - to:
-        - ipBlock:
-            cidr: 8.8.8.8/32
-        - ipBlock:
-            cidr: 1.1.1.1/32
+            cidr: 10.96.0.10/32
       ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
 
-    # 4️⃣ Allow Kubernetes API
+    # Allow Kubernetes and internal networks
     - to:
         - ipBlock:
-            cidr: 10.96.0.0/12
+            cidr: 10.0.0.0/8
+    - to:
+        - ipBlock:
+            cidr: 192.168.0.0/16
 
-    # 5️⃣ Allow LAN subnets
-    - to:
-        - ipBlock:
-            cidr: 10.10.0.0/24
-    - to:
-        - ipBlock:
-            cidr: 192.168.2.0/24
-
-    # 6️⃣ Allow communication between apps
+    # Allow communication between media apps
     - to:
         - podSelector:
             matchLabels:
@@ -75,14 +53,6 @@ spec:
         - podSelector:
             matchLabels:
               app: qbittorrent
-
-    # 7️⃣ Allow NTP (time synchronization)
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-      ports:
-        - protocol: UDP
-          port: 123
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
