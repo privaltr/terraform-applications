@@ -39,6 +39,14 @@ spec:
               value: "on"
             - name: FIREWALL
               value: "on"
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
+            - name: DNS_PLAINTEXT_ADDRESS
+              value: "0.0.0.0:53"
+            - name: DOT
+              value: "off"
+            - name: DNS_UPDATE_PERIOD
+              value: "24h"
           ports:
             - containerPort: 8000 # Gluetun control port
       restartPolicy: Always
