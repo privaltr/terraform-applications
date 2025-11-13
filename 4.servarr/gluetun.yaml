@@ -57,13 +57,13 @@ spec:
             - containerPort: 8000 # Gluetun control port
             - containerPort: 8080 # HTTP proxy port
             - containerPort: 9090 # SOCKS5 proxy port
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "128Mi"
-              cpu: "100m"
+          # resources:
+          #   requests:
+          #     memory: "64Mi"
+          #     cpu: "50m"
+          #   limits:
+          #     memory: "128Mi"
+          #     cpu: "100m"
       restartPolicy: Always
 ---
 apiVersion: external-secrets.io/v1
