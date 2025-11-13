@@ -26,19 +26,18 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # 2️⃣ Allow AuthentiK traffic (in-cluster) - FIXED
+    # 2️⃣ Allow AuthentiK traffic
     - to:
         - podSelector:
             matchLabels:
-              app: authentik
+              app: authentik-server  # authentik server
       ports:
         - protocol: TCP
           port: 9000
-    # ADD: Allow traffic to Authentik outpost
     - to:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: outpost  # typical outpost label
+              app: authentik-outpost  # outpost pods
       ports:
         - protocol: TCP
           port: 9000
@@ -65,7 +64,7 @@ spec:
         - ipBlock:
             cidr: 192.168.2.0/24
 
-    # 6️⃣ Allow communication between Prowlarr and qBittorrent
+    # 6️⃣ Allow communication between apps
     - to:
         - podSelector:
             matchLabels:
@@ -118,14 +117,14 @@ spec:
         - protocol: TCP
           port: 8080
 
-    # ADD: Allow from Authentik outpost (CRITICAL FIX)
+    # CRITICAL FIX: Allow from Authentik outpost
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: authentik  # authentik namespace
+              kubernetes.io/metadata.name: authentik
           podSelector:
             matchLabels:
-              app.kubernetes.io/name: outpost  # outpost pod label
+              app: authentik-outpost  # This matches your outpost pod
       ports:
         - protocol: TCP
           port: 9696
