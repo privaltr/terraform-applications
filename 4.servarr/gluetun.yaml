@@ -16,6 +16,12 @@ spec:
       labels:
         app: vpn-gateway
     spec:
+      securityContext:  # ← MOVED sysctls HERE (pod level)
+        sysctls:
+        - name: net.ipv6.conf.all.disable_ipv6
+          value: "1"
+        - name: net.ipv6.conf.default.disable_ipv6
+          value: "1"
       containers:
         - name: vpn
           image: qmcgaw/gluetun:latest
@@ -24,11 +30,6 @@ spec:
               add:
                 - NET_ADMIN
                 - SYS_MODULE
-            sysctls:
-            - name: net.ipv6.conf.all.disable_ipv6
-              value: "1"
-            - name: net.ipv6.conf.default.disable_ipv6
-              value: "1"
           env:
             - name: VPN_SERVICE_PROVIDER
               value: private internet access
