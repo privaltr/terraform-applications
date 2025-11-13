@@ -39,6 +39,8 @@ spec:
               value: "on"
             - name: FIREWALL
               value: "on"
+            - name: SERVER_COUNTRIES
+              value: "United States,Mexico"
             # Add HTTP proxy configuration
             - name: HTTPPROXY
               value: "on"
