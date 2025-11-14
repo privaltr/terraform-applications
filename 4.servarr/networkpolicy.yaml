@@ -160,8 +160,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: qbittorrent-egress-vpn-only
-  annotations:
-    argocd.argoproj.io/sync-wave: "4"
 spec:
   podSelector:
     matchLabels:
@@ -169,7 +167,7 @@ spec:
   policyTypes:
   - Egress
   egress:
-  # Allow DNS resolution (cluster DNS and external through VPN)
+  # Allow DNS resolution
   - to:
     - namespaceSelector: {}
     ports:
@@ -178,20 +176,13 @@ spec:
     - port: 53
       protocol: TCP
   
-  # Allow connections to VPN gateway for all external traffic
+  # Allow connections to VPN gateway (for routing all other traffic)
   - to:
     - podSelector:
         matchLabels:
           app: vpn-gateway
-    ports:
-    - port: 8080
-      protocol: TCP
-    - port: 1080
-      protocol: TCP
-    - port: 8888  # Gluetun HTTP control port (optional)
-      protocol: TCP
   
-  # Allow internal cluster communications (for service discovery, etc.)
+  # Allow internal cluster communications
   - to:
     - namespaceSelector: {}
     ports:
@@ -201,9 +192,5 @@ spec:
       protocol: TCP
     - port: 8080
       protocol: TCP
-  
-  # Allow connections to other pods in the same namespace if needed
-  - to:
-    - podSelector: {}
   
   # Block all other egress traffic
