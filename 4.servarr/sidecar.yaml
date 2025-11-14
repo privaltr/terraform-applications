@@ -51,7 +51,7 @@ spec:
           - name: FIREWALL
             value: "off"
           - name: KILL_SWITCH
-            value: "on"
+            value: "off"
         resources:
           requests:
             memory: "64Mi"
@@ -81,7 +81,6 @@ spec:
           value: "UTC"
         - name: WEBUI_PORT
           value: "8080"
-        # REMOVED: HTTP_PROXY and HTTPS_PROXY
         volumeMounts:
         - name: config
           mountPath: /config
