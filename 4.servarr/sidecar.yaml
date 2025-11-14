@@ -90,8 +90,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        # - name: qbittorrent-conf
-        #   mountPath: /config/qBittorrent/qBittorrent.conf
+        - name: qbittorrent-conf
+          mountPath: /config/qBittorrent/qBittorrent.conf
           subPath: qBittorrent.conf
         - name: downloads
           mountPath: /downloads
@@ -124,6 +124,7 @@ data:
     FileLogger\Path=/config/qBittorrent/logs
 
     [BitTorrent]
+    Session\DefaultSavePath=/downloads/
     Session\AddTorrentStopped=false
     Session\AlternativeGlobalDLSpeedLimit=1024
     Session\AlternativeGlobalUPSpeedLimit=1024
@@ -168,6 +169,8 @@ data:
     WebUI\AuthSubnetWhitelistEnabled=true
     WebUI\LocalHostAuth=false
     WebUI\ServerDomains=*
+    Downloads\SavePath=/downloads/
+    Downloads\TempPath=/downloads/incomplete/
 
     [RSS]
     AutoDownloader\DownloadRepacks=true
