@@ -1,196 +1,52 @@
-# apiVersion: networking.k8s.io/v1
-# kind: NetworkPolicy
+# apiVersion: v1
+# kind: Service
 # metadata:
-#   name: restrict-media-apps-egress
+#   name: ak-outpost-outpost
 #   annotations:
-#     argocd.argoproj.io/sync-wave: "4"
+#     argocd.argoproj.io/sync-wave: "1"
 # spec:
-#   podSelector:
-#     matchExpressions:
-#       - key: app
-#         operator: In
-#         values:
-#           - prowlarr
-#           - qbittorrent
-#   policyTypes:
-#     - Egress
-#   egress:
-#     # 1️⃣ Allow DNS resolution
-#     - to:
-#         - ipBlock:
-#             cidr: 10.96.0.10/32  # CoreDNS
-#       ports:
-#         - protocol: UDP
-#           port: 53
-#         - protocol: TCP
-#           port: 53
-
-#     # 2️⃣ Allow connection to VPN gateway pod
-#     - to:
-#         - podSelector:
-#             matchLabels:
-#               app: vpn-gateway
-#       ports:
-#         - protocol: TCP
-#           port: 8080  # qBittorrent web UI through VPN
-#         - protocol: TCP  
-#           port: 9696  # Prowlarr through VPN
-
-#     # 3️⃣ Allow Kubernetes API
-#     - to:
-#         - ipBlock:
-#             cidr: 10.96.0.0/12
-
-#     # 4️⃣ Allow LAN access
-#     - to:
-#         - ipBlock:
-#             cidr: 10.10.0.0/24
-#     - to:
-#         - ipBlock:
-#             cidr: 192.168.2.0/24
-
-#     # 5️⃣ Allow communication between apps
-#     - to:
-#         - podSelector:
-#             matchLabels:
-#               app: prowlarr
-#     - to:
-#         - podSelector:
-#             matchLabels:
-#               app: qbittorrent
+#   type: ExternalName
+#   externalName: ak-outpost-outpost.authentik.svc.cluster.local
+#   ports:
+#     - port: 9000
+#       targetPort: 9000
+#       protocol: TCP
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: NetworkPolicy
 # metadata:
-#   name: allow-vpn-to-internet
-#   annotations:
-#     argocd.argoproj.io/sync-wave: "4"
+#   name: qbittorrent-egress-vpn-only
 # spec:
 #   podSelector:
 #     matchLabels:
-#       app: vpn-gateway
+#       app: qbittorrent
 #   policyTypes:
-#     - Egress
+#   - Egress
 #   egress:
-#     # Allow DNS to CoreDNS
-#     - to:
-#         - ipBlock:
-#             cidr: 10.96.0.0/12
-#       ports:
-#         - protocol: UDP
-#           port: 53
-#         - protocol: TCP
-#           port: 53
-
-#     # Allow ALL outbound traffic for the VPN pod
-#     - {}
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: NetworkPolicy
-# metadata:
-#   name: allow-media-apps-ui-access
-#   annotations:
-#     argocd.argoproj.io/sync-wave: "4"
-# spec:
-#   podSelector:
-#     matchExpressions:
-#       - key: app
-#         operator: In
-#         values:
-#           - prowlarr
-#           - qbittorrent
-#   policyTypes:
-#     - Ingress
-#   ingress:
-#     # Allow from internal networks
-#     - from:
-#         - ipBlock:
-#             cidr: 10.0.0.0/8
-#         - ipBlock:
-#             cidr: 192.168.2.0/24
-#       ports:
-#         - protocol: TCP
-#           port: 9696
-#         - protocol: TCP
-#           port: 8080
-
-#     # Allow from ingress controller
-#     - from:
-#         - namespaceSelector:
-#             matchLabels:
-#               app.kubernetes.io/name: ingress-nginx
-#           podSelector:
-#             matchLabels:
-#               app.kubernetes.io/name: ingress-nginx
-#       ports:
-#         - protocol: TCP
-#           port: 9696
-#         - protocol: TCP
-#           port: 8080
-
-#     # Allow from Authentik outpost
-#     - from:
-#         - namespaceSelector:
-#             matchLabels:
-#               kubernetes.io/metadata.name: authentik
-#           podSelector:
-#             matchLabels:
-#               app: authentik-outpost
-#       ports:
-#         - protocol: TCP
-#           port: 9696
-#         - protocol: TCP
-#           port: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ak-outpost-outpost
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  type: ExternalName
-  externalName: ak-outpost-outpost.authentik.svc.cluster.local
-  ports:
-    - port: 9000
-      targetPort: 9000
-      protocol: TCP
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: qbittorrent-egress-vpn-only
-spec:
-  podSelector:
-    matchLabels:
-      app: qbittorrent
-  policyTypes:
-  - Egress
-  egress:
-  # Allow DNS resolution
-  - to:
-    - namespaceSelector: {}
-    ports:
-    - port: 53
-      protocol: UDP
-    - port: 53
-      protocol: TCP
+#   # Allow DNS resolution
+#   - to:
+#     - namespaceSelector: {}
+#     ports:
+#     - port: 53
+#       protocol: UDP
+#     - port: 53
+#       protocol: TCP
   
-  # Allow connections to VPN gateway (for routing all other traffic)
-  - to:
-    - podSelector:
-        matchLabels:
-          app: vpn-gateway
+#   # Allow connections to VPN gateway (for routing all other traffic)
+#   - to:
+#     - podSelector:
+#         matchLabels:
+#           app: vpn-gateway
   
-  # Allow internal cluster communications
-  - to:
-    - namespaceSelector: {}
-    ports:
-    - port: 443
-      protocol: TCP
-    - port: 80
-      protocol: TCP
-    - port: 8080
-      protocol: TCP
+#   # Allow internal cluster communications
+#   - to:
+#     - namespaceSelector: {}
+#     ports:
+#     - port: 443
+#       protocol: TCP
+#     - port: 80
+#       protocol: TCP
+#     - port: 8080
+#       protocol: TCP
   
-  # Block all other egress traffic
+#   # Block all other egress traffic

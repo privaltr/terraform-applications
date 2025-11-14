@@ -1,108 +1,82 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: vpn-gateway
-  labels:
-    app: vpn-gateway
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 2
-  replicas: 1
-  selector:
-    matchLabels:
-      app: vpn-gateway
-  template:
-    metadata:
-      labels:
-        app: vpn-gateway
-    spec:
-      containers:
-        - name: vpn
-          image: qmcgaw/gluetun:latest
-          securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
-                - SYS_MODULE
-          env:
-            - name: VPN_SERVICE_PROVIDER
-              value: private internet access
-            - name: OPENVPN_USER
-              valueFrom:
-                secretKeyRef:
-                  name: vpn-secret
-                  key: OPENVPN_USER
-            - name: OPENVPN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: vpn-secret
-                  key: OPENVPN_PASSWORD
-            - name: SERVER_REGIONS
-              value: "Netherlands,Switzerland,Romania"
-            # DNS Configuration
-            - name: DNS_PLAINTEXT_ADDRESS
-              value: "1.1.1.1"  # Use Cloudflare DNS
-            - name: DNS_KEEP_NAMESERVER
-              value: "off"
-            - name: DOT
-              value: "on"  # DNS over TLS for security
-            # IPv6 Configuration
-            - name: IPV6
-              value: "off"  # Disable IPv6
-            # Security
-            - name: FIREWALL
-              value: "on"
-            - name: FIREWALL_INPUT_PORTS
-              value: "8080,1080,6881,6889"  # Allow incoming connections to the HTTP proxy
-            - name: KILL_SWITCH
-              value: "on"
-            # Port forwarding (if needed)
-            - name: PORT_FORWARDING
-              value: "off"
-            # Enable HTTP proxy
-            # Add these for better proxy configuration
-            - name: HTTPPROXY_LISTENING_ADDRESS
-              value: "0.0.0.0"  # Listen on all interfaces
-            - name: HTTPPROXY_USER
-              value: ""  # No authentication
-            - name: HTTPPROXY_PASSWORD
-              value: ""  # No authentication
-            - name: HTTPPROXY
-              value: "off"
-            - name: HTTPPROXY_LOG
-              value: "on"
-            - name: HTTPPROXY_PORT
-              value: "8080"
-            - name: HTTPPROXY_STEALTH
-              value: "on" 
-            # SHADOWSOCKS
-            - name: SHADOWSOCKS
-              value: "false" 
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: vpn-secret
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  refreshInterval: 1h0m0s
-  secretStoreRef:
-    name: es-secret-store
-    kind: ClusterSecretStore
-  target:
-    name: vpn-secret
-  data:
-  - secretKey: OPENVPN_USER 
-    remoteRef:
-      key: servarr/pia
-      property: username
-  - secretKey: OPENVPN_PASSWORD
-    remoteRef:
-      key: servarr/pia
-      property: password
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: vpn-gateway
+#   labels:
+#     app: vpn-gateway
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "2"
+# spec:
+#   strategy:
+#     type: RollingUpdate
+#     rollingUpdate:
+#       maxSurge: 1
+#       maxUnavailable: 2
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: vpn-gateway
+#   template:
+#     metadata:
+#       labels:
+#         app: vpn-gateway
+#     spec:
+#       containers:
+#         - name: vpn
+#           image: qmcgaw/gluetun:latest
+#           securityContext:
+#             capabilities:
+#               add:
+#                 - NET_ADMIN
+#                 - SYS_MODULE
+#           env:
+#             - name: VPN_SERVICE_PROVIDER
+#               value: private internet access
+#             - name: OPENVPN_USER
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: vpn-secret
+#                   key: OPENVPN_USER
+#             - name: OPENVPN_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: vpn-secret
+#                   key: OPENVPN_PASSWORD
+#             - name: SERVER_REGIONS
+#               value: "Netherlands,Switzerland,Romania"
+#             # DNS Configuration
+#             - name: DNS_PLAINTEXT_ADDRESS
+#               value: "1.1.1.1"  # Use Cloudflare DNS
+#             - name: DNS_KEEP_NAMESERVER
+#               value: "off"
+#             - name: DOT
+#               value: "on"  # DNS over TLS for security
+#             # IPv6 Configuration
+#             - name: IPV6
+#               value: "off"  # Disable IPv6
+#             # Security
+#             - name: FIREWALL
+#               value: "on"
+# ---
+# apiVersion: external-secrets.io/v1
+# kind: ExternalSecret
+# metadata:
+#   name: vpn-secret
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   refreshInterval: 1h0m0s
+#   secretStoreRef:
+#     name: es-secret-store
+#     kind: ClusterSecretStore
+#   target:
+#     name: vpn-secret
+#   data:
+#   - secretKey: OPENVPN_USER 
+#     remoteRef:
+#       key: servarr/pia
+#       property: username
+#   - secretKey: OPENVPN_PASSWORD
+#     remoteRef:
+#       key: servarr/pia
+#       property: password
