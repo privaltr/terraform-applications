@@ -72,12 +72,12 @@ spec:
         ports:
         - name: webui
           containerPort: 8080
-        - name: torrent-tcp
-          containerPort: 6881
-          protocol: TCP
-        - name: torrent-udp
-          containerPort: 6881
-          protocol: UDP
+        # - name: torrent-tcp
+        #   containerPort: 6881
+        #   protocol: TCP
+        # - name: torrent-udp
+        #   containerPort: 6881
+        #   protocol: UDP
         env:
         - name: PUID
           value: "1000"
@@ -173,8 +173,6 @@ data:
     WebUI\ServerDomains=*
     Downloads\SavePath=/downloads/
     Downloads\TempPath=/downloads/incomplete/
-    Advanced\NetworkInterface=tun0
-    Advanced\NetworkInterfaceName=tun0
 
     [RSS]
     AutoDownloader\DownloadRepacks=true
