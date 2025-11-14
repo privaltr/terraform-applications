@@ -158,7 +158,7 @@ data:
     General\StatusbarExternalIPDisplayed=true
     MailNotification\req_auth=true
     Scheduler\end_time=@Variant(\0\0\0\xf\x3\xa5\xd6\x80)
-    WebUI\Address=*
+    WebUI\Address=0.0.0.0
     WebUI\AuthSubnetWhitelist=0.0.0.0/0
     WebUI\AuthSubnetWhitelistEnabled=true
     WebUI\LocalHostAuth=false
