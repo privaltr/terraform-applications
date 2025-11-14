@@ -72,12 +72,12 @@ spec:
         ports:
         - name: webui
           containerPort: 8080
-        # - name: torrent-tcp
-        #   containerPort: 6881
-        #   protocol: TCP
-        # - name: torrent-udp
-        #   containerPort: 6881
-        #   protocol: UDP
+        - name: torrent-tcp
+          containerPort: 6881
+          protocol: TCP
+        - name: torrent-udp
+          containerPort: 6881
+          protocol: UDP
         env:
         - name: PUID
           value: "1000"
@@ -135,7 +135,7 @@ data:
     Session\GlobalDLSpeedLimit=3072
     Session\GlobalUPSpeedLimit=2048
     Session\Port=6881
-    Session\ProxyPeerConnections=false  # DISABLED - no proxy needed
+    Session\ProxyPeerConnections=false
     Session\QueueingSystemEnabled=true
     Session\SSL\Port=38686
     Session\ShareLimitAction=Stop
@@ -150,7 +150,6 @@ data:
 
     [Network]
     PortForwardingEnabled=false
-    # REMOVED all proxy configuration
     Proxy\AuthEnabled=false
     Proxy\HostnameLookupEnabled=false
     Proxy\IP=
@@ -159,7 +158,7 @@ data:
     Proxy\Profiles\BitTorrent=false
     Proxy\Profiles\Misc=false
     Proxy\Profiles\RSS=false
-    Proxy\Type=None  # No proxy
+    Proxy\Type=None
 
     [Preferences]
     General\Locale=en
