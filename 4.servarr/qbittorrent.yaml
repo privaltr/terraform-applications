@@ -121,7 +121,6 @@ metadata:
 data:
   qBittorrent.conf: |
     [Preferences]
-    [Preferences]
     WebUI\Address=*
     WebUI\AuthSubnetWhitelist=0.0.0.0/0
     WebUI\AuthSubnetWhitelistEnabled=true
@@ -136,6 +135,7 @@ data:
     Session\ProxyPeerConnections=true
     Session\ProxyHostnameLookup=true
     Session\ForceProxy=true
+    Session\ProxyPeerConnections=true
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
