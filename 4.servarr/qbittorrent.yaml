@@ -157,11 +157,11 @@ data:
     Proxy\HostnameLookupEnabled=true
     Proxy\IP=vpn-gateway
     Proxy\Password=
-    Proxy\Port=1080
+    Proxy\Port=8080
     Proxy\Profiles\BitTorrent=true
     Proxy\Profiles\Misc=true
     Proxy\Profiles\RSS=true
-    Proxy\Type=SOCKS5
+    Proxy\Type=HTTP
     Proxy\Username=
 
     [Preferences]

@@ -58,7 +58,7 @@ spec:
             - name: FIREWALL
               value: "on"
             - name: FIREWALL_INPUT_PORTS
-              value: "8080,1080"  # Allow incoming connections to the HTTP proxy
+              value: "8080,1080,6881,6889"  # Allow incoming connections to the HTTP proxy
             - name: KILL_SWITCH
               value: "on"
             # Port forwarding (if needed)
@@ -80,20 +80,17 @@ spec:
               value: "8080"
             - name: HTTPPROXY_STEALTH
               value: "on" 
-            # SOCKS5
+            # SHADOWSOCKS
             - name: SHADOWSOCKS
-              value: "on" 
-            - name: SOCKS5_LISTENING_ADDRESS
-              value: "0.0.0.0"
-            - name: SOCKS5
-              value: "on"
-            - name: SOCKS5_PORT
-              value: "1080"
+              value: "false" 
           ports:
             - containerPort: 8080  # HTTP proxy
               name: http-proxy
-            - containerPort: 1080
-              name: socks5
+            - containerPort: 6881  # BitTorrent
+              name: bittorrent
+            - containerPort: 6881  # BitTorrent UDP
+              name: bittorrent-udp
+              protocol: UDP
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -131,6 +128,12 @@ spec:
     - name: http-proxy
       port: 8080
       targetPort: 8080
-    - name: socks5
-      port: 1080
-      targetPort: 1080
+    - name: bittorrent-tcp
+      port: 6881
+      targetPort: 6881
+      nodePort: 30681  # Optional
+    - name: bittorrent-udp
+      port: 6881
+      targetPort: 6881
+      protocol: UDP
+      nodePort: 30681  # Optional
