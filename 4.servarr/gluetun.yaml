@@ -58,7 +58,7 @@ spec:
             - name: FIREWALL
               value: "on"
             - name: FIREWALL_INPUT_PORTS
-              value: "8080"  # Allow incoming connections to the HTTP proxy
+              value: "8080,1080"  # Allow incoming connections to the HTTP proxy
             - name: KILL_SWITCH
               value: "on"
             # Port forwarding (if needed)

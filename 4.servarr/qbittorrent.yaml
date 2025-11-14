@@ -157,7 +157,7 @@ data:
     Proxy\HostnameLookupEnabled=true
     Proxy\IP=vpn-gateway
     Proxy\Password=
-    Proxy\Port=@Variant(\0\0\0\x85\x4\x38)
+    Proxy\Port=1080
     Proxy\Profiles\BitTorrent=true
     Proxy\Profiles\Misc=true
     Proxy\Profiles\RSS=true
