@@ -120,22 +120,64 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 data:
   qBittorrent.conf: |
+    [Application]
+    FileLogger\Age=1
+    FileLogger\AgeType=1
+    FileLogger\Backup=true
+    FileLogger\DeleteOld=true
+    FileLogger\Enabled=true
+    FileLogger\MaxSizeBytes=66560
+    FileLogger\Path=/config/qBittorrent/logs
+
+    [BitTorrent]
+    Session\AddTorrentStopped=false
+    Session\AlternativeGlobalDLSpeedLimit=1024
+    Session\AlternativeGlobalUPSpeedLimit=1024
+    Session\BandwidthSchedulerEnabled=true
+    Session\ExcludedFileNames=
+    Session\GlobalDLSpeedLimit=3072
+    Session\GlobalUPSpeedLimit=2048
+    Session\Port=6881
+    Session\ProxyPeerConnections=true
+    Session\QueueingSystemEnabled=true
+    Session\SSL\Port=38686
+    Session\ShareLimitAction=Stop
+    Session\UseAlternativeGlobalSpeedLimit=true
+    Session\UseUPnP=false
+
+    [Core]
+    AutoDeleteAddedTorrentFile=Never
+
+    [Meta]
+    MigrationVersion=8
+
+    [Network]
+    PortForwardingEnabled=false
+    Proxy\AuthEnabled=false
+    Proxy\HostnameLookupEnabled=true
+    Proxy\IP=vpn-gateway
+    Proxy\Password=
+    Proxy\Port=@Variant(\0\0\0\x85\x4\x38)
+    Proxy\Profiles\BitTorrent=true
+    Proxy\Profiles\Misc=true
+    Proxy\Profiles\RSS=true
+    Proxy\Type=SOCKS5
+    Proxy\Username=
+
     [Preferences]
+    General\Locale=en
+    General\StatusbarExternalIPDisplayed=true
+    MailNotification\req_auth=true
+    Scheduler\end_time=@Variant(\0\0\0\xf\x3\xa5\xd6\x80)
     WebUI\Address=*
     WebUI\AuthSubnetWhitelist=0.0.0.0/0
     WebUI\AuthSubnetWhitelistEnabled=true
     WebUI\LocalHostAuth=false
     WebUI\ServerDomains=*
-    [BitTorrent]
-    Session\Port=6881
-    Session\UseUPnP=false
-    Session\ProxyType=1
-    Session\ProxyIP=vpn-gateway
-    Session\ProxyPort=1080
-    [Connection]
-    Connection\UseProxyForPeerConnections=true
-    Connection\ProxyHostnameLookup=true
-    Connection\ForceProxy=true
+
+    [RSS]
+    AutoDownloader\DownloadRepacks=true
+    AutoDownloader\SmartEpisodeFilter=s(\\d+)e(\\d+), (\\d+)x(\\d+), "(\\d{4}[.\\-]\\d{1,2}[.\\-]\\d{1,2})", "(\\d{1,2}[.\\-]\\d{1,2}[.\\-]\\d{4})"
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
