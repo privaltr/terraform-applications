@@ -63,6 +63,13 @@ spec:
             - name: PORT_FORWARDING
               value: "off"
             # Enable HTTP proxy
+            # Add these for better proxy configuration
+            - name: HTTPPROXY_LISTENING_ADDRESS
+              value: "0.0.0.0"  # Listen on all interfaces
+            - name: HTTPPROXY_USER
+              value: ""  # No authentication
+            - name: HTTPPROXY_PASSWORD
+              value: ""  # No authentication
             - name: HTTPPROXY
               value: "on"
             - name: HTTPPROXY_LOG
