@@ -90,8 +90,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: qbittorrent-conf
-          mountPath: /config/qBittorrent/qBittorrent.conf
+        # - name: qbittorrent-conf
+        #   mountPath: /config/qBittorrent/qBittorrent.conf
           subPath: qBittorrent.conf
         - name: downloads
           mountPath: /downloads
