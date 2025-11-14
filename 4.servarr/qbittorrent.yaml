@@ -132,10 +132,10 @@ data:
     Session\ProxyType=1
     Session\ProxyIP=vpn-gateway
     Session\ProxyPort=1080
-    Session\ProxyPeerConnections=true
-    Session\ProxyHostnameLookup=true
-    Session\ForceProxy=true
-    Session\ProxyPeerConnections=true
+    [Connection]
+    UseProxyForPeerConnections=true
+    ProxyHostnameLookup=true
+    ForceProxy=true
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
