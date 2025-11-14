@@ -55,7 +55,7 @@ spec:
           - name: FIREWALL_OUTBOUND_SUBNETS
             value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow internal cluster traffic
           - name: FIREWALL_INPUT_PORTS
-            value: "8080"  # Explicitly allow the web UI port
+            value: "8080,6881"  # Explicitly allow the web UI port
         resources:
           requests:
             memory: "64Mi"
