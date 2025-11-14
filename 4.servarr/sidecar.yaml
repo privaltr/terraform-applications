@@ -90,8 +90,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        # - name: qbittorrent-conf
-        #   mountPath: /config/qBittorrent/qBittorrent.conf
+        - name: qbittorrent-conf
+          mountPath: /config/qBittorrent/qBittorrent.conf
           subPath: qBittorrent.conf
         - name: downloads
           mountPath: /downloads
@@ -130,6 +130,8 @@ data:
     Session\AlternativeGlobalUPSpeedLimit=1024
     Session\BandwidthSchedulerEnabled=true
     Session\ExcludedFileNames=
+    Session\Interface=tun0
+    Session\InterfaceName=tun0
     Session\GlobalDLSpeedLimit=3072
     Session\GlobalUPSpeedLimit=2048
     Session\Port=6881
