@@ -73,11 +73,18 @@ spec:
             - name: HTTPPROXY_PASSWORD
               value: ""  # No authentication
             - name: HTTPPROXY
-              value: "off"
+              value: "on"
             - name: HTTPPROXY_LOG
               value: "on"
             - name: HTTPPROXY_PORT
               value: "8080"
+            - name: HTTPPROXY_STEALTH
+              value: "on" 
+            # SOCKS5
+            - name: SHADOWSOCKS
+              value: "on" 
+            - name: SOCKS5_LISTENING_ADDRESS
+              value: "0.0.0.0"
             - name: SOCKS5
               value: "on"
             - name: SOCKS5_PORT
