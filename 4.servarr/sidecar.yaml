@@ -17,7 +17,8 @@ spec:
         app: qbittorrent
     spec:
       containers:
-      # Gluetun VPN Sidecar
+
+      # Gluetun VPN primary container (must have NET_ADMIN so it can create tun0 and set routes)
       - name: vpn
         image: qmcgaw/gluetun:latest
         securityContext:
@@ -25,6 +26,12 @@ spec:
             add:
               - NET_ADMIN
               - SYS_MODULE
+        ports:
+          - containerPort: 8080   # qBittorrent Web UI (app binds on the pod network)
+          - containerPort: 6881
+            protocol: TCP
+          - containerPort: 6881
+            protocol: UDP
         env:
           - name: VPN_SERVICE_PROVIDER
             value: private internet access
@@ -53,58 +60,117 @@ spec:
           - name: KILL_SWITCH
             value: "on"
           - name: FIREWALL_OUTBOUND_SUBNETS
-            value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow internal cluster traffic
+            value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
           - name: FIREWALL_INPUT_PORTS
-            value: "8080"  # Explicitly allow the web UI port
+            value: "8080"
           - name: VPN_INPUT_PORTS
-            value: "6881"  # Explicitly allow the web UI port
-        # resources:
-        #   requests:
-        #     memory: "64Mi"
-        #     cpu: "50m"
-        #   limits:
-        #     memory: "128Mi"
-        #     cpu: "100m"
-      
-      # qBittorrent Container
+            value: "6881"
+
+        # Signal file for vpn readiness: create /vpn-ready/ready after tun0 exists
+        volumeMounts:
+          - name: vpn-ready
+            mountPath: /vpn-ready
+
+        lifecycle:
+          postStart:
+            exec:
+              # background loop that waits for tun0 then writes ready file
+              # This runs inside the vpn container.
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "[vpn postStart] waiting for tun0..."
+                  for i in $(seq 1 60); do
+                    # try ip link show; if 'ip' is not present, fallback to checking /sys/class/net
+                    if command -v ip >/dev/null 2>&1; then
+                      ip link show tun0 >/dev/null 2>&1 && { echo "[vpn] tun0 present"; touch /vpn-ready/ready; exit 0; }
+                    else
+                      [ -d /sys/class/net/tun0 ] && { echo "[vpn] tun0 present (sysfs)"; touch /vpn-ready/ready; exit 0; }
+                    fi
+                    sleep 1
+                  done
+                  echo "[vpn] timed out waiting for tun0" >&2
+                  # do not exit with non-zero to avoid killing the container; leave it for liveness to handle
+                  exit 0
+
+      # qBittorrent container (no network capabilities; uses pod network)
       - name: qbittorrent
         image: lscr.io/linuxserver/qbittorrent:latest
-        ports:
-        - name: webui
-          containerPort: 8080
-        - name: torrent-tcp
-          containerPort: 6881
-          protocol: TCP
-        - name: torrent-udp
-          containerPort: 6881
-          protocol: UDP
         env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "UTC"
-        - name: WEBUI_PORT
-          value: "8080"
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "UTC"
+          - name: WEBUI_PORT
+            value: "8080"
+        # no container ports here — pod network is shared
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+
+        # readiness waits for vpn-ready file, so the Service doesn't send traffic until VPN is up
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - -c
+              - |
+                # Wait for the VPN readiness file and also ensure the web UI is responding on localhost:8080
+                if [ -f /vpn-ready/ready ]; then
+                  # check webui health (adjust path if your webui has auth)
+                  if command -v curl >/dev/null 2>&1; then
+                    curl -fsS --max-time 3 http://127.0.0.1:8080/ || exit 1
+                    exit 0
+                  else
+                    # no curl; consider the pod ready if the ready file exists
+                    exit 0
+                  fi
+                fi
+                exit 1
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          failureThreshold: 6
+          successThreshold: 1
+          timeoutSeconds: 3
+
+        # a livenessProbe to restart if the webui dies (optional)
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 6
+
         volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: qbittorrent-conf
-          mountPath: /config/qBittorrent/qBittorrent.conf
-          subPath: qBittorrent.conf
-        - name: downloads
-          mountPath: /downloads
+          - name: config
+            mountPath: /config
+          - name: qbittorrent-conf
+            mountPath: /config/qBittorrent/qBittorrent.conf
+            subPath: qBittorrent.conf
+          - name: downloads
+            mountPath: /downloads
+          - name: vpn-ready
+            mountPath: /vpn-ready
+            readOnly: true
+
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: qbittorrent-config
-      - name: downloads
-        persistentVolumeClaim:
-          claimName: qbittorrent-downloads
-      - name: qbittorrent-conf
-        configMap:
-          name: qbittorrent-configmap
+        - name: config
+          persistentVolumeClaim:
+            claimName: qbittorrent-config
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: qbittorrent-downloads
+        - name: qbittorrent-conf
+          configMap:
+            name: qbittorrent-configmap
+        - name: vpn-ready
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: ConfigMap
