@@ -78,9 +78,15 @@ spec:
               value: "on"
             - name: HTTPPROXY_PORT
               value: "8080"
+            - name: SOCKS5
+              value: "on"
+            - name: SOCKS5_PORT
+              value: "1080"
           ports:
             - containerPort: 8080  # HTTP proxy
               name: http-proxy
+            - containerPort: 1080
+              name: socks5
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -118,3 +124,6 @@ spec:
     - name: http-proxy
       port: 8080
       targetPort: 8080
+    - name: socks5
+      port: 1080
+      targetPort: 1080
