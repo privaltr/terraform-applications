@@ -106,7 +106,6 @@ spec:
         configMap:
           name: qbittorrent-configmap
       #Prowlarr
-      containers:
       - name: prowlarr
         image: lscr.io/linuxserver/prowlarr:latest
         ports:
