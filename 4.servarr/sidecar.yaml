@@ -121,9 +121,9 @@ spec:
         volumeMounts:
         - name: prowlarr-config
           mountPath: /config
-        # - name: prowlarr-conf
-        #   mountPath: /config/config.xml
-        #   subPath: config.xml
+        - name: prowlarr-conf
+          mountPath: /config/config.xml
+          subPath: config.xml
       volumes:
       - name: qbittorrent-config
         persistentVolumeClaim:
