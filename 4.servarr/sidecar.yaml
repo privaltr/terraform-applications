@@ -88,18 +88,18 @@ spec:
         - name: WEBUI_PORT
           value: "8080"
         volumeMounts:
-        - name: config-qbittorrent
+        - name: qbittorrent-config
           mountPath: /config
         - name: qbittorrent-conf
           mountPath: /config/qBittorrent/qBittorrent.conf
           subPath: qBittorrent.conf
-        - name: downloads
+        - name: qbittorrent-downloads
           mountPath: /downloads
       volumes:
       - name: qbittorrent-config
         persistentVolumeClaim:
           claimName: qbittorrent-config
-      - name: downloads
+      - name: qbittorrent-downloads
         persistentVolumeClaim:
           claimName: qbittorrent-downloads
       - name: qbittorrent-conf
@@ -119,8 +119,8 @@ spec:
         - name: TZ
           value: "UTC"
         volumeMounts:
-        # - name: prowlarr-config
-        #   mountPath: /config
+        - name: prowlarr-config
+          mountPath: /config
         - name: prowlarr-conf
           mountPath: /config/config.xml
           subPath: config.xml
