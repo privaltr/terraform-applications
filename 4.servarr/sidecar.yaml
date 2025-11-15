@@ -433,7 +433,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: qbittorrent
+                name: prowlarr
                 port:
                   number: 9696
 --- 
