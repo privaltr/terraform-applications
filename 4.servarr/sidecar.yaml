@@ -95,16 +95,16 @@ spec:
           subPath: qBittorrent.conf
         - name: qbittorrent-downloads
           mountPath: /downloads
-      volumes:
-      - name: qbittorrent-config
-        persistentVolumeClaim:
-          claimName: qbittorrent-config
-      - name: qbittorrent-downloads
-        persistentVolumeClaim:
-          claimName: qbittorrent-downloads
-      - name: qbittorrent-conf
-        configMap:
-          name: qbittorrent-configmap
+      # volumes:
+      # - name: qbittorrent-config
+      #   persistentVolumeClaim:
+      #     claimName: qbittorrent-config
+      # - name: qbittorrent-downloads
+      #   persistentVolumeClaim:
+      #     claimName: qbittorrent-downloads
+      # - name: qbittorrent-conf
+      #   configMap:
+      #     name: qbittorrent-configmap
       #Prowlarr
       - name: prowlarr
         image: lscr.io/linuxserver/prowlarr:latest
@@ -125,6 +125,15 @@ spec:
           mountPath: /config/config.xml
           subPath: config.xml
       volumes:
+      - name: qbittorrent-config
+        persistentVolumeClaim:
+          claimName: qbittorrent-config
+      - name: qbittorrent-downloads
+        persistentVolumeClaim:
+          claimName: qbittorrent-downloads
+      - name: qbittorrent-conf
+        configMap:
+          name: qbittorrent-configmap
       - name: prowlarr-config
         persistentVolumeClaim:
           claimName: prowlarr-config
