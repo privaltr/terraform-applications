@@ -55,7 +55,7 @@ data:
       <SslPort>9899</SslPort>
       <EnableSsl>False</EnableSsl>
       <LaunchBrowser>True</LaunchBrowser>
-      <ApiKey>CHANGE_ME_SONARR_API_KEY</ApiKey>
+      <ApiKey>dd26fe0eee584815b02808d9d0418ed6</ApiKey>
       <AuthenticationMethod>External</AuthenticationMethod>
       <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
       <Branch>master</Branch>
@@ -98,9 +98,9 @@ spec:
           volumeMounts:
             - name: sonarr-config
               mountPath: /config
-            # - name: sonarr-conf
-            #   mountPath: /config/config.xml
-            #   subPath: config.xml
+            - name: sonarr-conf
+              mountPath: /config/config.xml
+              subPath: config.xml
             - name: qbittorrent-downloads
               mountPath: /downloads
             - name: series-pvc
