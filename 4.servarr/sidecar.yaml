@@ -55,7 +55,7 @@ spec:
           - name: FIREWALL_OUTBOUND_SUBNETS
             value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"  # Allow internal cluster traffic
           - name: FIREWALL_INPUT_PORTS
-            value: "8080,9696"  # Explicitly allow the web UI port
+            value: "8080,9696,7878,8989"  # Explicitly allow the web UI port
           - name: VPN_INPUT_PORTS
             value: "6881"  # Explicitly allow the web UI port
         # resources:
@@ -95,16 +95,6 @@ spec:
           subPath: qBittorrent.conf
         - name: qbittorrent-downloads
           mountPath: /downloads
-      # volumes:
-      # - name: qbittorrent-config
-      #   persistentVolumeClaim:
-      #     claimName: qbittorrent-config
-      # - name: qbittorrent-downloads
-      #   persistentVolumeClaim:
-      #     claimName: qbittorrent-downloads
-      # - name: qbittorrent-conf
-      #   configMap:
-      #     name: qbittorrent-configmap
       #Prowlarr
       - name: prowlarr
         image: lscr.io/linuxserver/prowlarr:latest
