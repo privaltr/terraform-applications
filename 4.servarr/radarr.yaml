@@ -2,7 +2,6 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: radarr-tls
-  namespace: radarr
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
@@ -18,7 +17,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: radarr-config
-  namespace: radarr
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
@@ -33,7 +31,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: movies-pvc
-  namespace: radarr
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
@@ -48,7 +45,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: radarr
-  namespace: radarr
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
@@ -95,7 +91,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: radarr
-  namespace: radarr
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
@@ -111,7 +106,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: radarr
-  namespace: radarr
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
