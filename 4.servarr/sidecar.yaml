@@ -43,7 +43,7 @@ spec:
           - name: DNS_PLAINTEXT_ADDRESS
             value: "1.1.1.1"
           - name: DNS_KEEP_NAMESERVER
-            value: "off"
+            value: "on"
           - name: DOT
             value: "on"
           - name: IPV6
