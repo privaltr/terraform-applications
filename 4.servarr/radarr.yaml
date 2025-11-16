@@ -41,6 +41,32 @@ spec:
     requests:
       storage: 100Gi
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: radarr-configmap
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  config.xml: |
+    <Config>
+      <BindAddress>*</BindAddress>
+      <Port>7878</Port>
+      <SslPort>9898</SslPort>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <ApiKey>decd67e4991f4bafbd3476bb1828fc36</ApiKey>
+      <AuthenticationMethod>External</AuthenticationMethod>
+      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+      <Branch>master</Branch>
+      <LogLevel>debug</LogLevel>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <UrlBase></UrlBase>
+      <InstanceName>Radarr</InstanceName>
+      <UpdateMechanism>Docker</UpdateMechanism>
+    </Config>
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -72,6 +98,9 @@ spec:
           volumeMounts:
             - name: radarr-config
               mountPath: /config
+            - name: radarr-conf
+              mountPath: /config/config.xml
+              subPath: config.xml
             - name: qbittorrent-downloads
               mountPath: /downloads
             - name: movies-pvc
@@ -80,6 +109,9 @@ spec:
         - name: radarr-config
           persistentVolumeClaim:
             claimName: radarr-config
+        - name: radarr-conf
+          configMap:
+            name: radarr-configmap
         - name: qbittorrent-downloads
           persistentVolumeClaim:
             claimName: qbittorrent-downloads
