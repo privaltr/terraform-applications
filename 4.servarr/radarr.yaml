@@ -26,20 +26,20 @@ spec:
   resources:
     requests:
       storage: 5Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: movies-pvc
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 100Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: movies-pvc
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 100Gi
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -94,9 +94,18 @@ spec:
               mkdir -p /library/movies/ && \
               chown 1000:1000 -R /library && \
               chmod -R 775 /library
+
+              if [ ! -f /config/config.xml ]; then
+                echo "Seeding config.xml from ConfigMap"
+                cp /seed/config.xml /config/config.xml
+              fi
           volumeMounts:
             - name: qbittorrent-downloads
               mountPath: /library
+            - name: radarr-conf
+              mountPath: /seed
+            - name: radarr-config
+              mountPath: /config
       securityContext:
           fsGroup: 1000
       containers:
@@ -114,13 +123,13 @@ spec:
           volumeMounts:
             - name: radarr-config
               mountPath: /config
-            - name: radarr-conf
-              mountPath: /config/config.xml
-              subPath: config.xml
+            # - name: radarr-conf
+            #   mountPath: /config/config.xml
+            #   subPath: config.xml
             - name: qbittorrent-downloads
               mountPath: /library
-            - name: movies-pvc
-              mountPath: /movies
+            # - name: movies-pvc
+            #   mountPath: /movies
       volumes:
         - name: radarr-config
           persistentVolumeClaim:
@@ -131,9 +140,9 @@ spec:
         - name: qbittorrent-downloads
           persistentVolumeClaim:
             claimName: qbittorrent-downloads
-        - name: movies-pvc
-          persistentVolumeClaim:
-            claimName: movies-pvc
+        # - name: movies-pvc
+        #   persistentVolumeClaim:
+        #     claimName: movies-pvc
 ---
 apiVersion: v1
 kind: Service
