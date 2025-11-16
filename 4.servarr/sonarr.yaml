@@ -83,6 +83,21 @@ spec:
       labels:
         app: sonarr
     spec:
+      # InitContainer to create directories automatically
+      initContainers:
+        - name: init-download-dirs
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /library/series/ & \
+              chmod -R 775 /library
+          volumeMounts:
+            - name: qbittorrent-downloads
+              mountPath: /library
+      securityContext:
+          fsGroup: 1000
       containers:
         - name: sonarr
           image: lscr.io/linuxserver/sonarr:latest
@@ -102,7 +117,7 @@ spec:
               mountPath: /config/config.xml
               subPath: config.xml
             - name: qbittorrent-downloads
-              mountPath: /downloads
+              mountPath: /library
             - name: series-pvc
               mountPath: /series
       volumes:

@@ -83,6 +83,19 @@ spec:
       labels:
         app: radarr
     spec:
+      # InitContainer to create directories automatically
+      initContainers:
+        - name: init-download-dirs
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /library/movies/ & \
+              chmod -R 775 /library
+          volumeMounts:
+            - name: qbittorrent-downloads
+              mountPath: /library
       securityContext:
           fsGroup: 1000
       containers:
@@ -104,7 +117,7 @@ spec:
               mountPath: /config/config.xml
               subPath: config.xml
             - name: qbittorrent-downloads
-              mountPath: /downloads
+              mountPath: /library
             - name: movies-pvc
               mountPath: /movies
       volumes:

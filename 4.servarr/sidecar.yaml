@@ -16,6 +16,19 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      # InitContainer to create directories automatically
+      initContainers:
+        - name: init-download-dirs
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /library/downloads/  /downloads/incomplete && \
+              chmod -R 775 /library
+          volumeMounts:
+            - name: qbittorrent-downloads
+              mountPath: /library
       containers:
       # Gluetun VPN Sidecar
       - name: vpn
@@ -94,7 +107,7 @@ spec:
           mountPath: /config/qBittorrent/qBittorrent.conf
           subPath: qBittorrent.conf
         - name: qbittorrent-downloads
-          mountPath: /downloads
+          mountPath: /library
       #Prowlarr
       - name: prowlarr
         image: lscr.io/linuxserver/prowlarr:latest
@@ -195,8 +208,8 @@ data:
     WebUI\AuthSubnetWhitelistEnabled=true
     WebUI\LocalHostAuth=false
     WebUI\ServerDomains=*
-    Downloads\SavePath=/downloads/
-    Downloads\TempPath=/downloads/incomplete/
+    Downloads\SavePath=/library/downloads/
+    Downloads\TempPath=/library/downloads/incomplete/
 
     [RSS]
     AutoDownloader\DownloadRepacks=true
