@@ -188,6 +188,13 @@ spec:
     - host: radarr.acc.ricksdomein.nl
       http:
         paths:
+          - path: /outpost.goauthentik.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: ak-outpost-outpost
+                port:
+                  number: 9000
           - path: /
             pathType: Prefix
             backend:
