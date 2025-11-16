@@ -34,6 +34,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 1000
   accessModes:
     - ReadWriteOnce
   storageClassName: longhorn
