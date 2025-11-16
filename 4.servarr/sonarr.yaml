@@ -94,9 +94,18 @@ spec:
               mkdir -p /library/series/ && \
               chown 1000:1000 -R /library && \
               chmod -R 775 /library
+
+              if [ ! -s /config/config.xml ]; then
+                echo "Seeding config.xml from ConfigMap"
+                cp /seed/config.xml /config/config.xml
+              fi
           volumeMounts:
             - name: qbittorrent-downloads
               mountPath: /library
+            - name: sonarr-conf
+              mountPath: /seed
+            - name: sonarr-config
+              mountPath: /config
       securityContext:
           fsGroup: 1000
       containers:
