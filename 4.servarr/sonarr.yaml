@@ -91,7 +91,8 @@ spec:
             - sh
             - -c
             - |
-              mkdir -p /library/series/ & \
+              mkdir -p /library/series/ && \
+              chown 1000:1000 -R /library && \
               chmod -R 775 /library
           volumeMounts:
             - name: qbittorrent-downloads
