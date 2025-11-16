@@ -25,7 +25,7 @@ spec:
             - -c
             - |
               mkdir -p /library/downloads/  /downloads/incomplete && \
-              hown 1000:1000 -R /library && \
+              chown 1000:1000 -R /library && \
               chmod -R 775 /library
           volumeMounts:
             - name: qbittorrent-downloads
