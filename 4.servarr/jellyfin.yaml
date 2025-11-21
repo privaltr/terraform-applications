@@ -99,9 +99,9 @@ spec:
             
       #       # Clean up
       #       rm /config/plugins/jellyfin-plugin-sso.zip
-        volumeMounts:
-        - name: jellyfin-config
-          mountPath: /config
+        # volumeMounts:
+        # - name: jellyfin-config
+        #   mountPath: /config
       containers:
         - name: jellyfin
           image: harbor.acc.ricksdomein.nl/library/jellyfin:10.11.3-ca
