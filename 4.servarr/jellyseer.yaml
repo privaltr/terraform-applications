@@ -1,0 +1,130 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: jellyseer
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: jellyseer-secrets
+  data:
+    - secretKey: JELLYFIN_API_KEY
+      remoteRef:
+        key: servarr/jellyfin
+        property: api_key
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyseer-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseer
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseer
+  template:
+    metadata:
+      labels:
+        app: jellyseer
+    spec:
+      containers:
+        - name: jellyseer
+          image: fallenbagel/jellyseerr:latest
+          ports:
+            - containerPort: 5055
+          env:
+            - name: TZ
+              value: "Europe/Amsterdam"
+
+            # --- Jellyfin connection ---
+            - name: JELLYFIN_URL
+              value: "https://jellyfin.acc.ricksdomein.nl"
+            - name: JELLYFIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jellyseer-secrets
+                  key: JELLYFIN_API_KEY
+
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyseer-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyseer
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: jellyseer
+  ports:
+    - name: http
+      port: 5055
+      targetPort: 5055
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyseer
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: jellyseer.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyseer
+                port:
+                  number: 5055
+  tls:
+    - hosts:
+        - jellyseer.acc.ricksdomein.nl
+      secretName: jellyseer-https-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jellyseer-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: jellyseer-https-cert
+  dnsNames:
+    - jellyseer.acc.ricksdomein.nl
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
