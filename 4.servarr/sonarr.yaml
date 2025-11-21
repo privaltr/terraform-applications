@@ -123,9 +123,9 @@ spec:
           volumeMounts:
             - name: sonarr-config
               mountPath: /config
-            - name: sonarr-conf
-              mountPath: /config/config.xml
-              subPath: config.xml
+            # - name: sonarr-conf
+            #   mountPath: /config/config.xml
+            #   subPath: config.xml
             - name: qbittorrent-downloads
               mountPath: /library
             - name: series-pvc
