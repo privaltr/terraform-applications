@@ -102,7 +102,9 @@ spec:
               value: "1000"
             - name: TZ
               value: "Europe/Amsterdam"
-      #     volumeMounts:
+          volumeMounts:
+            - name: qbittorrent-downloads
+              mountPath: /library
       #       - name: bazarr-config
       #         mountPath: /config
       #       - name: bazarr-conf
@@ -112,7 +114,11 @@ spec:
       #         mountPath: /library
       #       - name: subtitles-pvc
       #         mountPath: /subtitles
-      # volumes:
+
+      volumes:
+        - name: qbittorrent-downloads
+          persistentVolumeClaim:
+            claimName: qbittorrent-downloads
       #   - name: bazarr-config
       #     persistentVolumeClaim:
       #       claimName: bazarr-config
