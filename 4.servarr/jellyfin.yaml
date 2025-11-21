@@ -104,7 +104,7 @@ spec:
           mountPath: /config
       containers:
         - name: jellyfin
-          image: lscr.io/linuxserver/jellyfin:latest
+          image: harbor.acc.ricksdomein.nl/library/jellyfin:10.11.3-ca
           ports:
             - containerPort: 8096
           env:
