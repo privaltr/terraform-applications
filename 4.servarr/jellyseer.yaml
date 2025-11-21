@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
-  refreshInterval: 1h
+  refreshInterval: 1h0m0s
   secretStoreRef:
     name: es-secret-store
     kind: ClusterSecretStore
@@ -17,6 +17,15 @@ spec:
       remoteRef:
         key: servarr/jellyfin
         property: api_key
+
+    - secretKey: OIDC_CLIENT_ID
+      remoteRef:
+        key: servarr/jellyseer
+        property: OIDC_CLIENT_ID
+    - secretKey: OIDC_CLIENT_SECRET
+      remoteRef:
+        key: servarr/jellyseer
+        property: OIDC_CLIENT_SECRET
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -50,7 +59,7 @@ spec:
     spec:
       containers:
         - name: jellyseer
-          image: fallenbagel/jellyseerr:latest
+          image: ghcr.io/michaelhthomas/jellyseerr:feat-oidc-logi
           ports:
             - containerPort: 5055
           env:
@@ -66,6 +75,38 @@ spec:
                   name: jellyseer-secrets
                   key: JELLYFIN_API_KEY
 
+            # --- OIDC Provider ---
+            - name: OIDC_ENABLED
+              value: "true"
+
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: jellyseer-secrets
+                  key: OIDC_CLIENT_ID
+
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jellyseer-secrets
+                  key: OIDC_CLIENT_SECRET
+
+            - name: OIDC_ISSUER
+              value: "https://authentik.acc.ricksdomein.nl/application/o/jellyseer/"
+
+            - name: OIDC_BASE_URL
+              value: "https://jellyseer.acc.ricksdomein.nl"
+
+            - name: OIDC_SCOPE
+              value: "openid profile email"
+
+            # # Example attributes Authentik sends
+            # - name: OIDC_CLAIM_EMAIL
+            #   value: "email"
+            # - name: OIDC_CLAIM_NAME
+            #   value: "name"
+            # - name: OIDC_CLAIM_PREFERRED_USERNAME
+            #   value: "preferred_username"
           volumeMounts:
             - name: config
               mountPath: /app/config
