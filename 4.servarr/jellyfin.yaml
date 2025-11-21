@@ -80,25 +80,25 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
-      initContainers:
-      - name: install-sso-plugin
-        image: curlimages/curl:latest
-        command: 
-          - /bin/sh
-          - -c
-          - |
-            # Create plugins directory
-            mkdir -p /config/plugins
+      # initContainers:
+      # - name: install-sso-plugin
+      #   image: curlimages/curl:latest
+      #   command: 
+      #     - /bin/sh
+      #     - -c
+      #     - |
+      #       # Create plugins directory
+      #       mkdir -p /config/plugins
             
-            # Download the SSO plugin from the correct URL
-            curl -L -o /config/plugins/jellyfin-plugin-sso.zip \
-              "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip"
+      #       # Download the SSO plugin from the correct URL
+      #       curl -L -o /config/plugins/jellyfin-plugin-sso.zip \
+      #         "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip"
             
-            # Extract the plugin
-            unzip -o /config/plugins/jellyfin-plugin-sso.zip -d /config/plugins/
+      #       # Extract the plugin
+      #       unzip -o /config/plugins/jellyfin-plugin-sso.zip -d /config/plugins/
             
-            # Clean up
-            rm /config/plugins/jellyfin-plugin-sso.zip
+      #       # Clean up
+      #       rm /config/plugins/jellyfin-plugin-sso.zip
         volumeMounts:
         - name: jellyfin-config
           mountPath: /config
