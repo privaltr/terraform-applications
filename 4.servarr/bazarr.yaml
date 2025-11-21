@@ -13,19 +13,19 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
 ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: bazarr-config
-#   annotations:
-#     argocd.argoproj.io/sync-wave: "1"
-# spec:
-#   accessModes: [ "ReadWriteOnce" ]
-#   storageClassName: longhorn
-#   resources:
-#     requests:
-#       storage: 5Gi
-# ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bazarr-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
 # apiVersion: v1
 # kind: PersistentVolumeClaim
 # metadata:
@@ -105,13 +105,8 @@ spec:
           volumeMounts:
             - name: qbittorrent-downloads
               mountPath: /library
-      #       - name: bazarr-config
-      #         mountPath: /config
-      #       - name: bazarr-conf
-      #         mountPath: /config/config.yaml
-      #         subPath: config.yaml
-      #       - name: qbittorrent-downloads
-      #         mountPath: /library
+            - name: bazarr-config
+              mountPath: /config
       #       - name: subtitles-pvc
       #         mountPath: /subtitles
 
@@ -119,15 +114,9 @@ spec:
         - name: qbittorrent-downloads
           persistentVolumeClaim:
             claimName: qbittorrent-downloads
-      #   - name: bazarr-config
-      #     persistentVolumeClaim:
-      #       claimName: bazarr-config
-      #   - name: bazarr-conf
-      #     configMap:
-      #       name: bazarr-configmap
-      #   - name: qbittorrent-downloads
-      #     persistentVolumeClaim:
-      #       claimName: qbittorrent-downloads
+        - name: bazarr-config
+          persistentVolumeClaim:
+            claimName: bazarr-config
       #   - name: subtitles-pvc
       #     persistentVolumeClaim:
       #       claimName: subtitles-pvc
