@@ -1,0 +1,129 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jellyfin-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: jellyfin-https-cert
+  dnsNames:
+    - "jellyfin.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-cache
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: jellyfin
+          image: lscr.io/linuxserver/jellyfin:latest
+          ports:
+            - containerPort: 8096
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Amsterdam"
+          volumeMounts:
+            - name: jellyfin-config
+              mountPath: /config
+            - name: jellyfin-cache
+              mountPath: /cache
+            - name: qbittorrent-downloads
+              mountPath: /library
+      volumes:
+        - name: jellyfin-config
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+        - name: jellyfin-cache
+          persistentVolumeClaim:
+            claimName: jellyfin-cache
+        - name: qbittorrent-downloads
+          persistentVolumeClaim:
+            claimName: qbittorrent-downloads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: jellyfin
+  ports:
+    - name: http
+      port: 8096
+      targetPort: 8096
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - jellyfin.acc.ricksdomein.nl
+      secretName: jellyfin-https-cert
+  rules:
+    - host: jellyfin.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyfin
+                port:
+                  number: 8096
