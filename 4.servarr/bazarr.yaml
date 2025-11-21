@@ -1,0 +1,188 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bazarr-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: bazarr-https-cert
+  dnsNames:
+    - "bazarr.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: bazarr-config
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes: [ "ReadWriteOnce" ]
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 5Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: subtitles-pvc
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes: [ "ReadWriteOnce" ]
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 20Gi
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: bazarr-configmap
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# data:
+#   config.yaml: |
+#     general:
+#       port: 6767
+#       debug: true
+#       base_url: ""
+#     authentication:
+#       type: none
+#     paths:
+#       root_folder: "/library"
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazarr
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      # initContainers:
+      #   - name: init-bazarr-config
+      #     image: busybox
+      #     command:
+      #       - sh
+      #       - -c
+      #       - |
+      #         if [ ! -s /config/config.yaml ]; then
+      #           echo "Seeding bazarr config.yaml"
+      #           cp /seed/config.yaml /config/config.yaml
+      #         fi
+      #     volumeMounts:
+      #       - name: bazarr-conf
+      #         mountPath: /seed
+      #       - name: bazarr-config
+      #         mountPath: /config
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: bazarr
+          image: lscr.io/linuxserver/bazarr:latest
+          ports:
+            - containerPort: 6767
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Amsterdam"
+      #     volumeMounts:
+      #       - name: bazarr-config
+      #         mountPath: /config
+      #       - name: bazarr-conf
+      #         mountPath: /config/config.yaml
+      #         subPath: config.yaml
+      #       - name: qbittorrent-downloads
+      #         mountPath: /library
+      #       - name: subtitles-pvc
+      #         mountPath: /subtitles
+      # volumes:
+      #   - name: bazarr-config
+      #     persistentVolumeClaim:
+      #       claimName: bazarr-config
+      #   - name: bazarr-conf
+      #     configMap:
+      #       name: bazarr-configmap
+      #   - name: qbittorrent-downloads
+      #     persistentVolumeClaim:
+      #       claimName: qbittorrent-downloads
+      #   - name: subtitles-pvc
+      #     persistentVolumeClaim:
+      #       claimName: subtitles-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazarr
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: bazarr
+  ports:
+    - name: http
+      port: 6767
+      targetPort: 6767
+      protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bazarr
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    # nginx.ingress.kubernetes.io/auth-url: |
+    #   http://ak-outpost-outpost.authentik.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+    # nginx.ingress.kubernetes.io/auth-signin: |
+    #   https://bazarr.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
+    # nginx.ingress.kubernetes.io/auth-response-headers: |
+    #   Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
+    # nginx.ingress.kubernetes.io/auth-snippet: |
+    #   proxy_set_header X-Forwarded-Host $http_host;
+    #   proxy_set_header X-Forwarded-Proto $scheme;
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - bazarr.acc.ricksdomein.nl
+      secretName: bazarr-https-cert
+  rules:
+    - host: bazarr.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /outpost.goauthentik.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: ak-outpost-outpost
+                port:
+                  number: 9000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bazarr
+                port:
+                  number: 6767
