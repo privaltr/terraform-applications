@@ -1,3 +1,26 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: jellyfin
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: es-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: jellyfin-openid
+  data:
+  - secretKey: ClientId 
+    remoteRef:
+      key: servarr/jellyfin
+      property: ClientId 
+  - secretKey: ClientSecret
+    remoteRef:
+      key: servarr/jellyfin
+      property: ClientSecret
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -69,6 +92,18 @@ spec:
               value: "1000"
             - name: TZ
               value: "Europe/Amsterdam"
+            - name: JELLYFIN_OpenIdConnect__Authority
+              value: "https://authentik.acc.ricksdomein.nl/application/o/jellyfin/"
+            - name: JELLYFIN_OpenIdConnect__ClientId
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-openid
+                  key: ClientId
+            - name: JELLYFIN_OpenIdConnect__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-openid
+                  key: ClientSecret
           volumeMounts:
             - name: jellyfin-config
               mountPath: /config
