@@ -59,7 +59,7 @@ spec:
     spec:
       containers:
         - name: jellyseer
-          image: ghcr.io/michaelhthomas/jellyseerr:feat-oidc-logi
+          image: harbor.acc.ricksdomein.nl/library/jellyseerr:preview-OID-ca
           ports:
             - containerPort: 5055
           env:
