@@ -59,7 +59,7 @@ spec:
     spec:
       containers:
         - name: jellyseer
-          image: fallenbagel/jellyseerr:latest
+          image: harbor.acc.ricksdomein.nl/library/jellyseerr:preview-OID-ca
           ports:
             - containerPort: 5055
           env:
