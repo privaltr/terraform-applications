@@ -31,6 +31,20 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: calibre-opt
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: calibre-library
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -91,8 +105,11 @@ spec:
               fi
               
               # Kepubify tool for Kobo device support
-              if [ ! -f /library/metadata.db ]; then
-                wget -O /opt/kepubify https://github.com/pgaskin/kepubify/releases/latest/download/kepubify-linux-64bit
+              mkdir -p /opt/kepubify
+              if [ ! -f /opt/kepubify/kepubify ]; then
+                echo "Downloading kepubify..."
+                wget -O /opt/kepubify/kepubify https://github.com/pgaskin/kepubify/releases/latest/download/kepubify-linux-64bit
+                chmod +x /opt/kepubify/kepubify
               fi
 
               # Seed app.ini if it doesn't exist
@@ -111,6 +128,8 @@ spec:
               mountPath: /seed
             - name: calibre-web-config
               mountPath: /config
+            - name: calibre-opt
+              mountPath: /opt
       containers:
         - name: calibre-web
           image: lscr.io/linuxserver/calibre-web:latest
@@ -140,6 +159,9 @@ spec:
         - name: calibre-library
           persistentVolumeClaim:
             claimName: calibre-library
+        - name: calibre-opt
+          persistentVolumeClaim:
+            claimName: calibre-opt
 ---
 apiVersion: v1
 kind: Service
