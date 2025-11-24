@@ -31,20 +31,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: calibre-opt
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
   name: calibre-library
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -104,14 +90,6 @@ spec:
                 wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
               fi
               
-              # Kepubify tool for Kobo device support
-              mkdir -p /opt/kepubify
-              if [ ! -f /opt/kepubify/kepubify ]; then
-                echo "Downloading kepubify..."
-                wget -O /opt/kepubify/kepubify https://github.com/pgaskin/kepubify/releases/latest/download/kepubify-linux-64bit
-                chmod +x /opt/kepubify/kepubify
-              fi
-
               # Seed app.ini if it doesn't exist
               if [ ! -f /config/app.ini ]; then
                 echo "Seeding app.ini from ConfigMap"
@@ -119,7 +97,7 @@ spec:
               fi
 
               # Fix permissions
-              chown -R 1000:1000 /library /config /opt/kepubify/kepubify 
+              chown -R 1000:1000 /library /config
               chmod -R 775 /library /config
           volumeMounts:
             - name: calibre-library
@@ -128,8 +106,6 @@ spec:
               mountPath: /seed
             - name: calibre-web-config
               mountPath: /config
-            - name: calibre-opt
-              mountPath: /opt
       containers:
         - name: calibre-web
           image: lscr.io/linuxserver/calibre-web:latest
@@ -149,8 +125,6 @@ spec:
               mountPath: /config
             - name: calibre-library
               mountPath: /library
-            - name: calibre-opt
-              mountPath: /opt
       volumes:
         - name: calibre-web-config
           persistentVolumeClaim:
@@ -195,7 +169,7 @@ metadata:
     # nginx.ingress.kubernetes.io/auth-snippet: |
     #   proxy_set_header X-Forwarded-Host $http_host;
     #   proxy_set_header X-Forwarded-Proto $scheme;
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     argocd.argoproj.io/sync-wave: "4"
