@@ -65,6 +65,10 @@ spec:
           ports:
             - containerPort: 5055
           env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
             - name: TZ
               value: "Europe/Amsterdam"
 
