@@ -89,7 +89,7 @@ spec:
                 echo "metadata.db not found, downloading default..."
                 wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
               fi
-              
+
               # Seed app.ini if it doesn't exist
               if [ ! -f /config/app.ini ]; then
                 echo "Seeding app.ini from ConfigMap"
@@ -97,7 +97,7 @@ spec:
               fi
 
               # Fix permissions
-              chown -R 1000:1000 /library /config
+              chown -R 1000:1000 /library /config /opt/kepubify/kepubify-linux-64bit 
               chmod -R 775 /library /config
           volumeMounts:
             - name: calibre-library
@@ -166,9 +166,14 @@ metadata:
     # nginx.ingress.kubernetes.io/auth-snippet: |
     #   proxy_set_header X-Forwarded-Host $http_host;
     #   proxy_set_header X-Forwarded-Proto $scheme;
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"  # Unlimited
+    nginx.ingress.kubernetes.io/client-max-body-size: "0"  # Unlimited client body
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"  # Turn off for large files
     argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
