@@ -135,9 +135,6 @@ spec:
         - name: calibre-library
           persistentVolumeClaim:
             claimName: calibre-library
-        - name: calibre-opt
-          persistentVolumeClaim:
-            claimName: calibre-opt
 ---
 apiVersion: v1
 kind: Service
