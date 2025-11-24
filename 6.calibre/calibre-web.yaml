@@ -88,7 +88,7 @@ spec:
               cp /seed/app.ini /config/app.ini || true
           volumeMounts:
             - name: calibre-library
-              mountPath: /library
+              mountPath: /books
             - name: calweb-conf
               mountPath: /seed
             - name: calibre-web-config
@@ -106,7 +106,7 @@ spec:
             - name: TZ
               value: "Europe/Amsterdam"
             - name: DOCKER_MODS
-              value: "linuxserver/mods:calibre-web-kobo"  # Enables Kobo sync support
+              value: "linuxserver/mods:universal-calibre"
           volumeMounts:
             - name: calibre-web-config
               mountPath: /config
