@@ -172,7 +172,7 @@ metadata:
     # nginx.ingress.kubernetes.io/proxy-buffering: "on"
     # nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
     # nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
-    
+
     # Proxy buffer settings you requested
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "1024k"
@@ -181,8 +181,8 @@ metadata:
     
     # Additional recommended settings for large files
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "0"
     argocd.argoproj.io/sync-wave: "4"
 spec:
