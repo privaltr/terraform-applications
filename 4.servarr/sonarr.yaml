@@ -74,6 +74,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
+  revisionHistoryLimit: 2
   replicas: 1
   selector:
     matchLabels:
