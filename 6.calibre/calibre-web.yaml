@@ -149,6 +149,8 @@ spec:
               mountPath: /config
             - name: calibre-library
               mountPath: /library
+            - name: calibre-opt
+              mountPath: /opt
       volumes:
         - name: calibre-web-config
           persistentVolumeClaim:
