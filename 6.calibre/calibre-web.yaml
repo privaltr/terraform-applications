@@ -119,7 +119,7 @@ spec:
               fi
 
               # Fix permissions
-              chown -R 1000:1000 /library /config
+              chown -R 1000:1000 /library /config /opt/kepubify/kepubify 
               chmod -R 775 /library /config
           volumeMounts:
             - name: calibre-library
