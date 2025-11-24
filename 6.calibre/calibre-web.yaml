@@ -89,6 +89,11 @@ spec:
                 echo "metadata.db not found, downloading default..."
                 wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
               fi
+              
+              # Kepubify tool for Kobo device support
+              if [ ! -f /library/metadata.db ]; then
+                wget -O /opt/kepubify https://github.com/pgaskin/kepubify/releases/latest/download/kepubify-linux-64bit
+              fi
 
               # Seed app.ini if it doesn't exist
               if [ ! -f /config/app.ini ]; then
