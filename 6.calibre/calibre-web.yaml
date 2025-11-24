@@ -169,9 +169,21 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    # nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    # nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
+    
+    # Proxy buffer settings you requested
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-    nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "1024k"
+    nginx.ingress.kubernetes.io/proxy-buffers: "4 512k"
+    nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "1024k"
+    
+    # Additional recommended settings for large files
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "0"
     argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
