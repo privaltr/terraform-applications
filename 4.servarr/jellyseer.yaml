@@ -1,31 +1,31 @@
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: jellyseer
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  refreshInterval: 1h0m0s
-  secretStoreRef:
-    name: es-secret-store
-    kind: ClusterSecretStore
-  target:
-    name: jellyseer-secrets
-  data:
-    - secretKey: JELLYFIN_API_KEY
-      remoteRef:
-        key: servarr/jellyfin
-        property: api_key
+# ---
+# apiVersion: external-secrets.io/v1
+# kind: ExternalSecret
+# metadata:
+#   name: jellyseer
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   refreshInterval: 1h0m0s
+#   secretStoreRef:
+#     name: es-secret-store
+#     kind: ClusterSecretStore
+#   target:
+#     name: jellyseer-secrets
+#   data:
+#     - secretKey: JELLYFIN_API_KEY
+#       remoteRef:
+#         key: servarr/jellyfin
+#         property: api_key
 
-    - secretKey: OIDC_CLIENT_ID
-      remoteRef:
-        key: servarr/jellyseer
-        property: OIDC_CLIENT_ID
-    - secretKey: OIDC_CLIENT_SECRET
-      remoteRef:
-        key: servarr/jellyseer
-        property: OIDC_CLIENT_SECRET
+#     - secretKey: OIDC_CLIENT_ID
+#       remoteRef:
+#         key: servarr/jellyseer
+#         property: OIDC_CLIENT_ID
+#     - secretKey: OIDC_CLIENT_SECRET
+#       remoteRef:
+#         key: servarr/jellyseer
+#         property: OIDC_CLIENT_SECRET
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -48,6 +48,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   selector:
     matchLabels:
@@ -74,39 +75,39 @@ spec:
             - name: NODE_EXTRA_CA_CERTS
               value: "/usr/local/share/ca-certificates/acc.ricksdomein.nl.crt"
 
-            # --- Jellyfin connection ---
-            - name: JELLYFIN_URL
-              value: "https://jellyfin.acc.ricksdomein.nl"
-            - name: JELLYFIN_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jellyseer-secrets
-                  key: JELLYFIN_API_KEY
+            # # --- Jellyfin connection ---
+            # - name: JELLYFIN_URL
+            #   value: "https://jellyfin.acc.ricksdomein.nl"
+            # - name: JELLYFIN_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: jellyseer-secrets
+            #       key: JELLYFIN_API_KEY
 
-            # --- OIDC Provider ---
-            - name: OIDC_ENABLED
-              value: "true"
+            # # --- OIDC Provider ---
+            # - name: OIDC_ENABLED
+            #   value: "true"
 
-            - name: OIDC_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: jellyseer-secrets
-                  key: OIDC_CLIENT_ID
+            # - name: OIDC_CLIENT_ID
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: jellyseer-secrets
+            #       key: OIDC_CLIENT_ID
 
-            - name: OIDC_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: jellyseer-secrets
-                  key: OIDC_CLIENT_SECRET
+            # - name: OIDC_CLIENT_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: jellyseer-secrets
+            #       key: OIDC_CLIENT_SECRET
 
-            - name: OIDC_ISSUER
-              value: "https://authentik.acc.ricksdomein.nl/application/o/jellyseer/"
+            # - name: OIDC_ISSUER
+            #   value: "https://authentik.acc.ricksdomein.nl/application/o/jellyseer/"
 
-            - name: OIDC_BASE_URL
-              value: "https://jellyseer.acc.ricksdomein.nl"
+            # - name: OIDC_BASE_URL
+            #   value: "https://jellyseer.acc.ricksdomein.nl"
 
-            - name: OIDC_SCOPE
-              value: "openid profile email"
+            # - name: OIDC_SCOPE
+            #   value: "openid profile email"
 
             # # Example attributes Authentik sends
             # - name: OIDC_CLAIM_EMAIL
