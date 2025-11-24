@@ -57,6 +57,8 @@ spec:
       labels:
         app: jellyseer
     spec:
+      securityContext:
+          fsGroup: 1000
       containers:
         - name: jellyseer
           image: harbor.acc.ricksdomein.nl/library/jellyseerr:preview-OIDC-ca
