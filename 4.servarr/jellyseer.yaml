@@ -71,6 +71,8 @@ spec:
               value: "1000"
             - name: TZ
               value: "Europe/Amsterdam"
+            - name: NODE_EXTRA_CA_CERTS
+              value: "/usr/local/share/ca-certificates/acc.ricksdomein.nl.crt"
 
             # --- Jellyfin connection ---
             - name: JELLYFIN_URL
