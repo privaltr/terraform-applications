@@ -83,8 +83,25 @@ spec:
             - sh
             - -c
             - |
-              cp /seed/app.ini /config/app.ini || true
+              mkdir -p /library
+              # Check if metadata.db exists
+              if [ ! -f /library/metadata.db ]; then
+                echo "metadata.db not found, downloading default..."
+                wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
+              fi
+
+              # Seed app.ini if it doesn't exist
+              if [ ! -f /config/app.ini ]; then
+                echo "Seeding app.ini from ConfigMap"
+                cp /seed/app.ini /config/app.ini || true
+              fi
+
+              # Fix permissions
+              chown -R 1000:1000 /library /config
+              chmod -R 775 /library /config
           volumeMounts:
+            - name: calibre-library
+              mountPath: /library
             - name: calweb-conf
               mountPath: /seed
             - name: calibre-web-config
@@ -107,7 +124,7 @@ spec:
             - name: calibre-web-config
               mountPath: /config
             - name: calibre-library
-              mountPath: /books
+              mountPath: /library
       volumes:
         - name: calibre-web-config
           persistentVolumeClaim:
