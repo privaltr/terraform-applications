@@ -1,0 +1,266 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: booklore-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: booklore-https-cert
+  dnsNames:
+    - "booklore.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: booklore-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: books-pvc
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookdrop-pvc
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: booklore-secrets
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  database-password: dGVzdA==
+  database-root-password: dGVzdA==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: mariadb
+          image: lscr.io/linuxserver/mariadb:11.4.5
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Amsterdam"
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: booklore-secrets
+                  key: database-root-password
+            - name: MYSQL_DATABASE
+              value: "booklore"
+            - name: MYSQL_USER
+              value: "booklore"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: booklore-secrets
+                  key: database-password
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /config
+          livenessProbe:
+            exec:
+              command:
+                - mariadb-admin
+                - ping
+                - "-h"
+                - "localhost"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - mariadb-admin
+                - ping
+                - "-h"
+                - "localhost"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booklore
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booklore
+  template:
+    metadata:
+      labels:
+        app: booklore
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: booklore
+          image: booklore/booklore:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: USER_ID
+              value: "1000"
+            - name: GROUP_ID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Amsterdam"
+            - name: DATABASE_URL
+              value: "jdbc:mariadb://mariadb:3306/booklore"
+            - name: DATABASE_USERNAME
+              value: "booklore"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: booklore-secrets
+                  key: database-password
+            - name: BOOKLORE_PORT
+              value: "8080"
+          volumeMounts:
+            - name: booklore-data
+              mountPath: /app/data
+            - name: books-pvc
+              mountPath: /books
+            - name: bookdrop-pvc
+              mountPath: /bookdrop
+      volumes:
+        - name: booklore-data
+          persistentVolumeClaim:
+            claimName: booklore-data
+        - name: books-pvc
+          persistentVolumeClaim:
+            claimName: books-pvc
+        - name: bookdrop-pvc
+          persistentVolumeClaim:
+            claimName: bookdrop-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booklore
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  selector:
+    app: booklore
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: booklore
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - booklore.acc.ricksdomein.nl
+      secretName: booklore-https-cert
+  rules:
+    - host: booklore.acc.ricksdomein.nl
+      http:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: booklore
+                port:
+                  number: 8080
