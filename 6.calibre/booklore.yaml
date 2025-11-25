@@ -257,6 +257,7 @@ spec:
   rules:
     - host: booklore.acc.ricksdomein.nl
       http:
+        paths:
           - path: /
             pathType: Prefix
             backend:
