@@ -204,7 +204,7 @@ spec:
                   name: booklore-secrets
                   key: database-password
             - name: BOOKLORE_PORT
-              value: "8080"
+              value: "6060"
           volumeMounts:
             - name: booklore-data
               mountPath: /app/data
