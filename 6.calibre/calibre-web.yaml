@@ -1,211 +1,211 @@
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: calibre-web-tls
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  secretName: calibre-web-https-cert
-  dnsNames:
-    - "calibre.acc.ricksdomein.nl"
-  issuerRef:
-    name: root-ca-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: calibre-web-config
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 2Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: calibre-library
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 100Gi
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: calibre-web-configmap
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-data:
-  app.ini: |
-    [General]
-    server_port = 8083
-    server_host = 0.0.0.0
-    enable_kobo_sync = 1
-    default_language = en
-    # Add more calibre-web config parameters as needed
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: calibre-web
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  selector:
-    matchLabels:
-      app: calibre-web
-  template:
-    metadata:
-      labels:
-        app: calibre-web
-    spec:
-      securityContext:
-        fsGroup: 1000
-      initContainers:
-        - name: init-calibre-dirs
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              mkdir -p /library
-              # Check if metadata.db exists
-              if [ ! -f /library/metadata.db ]; then
-                echo "metadata.db not found, downloading default..."
-                wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
-              fi
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: calibre-web-tls
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   secretName: calibre-web-https-cert
+#   dnsNames:
+#     - "calibre.acc.ricksdomein.nl"
+#   issuerRef:
+#     name: root-ca-issuer
+#     kind: ClusterIssuer
+#     group: cert-manager.io
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: calibre-web-config
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 2Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: calibre-library
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 100Gi
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: calibre-web-configmap
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# data:
+#   app.ini: |
+#     [General]
+#     server_port = 8083
+#     server_host = 0.0.0.0
+#     enable_kobo_sync = 1
+#     default_language = en
+#     # Add more calibre-web config parameters as needed
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: calibre-web
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "2"
+# spec:
+#   revisionHistoryLimit: 1
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: calibre-web
+#   template:
+#     metadata:
+#       labels:
+#         app: calibre-web
+#     spec:
+#       securityContext:
+#         fsGroup: 1000
+#       initContainers:
+#         - name: init-calibre-dirs
+#           image: busybox
+#           command:
+#             - sh
+#             - -c
+#             - |
+#               mkdir -p /library
+#               # Check if metadata.db exists
+#               if [ ! -f /library/metadata.db ]; then
+#                 echo "metadata.db not found, downloading default..."
+#                 wget -O /library/metadata.db https://github.com/janeczku/calibre-web/raw/master/library/metadata.db
+#               fi
 
-              # Seed app.ini if it doesn't exist
-              if [ ! -f /config/app.ini ]; then
-                echo "Seeding app.ini from ConfigMap"
-                cp /seed/app.ini /config/app.ini || true
-              fi
+#               # Seed app.ini if it doesn't exist
+#               if [ ! -f /config/app.ini ]; then
+#                 echo "Seeding app.ini from ConfigMap"
+#                 cp /seed/app.ini /config/app.ini || true
+#               fi
 
-              # Fix permissions
-              chown -R 1000:1000 /library /config /opt/kepubify/kepubify-linux-64bit 
-              chmod -R 775 /library /config
-          volumeMounts:
-            - name: calibre-library
-              mountPath: /library
-            - name: calweb-conf
-              mountPath: /seed
-            - name: calibre-web-config
-              mountPath: /config
-      containers:
-        - name: calibre-web
-          image: lscr.io/linuxserver/calibre-web:latest
-          ports:
-            - containerPort: 8083
-          env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            - name: TZ
-              value: "Europe/Amsterdam"
-            - name: DOCKER_MODS
-              value: "linuxserver/mods:universal-calibre"
-          volumeMounts:
-            - name: calibre-web-config
-              mountPath: /config
-            - name: calibre-library
-              mountPath: /library
-      volumes:
-        - name: calibre-web-config
-          persistentVolumeClaim:
-            claimName: calibre-web-config
-        - name: calweb-conf
-          configMap:
-            name: calibre-web-configmap
-        - name: calibre-library
-          persistentVolumeClaim:
-            claimName: calibre-library
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: calibre-web
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-spec:
-  selector:
-    app: calibre-web
-  ports:
-    - name: http
-      port: 8083
-      targetPort: 8083
-      protocol: TCP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: calibre-web
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    # nginx.ingress.kubernetes.io/auth-url: |-
-    #   http://ak-outpost-outpost.authentik.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
-    # nginx.ingress.kubernetes.io/auth-signin: |-
-    #   https://calibre.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
-    # nginx.ingress.kubernetes.io/auth-response-headers: |-
-    #   Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
-    # nginx.ingress.kubernetes.io/auth-snippet: |
-    #   proxy_set_header X-Forwarded-Host $http_host;
-    #   proxy_set_header X-Forwarded-Proto $scheme;
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    # nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    # nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-    # nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
+#               # Fix permissions
+#               chown -R 1000:1000 /library /config /opt/kepubify/kepubify-linux-64bit 
+#               chmod -R 775 /library /config
+#           volumeMounts:
+#             - name: calibre-library
+#               mountPath: /library
+#             - name: calweb-conf
+#               mountPath: /seed
+#             - name: calibre-web-config
+#               mountPath: /config
+#       containers:
+#         - name: calibre-web
+#           image: lscr.io/linuxserver/calibre-web:latest
+#           ports:
+#             - containerPort: 8083
+#           env:
+#             - name: PUID
+#               value: "1000"
+#             - name: PGID
+#               value: "1000"
+#             - name: TZ
+#               value: "Europe/Amsterdam"
+#             - name: DOCKER_MODS
+#               value: "linuxserver/mods:universal-calibre"
+#           volumeMounts:
+#             - name: calibre-web-config
+#               mountPath: /config
+#             - name: calibre-library
+#               mountPath: /library
+#       volumes:
+#         - name: calibre-web-config
+#           persistentVolumeClaim:
+#             claimName: calibre-web-config
+#         - name: calweb-conf
+#           configMap:
+#             name: calibre-web-configmap
+#         - name: calibre-library
+#           persistentVolumeClaim:
+#             claimName: calibre-library
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: calibre-web
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "3"
+# spec:
+#   selector:
+#     app: calibre-web
+#   ports:
+#     - name: http
+#       port: 8083
+#       targetPort: 8083
+#       protocol: TCP
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: calibre-web
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+#     # nginx.ingress.kubernetes.io/auth-url: |-
+#     #   http://ak-outpost-outpost.authentik.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+#     # nginx.ingress.kubernetes.io/auth-signin: |-
+#     #   https://calibre.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
+#     # nginx.ingress.kubernetes.io/auth-response-headers: |-
+#     #   Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
+#     # nginx.ingress.kubernetes.io/auth-snippet: |
+#     #   proxy_set_header X-Forwarded-Host $http_host;
+#     #   proxy_set_header X-Forwarded-Proto $scheme;
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+#     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#     # nginx.ingress.kubernetes.io/proxy-buffering: "on"
+#     # nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+#     # nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
 
-    # Proxy buffer settings you requested
-    nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "1024k"
-    nginx.ingress.kubernetes.io/proxy-buffers: "4 512k"
-    nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "1024k"
+#     # Proxy buffer settings you requested
+#     nginx.ingress.kubernetes.io/proxy-buffering: "on"
+#     nginx.ingress.kubernetes.io/proxy-buffer-size: "1024k"
+#     nginx.ingress.kubernetes.io/proxy-buffers: "4 512k"
+#     nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "1024k"
     
-    # Additional recommended settings for large files
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "0"
-    argocd.argoproj.io/sync-wave: "4"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - calibre.acc.ricksdomein.nl
-      secretName: calibre-web-https-cert
-  rules:
-    - host: calibre.acc.ricksdomein.nl
-      http:
-        paths:
-          - path: /outpost.goauthentik.io/
-            pathType: Prefix
-            backend:
-              service:
-                name: ak-outpost-outpost
-                port:
-                  number: 9000
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: calibre-web
-                port:
-                  number: 8083
+#     # Additional recommended settings for large files
+#     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+#     nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+#     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+#     nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "0"
+#     argocd.argoproj.io/sync-wave: "4"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - hosts:
+#         - calibre.acc.ricksdomein.nl
+#       secretName: calibre-web-https-cert
+#   rules:
+#     - host: calibre.acc.ricksdomein.nl
+#       http:
+#         paths:
+#           - path: /outpost.goauthentik.io/
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: ak-outpost-outpost
+#                 port:
+#                   number: 9000
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: calibre-web
+#                 port:
+#                   number: 8083
