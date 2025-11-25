@@ -186,7 +186,7 @@ spec:
         - name: booklore
           image: booklore/booklore:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 6060
           env:
             - name: USER_ID
               value: "1000"
@@ -234,8 +234,8 @@ spec:
     app: booklore
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 6060
+      targetPort: 6060
       protocol: TCP
 ---
 apiVersion: networking.k8s.io/v1
@@ -263,4 +263,4 @@ spec:
               service:
                 name: booklore
                 port:
-                  number: 8080
+                  number: 6060
