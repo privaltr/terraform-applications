@@ -63,8 +63,8 @@ spec:
               mountPath: /config
             - name: bookdrop
               mountPath: /books
-            - name: downloads
-              mountPath: /downloads
+            # - name: downloads
+            #   mountPath: /downloads
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -72,9 +72,9 @@ spec:
         - name: bookdrop
           persistentVolumeClaim:
             claimName: bookdrop-pvc
-        - name: downloads
-          persistentVolumeClaim:
-            claimName: qbittorrent-downloads
+        # - name: downloads
+        #   persistentVolumeClaim:
+        #     claimName: qbittorrent-downloads
 ---
 apiVersion: v1
 kind: Service
