@@ -1,159 +1,159 @@
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: bookshelf-tls
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  secretName: bookshelf-https-cert
-  dnsNames:
-    - "bookshelf.acc.ricksdomein.nl"
-  issuerRef:
-    name: root-ca-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: bookshelf-config
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bookshelf-configmap
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-data:
-  config.xml: |
-    <Config>
-      <BindAddress>*</BindAddress>
-      <Port>8787</Port>
-      <SslPort>6868</SslPort>
-      <EnableSsl>False</EnableSsl>
-      <LaunchBrowser>True</LaunchBrowser>
-      <ApiKey>2f08b951269448fcbf57179e1fb3150e</ApiKey>
-      <AuthenticationMethod>External</AuthenticationMethod>
-      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
-      <Branch>master</Branch>
-      <LogLevel>debug</LogLevel>
-      <SslCertPath></SslCertPath>
-      <SslCertPassword></SslCertPassword>
-      <UrlBase></UrlBase>
-      <InstanceName>Radarr</InstanceName>
-      <UpdateMechanism>Docker</UpdateMechanism>
-    </Config>
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: bookshelf
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  replicas: 1
-  revisionHistoryLimit: 1
-  selector:
-    matchLabels:
-      app: bookshelf
-  template:
-    metadata:
-      labels:
-        app: bookshelf
-    spec:
-      initContainers:
-        - name: init-download-dirs
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              mkdir -p /library/books/ && \
-              chown 1000:1000 -R /library/books/ && \
-              chmod -R 775 /library/books/
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: bookshelf-tls
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   secretName: bookshelf-https-cert
+#   dnsNames:
+#     - "bookshelf.acc.ricksdomein.nl"
+#   issuerRef:
+#     name: root-ca-issuer
+#     kind: ClusterIssuer
+#     group: cert-manager.io
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: bookshelf-config
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 1Gi
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: bookshelf-configmap
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+# data:
+#   config.xml: |
+#     <Config>
+#       <BindAddress>*</BindAddress>
+#       <Port>8787</Port>
+#       <SslPort>6868</SslPort>
+#       <EnableSsl>False</EnableSsl>
+#       <LaunchBrowser>True</LaunchBrowser>
+#       <ApiKey>2f08b951269448fcbf57179e1fb3150e</ApiKey>
+#       <AuthenticationMethod>External</AuthenticationMethod>
+#       <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+#       <Branch>master</Branch>
+#       <LogLevel>debug</LogLevel>
+#       <SslCertPath></SslCertPath>
+#       <SslCertPassword></SslCertPassword>
+#       <UrlBase></UrlBase>
+#       <InstanceName>Radarr</InstanceName>
+#       <UpdateMechanism>Docker</UpdateMechanism>
+#     </Config>
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: bookshelf
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "2"
+# spec:
+#   replicas: 1
+#   revisionHistoryLimit: 1
+#   selector:
+#     matchLabels:
+#       app: bookshelf
+#   template:
+#     metadata:
+#       labels:
+#         app: bookshelf
+#     spec:
+#       initContainers:
+#         - name: init-download-dirs
+#           image: busybox
+#           command:
+#             - sh
+#             - -c
+#             - |
+#               mkdir -p /library/books/ && \
+#               chown 1000:1000 -R /library/books/ && \
+#               chmod -R 775 /library/books/
 
-              if [ ! -s /config/config.xml ]; then
-                echo "Seeding config.xml from ConfigMap"
-                cp /seed/config.xml /config/config.xml
-              fi
-          volumeMounts:
-            - name: qbittorrent-downloads
-              mountPath: /library
-            - name: bookshelf-conf
-              mountPath: /seed
-            - name: bookshelf-config
-              mountPath: /config
-      securityContext:
-          fsGroup: 1000
-      containers:
-        - name: bookshelf
-          image: ghcr.io/pennydreadful/bookshelf:hardcover
-          ports:
-            - containerPort: 8787
-          volumeMounts:
-            - name: bookshelf-config
-              mountPath: /config
-            - name: qbittorrent-downloads
-              mountPath: /library
-      volumes:
-        - name: bookshelf-config
-          persistentVolumeClaim:
-            claimName: bookshelf-config
-        - name: bookshelf-conf
-          configMap:
-            name: bookshelf-configmap
-        - name: qbittorrent-downloads
-          persistentVolumeClaim:
-            claimName: qbittorrent-downloads
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bookshelf
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-spec:
-  selector:
-    app: bookshelf
-  ports:
-    - name: http
-      port: 8787
-      targetPort: 8787
-      protocol: TCP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: bookshelf
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    argocd.argoproj.io/sync-wave: "4"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - bookshelf.acc.ricksdomein.nl
-      secretName: bookshelf-https-cert
-  rules:
-    - host: bookshelf.acc.ricksdomein.nl
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: bookshelf
-                port:
-                  number: 8787
+#               if [ ! -s /config/config.xml ]; then
+#                 echo "Seeding config.xml from ConfigMap"
+#                 cp /seed/config.xml /config/config.xml
+#               fi
+#           volumeMounts:
+#             - name: qbittorrent-downloads
+#               mountPath: /library
+#             - name: bookshelf-conf
+#               mountPath: /seed
+#             - name: bookshelf-config
+#               mountPath: /config
+#       securityContext:
+#           fsGroup: 1000
+#       containers:
+#         - name: bookshelf
+#           image: ghcr.io/pennydreadful/bookshelf:hardcover
+#           ports:
+#             - containerPort: 8787
+#           volumeMounts:
+#             - name: bookshelf-config
+#               mountPath: /config
+#             - name: qbittorrent-downloads
+#               mountPath: /library
+#       volumes:
+#         - name: bookshelf-config
+#           persistentVolumeClaim:
+#             claimName: bookshelf-config
+#         - name: bookshelf-conf
+#           configMap:
+#             name: bookshelf-configmap
+#         - name: qbittorrent-downloads
+#           persistentVolumeClaim:
+#             claimName: qbittorrent-downloads
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: bookshelf
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "3"
+# spec:
+#   selector:
+#     app: bookshelf
+#   ports:
+#     - name: http
+#       port: 8787
+#       targetPort: 8787
+#       protocol: TCP
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: bookshelf
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+#     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#     argocd.argoproj.io/sync-wave: "4"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - hosts:
+#         - bookshelf.acc.ricksdomein.nl
+#       secretName: bookshelf-https-cert
+#   rules:
+#     - host: bookshelf.acc.ricksdomein.nl
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: bookshelf
+#                 port:
+#                   number: 8787
