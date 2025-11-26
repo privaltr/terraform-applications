@@ -1,0 +1,201 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: adguardhome-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: adguardhome-https-cert
+  dnsNames:
+    - "adguard.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adguardhome-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adguardhome-configmap
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  AdGuardHome.yaml: |
+    bind_host: 0.0.0.0
+    port: 3000
+    tls_port: 3443
+    use_tls: false
+
+    users:
+      - name: admin
+        password: "changeme"
+        permissions:
+          - "*"
+
+    dns:
+      bind_hosts:
+        - 0.0.0.0
+      port: 53
+      upstream_dns:
+        - "1.1.1.1"
+        - "8.8.8.8"
+      bootstrap_dns:
+        - "1.1.1.1"
+        - "8.8.8.8"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguardhome
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguardhome
+  template:
+    metadata:
+      labels:
+        app: adguardhome
+    spec:
+      # initContainers:
+      #   - name: init-config
+      #     image: busybox
+      #     command:
+      #       - sh
+      #       - -c
+      #       - |
+      #         if [ ! -s /config/AdGuardHome.yaml ]; then
+      #           echo "Seeding AdGuardHome.yaml from ConfigMap"
+      #           cp /seed/AdGuardHome.yaml /config/AdGuardHome.yaml
+      #         fi
+      #     volumeMounts:
+      #       - name: adguardhome-config
+      #         mountPath: /config
+      #       - name: adguardhome-seed
+      #         mountPath: /seed
+
+      securityContext:
+        fsGroup: 1000
+
+      containers:
+        - name: adguardhome
+          image: adguard/adguardhome:latest
+          ports:
+            - containerPort: 3000
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 53
+              protocol: TCP
+      #     volumeMounts:
+      #       - name: adguardhome-config
+      #         mountPath: /opt/adguardhome/conf
+      #       - name: adguardhome-seed
+      #         mountPath: /opt/adguardhome/seed
+
+      # volumes:
+      #   - name: adguardhome-config
+      #     persistentVolumeClaim:
+      #       claimName: adguardhome-config
+      #   - name: adguardhome-seed
+      #     configMap:
+      #       name: adguardhome-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguardhome
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: adguardhome
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguardhome-dns
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  type: LoadBalancer
+  selector:
+    app: adguardhome
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguardhome
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+
+    # nginx.ingress.kubernetes.io/auth-url: |-
+    #   http://ak-outpost-outpost.authentik.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+    # nginx.ingress.kubernetes.io/auth-signin: |-
+    #   https://adguard.acc.ricksdomein.nl/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
+    # nginx.ingress.kubernetes.io/auth-response-headers: |-
+    #   Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
+    # nginx.ingress.kubernetes.io/auth-snippet: |
+    #   proxy_set_header X-Forwarded-Host $http_host;
+    #   proxy_set_header X-Forwarded-Proto $scheme;
+
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - adguard.acc.ricksdomein.nl
+      secretName: adguardhome-https-cert
+  rules:
+    - host: adguard.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /outpost.goauthentik.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: ak-outpost-outpost
+                port:
+                  number: 9000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguardhome
+                port:
+                  number: 3000
