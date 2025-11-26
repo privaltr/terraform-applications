@@ -1,0 +1,121 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lazylibrarian-tls
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: lazylibrarian-https-cert
+  dnsNames:
+    - "lazylibrarian.acc.ricksdomein.nl"
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lazylibrarian-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lazylibrarian
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lazylibrarian
+  template:
+    metadata:
+      labels:
+        app: lazylibrarian
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: lazylibrarian
+          image: lscr.io/linuxserver/lazylibrarian:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Amsterdam"
+          ports:
+            - containerPort: 5299
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: bookdrop
+              mountPath: /books
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: lazylibrarian-config
+        - name: bookdrop
+          persistentVolumeClaim:
+            claimName: bookdrop-pvc
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: qbittorrent-downloads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lazylibrarian
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app: lazylibrarian
+  ports:
+    - name: http
+      port: 5299
+      targetPort: 5299
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lazylibrarian
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    argocd.argoproj.io/sync-wave: "4"
+
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - lazylibrarian.acc.ricksdomein.nl
+      secretName: lazylibrarian-https-cert
+  rules:
+    - host: lazylibrarian.acc.ricksdomein.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lazylibrarian
+                port:
+                  number: 5299
