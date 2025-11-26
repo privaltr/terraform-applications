@@ -375,3 +375,17 @@ spec:
                 name: adguardhome
                 port:
                   number: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ak-outpost-outpost
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  type: ExternalName
+  externalName: ak-outpost-outpost.authentik.svc.cluster.local
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
