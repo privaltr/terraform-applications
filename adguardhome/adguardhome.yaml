@@ -28,6 +28,20 @@ spec:
       storage: 2Gi
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adguardhome-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: adguardhome-configmap
@@ -266,13 +280,18 @@ spec:
           volumeMounts:
             - name: adguardhome-config
               mountPath: /opt/adguardhome/conf
+            - name: adguardhome-data
+              mountPath: /opt/adguardhome/work
       volumes:
         - name: adguardhome-config
           persistentVolumeClaim:
-            claimName: adguardhome-config
+            claimName: adguardhome-data
         - name: adguardhome-seed
           configMap:
             name: adguardhome-configmap
+        - name: adguardhome-config
+          persistentVolumeClaim:
+            claimName: adguardhome-data
 ---
 apiVersion: v1
 kind: Service
