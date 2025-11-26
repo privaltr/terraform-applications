@@ -285,11 +285,11 @@ spec:
       volumes:
         - name: adguardhome-config
           persistentVolumeClaim:
-            claimName: adguardhome-data
+            claimName: adguardhome-config
         - name: adguardhome-seed
           configMap:
             name: adguardhome-configmap
-        - name: adguardhome-config
+        - name: adguardhome-data
           persistentVolumeClaim:
             claimName: adguardhome-data
 ---
