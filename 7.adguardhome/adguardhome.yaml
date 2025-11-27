@@ -417,8 +417,6 @@ spec:
     - toEndpoints:
         - matchLabels:
             app: ak-outpost-outpost
-      toNamespaces:
-        - matchName: "authentik"
       toPorts:
         - ports:
             - port: "9000"
