@@ -418,8 +418,7 @@ spec:
         - matchLabels:
             app: ak-outpost-outpost
       toNamespaces:
-        - matchLabels:
-            name: authentik
+        - matchName: "authentik"
       toPorts:
         - ports:
             - port: "9000"
