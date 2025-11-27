@@ -394,6 +394,30 @@ spec:
       targetPort: 9000
       protocol: TCP
 ---
+# Deny everything in namespace
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: namespace-isolation
+spec:
+  description: "Isolate namespace and allow only AdGuard Home traffic"
+  endpointSelector: {}  # Applies to all pods
+  
+  # Default deny all egress (with DNS exception for all pods)
+  egress:
+    - toEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+  
+  # Default deny all ingress
+  ingress: []
+---
+# Allow for adguardhome
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
