@@ -156,6 +156,10 @@ data:
         url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
         name: AdAway Default Blocklist
         id: 2
+      - enabled: true
+        url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_33.txt
+        name: Steven Black's List
+        id: 1764173996
     whitelist_filters: []
     user_rules: []
     dhcp:
@@ -389,3 +393,19 @@ spec:
     - port: 9000
       targetPort: 9000
       protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: restrict-egress-to-ak-outpost
+spec:
+  description: "Allow egress only to ak-outpost-outpost in authentik namespace"
+  endpointSelector: { matchLabels: { app: adguardhome } }  # applies to all pods in this namespace
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: ak-outpost-outpost
+          matchNamespace:
+            name: authentik
+  ingress:
+    - {}  # optional, allow all ingress
