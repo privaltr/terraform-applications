@@ -436,9 +436,9 @@ spec:
         - ports:
             - port: "9000"
               protocol: TCP
-    # Allow DNS service discovery within cluster
+    # Allow DNS service discovery within cluster - use cluster entity
     - toEntities:
-        - kube-dns
+        - cluster
       toPorts:
         - ports:
             - port: "53"
