@@ -404,14 +404,29 @@ spec:
     matchLabels:
       app: adguardhome
   egress:
-    # Allow DNS queries to upstream DNS servers
-    - toEntities:
-        - world
+    # Allow DNS-over-HTTPS to upstream DNS servers
+    - toFQDNs:
+        - matchName: "dns10.quad9.net"
       toPorts:
         - ports:
             - port: "443"
               protocol: TCP
-            - port: "853"
+    # Allow bootstrap DNS servers (Quad9)
+    - toFQDNs:
+        - matchName: "9.9.9.10"
+        - matchName: "149.112.112.10"
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Allow filter list downloads from GitHub
+    - toFQDNs:
+        - matchName: "adguardteam.github.io"
+      toPorts:
+        - ports:
+            - port: "443"
               protocol: TCP
     # Allow communication with authentik outpost
     - toEndpoints:
@@ -421,17 +436,25 @@ spec:
         - ports:
             - port: "9000"
               protocol: TCP
-    # Allow DNS service communication within cluster
+    # Allow DNS service discovery within cluster
     - toEntities:
-        - cluster
+        - kube-dns
       toPorts:
         - ports:
             - port: "53"
               protocol: UDP
             - port: "53"
               protocol: TCP
+    # Allow NTP for time synchronization (important for TLS)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "123"
+              protocol: UDP
+
   ingress:
-    # Allow DNS queries from anywhere
+    # Allow DNS queries from anywhere (UDP and TCP)
     - fromEntities:
         - world
       toPorts:
