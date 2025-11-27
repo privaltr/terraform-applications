@@ -397,15 +397,58 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: restrict-egress-to-ak-outpost
+  name: adguardhome-network-policy
 spec:
-  description: "Allow egress only to ak-outpost-outpost in authentik namespace"
-  endpointSelector: { matchLabels: { app: adguardhome } }  # applies to all pods in this namespace
+  description: "Network policy for AdGuard Home with necessary egress rules"
+  endpointSelector:
+    matchLabels:
+      app: adguardhome
   egress:
+    # Allow DNS queries to upstream DNS servers
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "853"
+              protocol: TCP
+    # Allow communication with authentik outpost
     - toEndpoints:
         - matchLabels:
             app: ak-outpost-outpost
-          matchNamespace:
+      toNamespaces:
+        - matchLabels:
             name: authentik
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    # Allow DNS service communication within cluster
+    - toEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
   ingress:
-    - {}  # optional, allow all ingress
+    # Allow DNS queries from anywhere
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Allow HTTP admin access from ingress controller
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: ingress-nginx
+            app.kubernetes.io/name: ingress-nginx
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
