@@ -258,8 +258,8 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    argocd.argoproj.io/depends-on: external-secrets/ClusterSecretStore/es-secret-store
+    # argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    # argocd.argoproj.io/depends-on: external-secrets/ClusterSecretStore/es-secret-store
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
