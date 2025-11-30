@@ -19,6 +19,7 @@ metadata:
   name: radarr-config
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    longhorn.io/fs-type: "ext4"
 spec:
   accessModes:
     - ReadWriteOnce
