@@ -109,9 +109,12 @@ spec:
                   - /bin/sh
                   - -c
                   - |
-                    # Give Radarr time to shutdown gracefully
+                    echo "Starting graceful shutdown of Radarr..."
+                    # Send SIGTERM to allow graceful shutdown
                     pkill -SIGTERM radarr
+                    # Wait for processes to clean up
                     sleep 30
+                    echo "Graceful shutdown completed"
           ports:
             - containerPort: 7878
           env:
