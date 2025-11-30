@@ -71,6 +71,7 @@ spec:
       labels:
         app: radarr
     spec:
+      terminationGracePeriodSeconds: 60
       # InitContainer to create directories automatically
       initContainers:
         - name: init-download-dirs
@@ -110,8 +111,6 @@ spec:
                     # Give Radarr time to shutdown gracefully
                     pkill -SIGTERM radarr
                     sleep 30
-          # Increase termination grace period
-          terminationGracePeriodSeconds: 60
           ports:
             - containerPort: 7878
           env:
