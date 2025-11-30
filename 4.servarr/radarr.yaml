@@ -71,33 +71,46 @@ spec:
         app: radarr
     spec:
       # InitContainer to create directories automatically
-      # initContainers:
-      #   - name: init-download-dirs
-      #     image: busybox
-      #     command:
-      #       - sh
-      #       - -c
-      #       - |
-      #         mkdir -p /library/movies/ && \
-      #         chown 1000:1000 -R /library && \
-      #         chmod -R 775 /library
+      initContainers:
+        - name: init-download-dirs
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /library/movies/ && \
+              chown 1000:1000 -R /library && \
+              chmod -R 775 /library
 
-      #         if [ ! -s /config/config.xml ]; then
-      #           echo "Seeding config.xml from ConfigMap"
-      #           cp /seed/config.xml /config/config.xml
-      #         fi
-      #     volumeMounts:
-      #       - name: qbittorrent-downloads
-      #         mountPath: /library
-      #       - name: radarr-conf
-      #         mountPath: /seed
-      #       - name: radarr-config
-      #         mountPath: /config
+              if [ ! -s /config/config.xml ]; then
+                echo "Seeding config.xml from ConfigMap"
+                cp /seed/config.xml /config/config.xml
+              fi
+          volumeMounts:
+            - name: qbittorrent-downloads
+              mountPath: /library
+            - name: radarr-conf
+              mountPath: /seed
+            - name: radarr-config
+              mountPath: /config
       securityContext:
           fsGroup: 1000
       containers:
         - name: radarr
           image: lscr.io/linuxserver/radarr:latest
+          # Add these lifecycle hooks
+          lifecycle:
+            preStop:
+              exec:
+                command: 
+                  - /bin/sh
+                  - -c
+                  - |
+                    # Give Radarr time to shutdown gracefully
+                    pkill -SIGTERM radarr
+                    sleep 30
+          # Increase termination grace period
+          terminationGracePeriodSeconds: 60
           ports:
             - containerPort: 7878
           env:
@@ -110,9 +123,9 @@ spec:
           volumeMounts:
             - name: radarr-config
               mountPath: /config
-            - name: radarr-conf
-              mountPath: /config/config.xml
-              subPath: config.xml
+            # - name: radarr-conf
+            #   mountPath: /config/config.xml
+            #   subPath: config.xml
             - name: qbittorrent-downloads
               mountPath: /library
       volumes:
