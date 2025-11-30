@@ -87,6 +87,7 @@ spec:
               if [ ! -s /config/config.xml ]; then
                 echo "Seeding config.xml from ConfigMap"
                 cp /seed/config.xml /config/config.xml
+                chown 1000:1000 -R /config/config.xml
               fi
           volumeMounts:
             - name: qbittorrent-downloads
